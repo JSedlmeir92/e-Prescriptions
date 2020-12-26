@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Credential, Connection
 from .forms import CredentialForm, ConnectionForm
 
+import hashlib
+import json
 import requests
 import time
 import urllib.request
@@ -232,6 +234,72 @@ def issue_cred_view(request):
                     rev_reg_id = requests.get(url + '/revocation/registries/created?cred_def_id=' + credential_definition_id + '&state=active').json()['rev_reg_ids'][0]
                     issuer_did = requests.get(url + '/wallet/did/public').json()['result']['did']
                     connection_id = request.POST.get('connection_id')
+
+                    attributes = [
+                        {
+                            # "mime-type": "image/jpeg",
+                            "name": "Doctor's Full Name",
+                            "value": request.POST.get('doctor_fullname')
+                        },
+                        {
+                            "name": "Doctor's Address",
+                            "value": request.POST.get('doctor_address')
+                        },
+                        {
+                            "name": "Doctor's Type",
+                            "value": request.POST.get('doctor_type')
+                        },
+                        {
+                            "name": "Patient's Full Name",
+                            "value": request.POST.get('patient_fullname')
+                        },
+                        {
+                            "name": "Patient's Birthday",
+                            "value": request.POST.get('patient_birthday')
+                        },
+                        {
+                            "name": "Medical",
+                            "value": request.POST.get('medical')
+                        },
+                        {
+                            "name": "Number",
+                            "value": request.POST.get('number')
+                        },
+                        {
+                            "name": "Expiration",
+                            "value": request.POST.get('expiration')
+                        }
+                    ]
+
+                    prescription_id = hashlib.sha256((json.dumps(attributes)).encode('utf-8')).hexdigest()
+                    print("ID: " + prescription_id)
+                    attributed.append(
+                    {
+                        "name": "Prescription Id",
+                        "value": prescription_id
+                    })
+
+                    with open("quorum_client/build/contracts/PrescriptionContract.json", "r") as file:
+                        contract = json.load(file)
+
+                    contract_address = contract["networks"]['10']['address']
+                    print("contract_address: " + contract_address)
+                    attributes.append(
+                    {
+                        "name": "Contract Address",
+                        "value": contract_address
+                    })
+
+                    os.system(f"quorum_client/createPresecription.sh {prescription_id}")
+                    FileHandler = open("ip_address_vm", "r")
+                    spending_key = FileHandler.read().replace("\n", "")
+                    print("Spending key: " + spending_key)
+                    attributes.append(
+                    {
+                        "name": "Spending Key",
+                        "value": spending_key
+                    })
+
                     credential = {
                         "schema_name": schema_name,
                         "auto_remove": True,
@@ -241,25 +309,7 @@ def issue_cred_view(request):
                         "schema_id": schema_id,
                         "credential_proposal": {
                             "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/credential-preview",
-                            "attributes": [
-                                {
-                                    # "mime-type": "image/jpeg",
-                                    "name": "Name",
-                                    "value": request.POST.get('fullname')
-                                },
-                                {
-                                    "name": "Company",
-                                    "value": request.POST.get('company')
-                                },
-                                {
-                                    "name": "Division",
-                                    "value": request.POST.get('division')
-                                },
-                                {
-                                    "name": "Job Title",
-                                    "value": request.POST.get('jobtitle')
-                                }
-                            ]
+                            "attributes": attributes,
                         },
                         "credential_def_id": credential_definition_id,
                         "issuer_did": issuer_did,

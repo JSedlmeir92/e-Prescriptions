@@ -1,4 +1,4 @@
-{% extends 'hr/base_hr.html' %}
+{% extends 'doctor/base_doctor.html' %}
 
 {% block head %}{% endblock %}
 
@@ -65,5 +65,5 @@
         <p><input type="submit" class="button2" value="Yes"/></p>
     </form>
     {% endif %}
-    <button class="button" onclick="window.location.href='{% url 'hr-revoke_cred' %}';">Go Back</button><br><br>
+    <button class="button" onclick="window.location.href='{% url 'doctor-revoke_cred' %}';">Go Back</button><br><br>
 {% endblock %}

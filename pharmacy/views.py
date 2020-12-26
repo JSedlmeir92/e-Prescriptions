@@ -13,7 +13,7 @@ url = 'http://0.0.0.0:7080'
 url2 = 'http://0.0.0.0:9080'
 
 def home_view(request):
-    return render(request, 'work/base_work.html', {'title': 'Work'})
+    return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Work'})
 
 @csrf_exempt
 def login_view(request):
@@ -40,7 +40,7 @@ def login_view(request):
                     pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
                     requests.post(url2 + '/present-proof/records/' + pres_ex_id + '/remove')
                     x -= 1
-                return redirect('work-login')
+                return redirect('pharmacy-connection')
             # In case the session key is None, the session is stored to get a key
             if not request.session.session_key:
                 request.session.save()
@@ -73,22 +73,22 @@ def login_view(request):
             # Creates a new INVITATION, if none exists
             if len(invitations) == 0:
                 invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true').json()['invitation_url']
-                FileHandler = open("connection_iam.txt", "w")
+                FileHandler = open("connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
-            elif os.stat("connection_iam.txt").st_size == 0:
+            elif os.stat("connection_pharmacy").st_size == 0:
                 connection_id = invitations[0]["connection_id"]
                 requests.post(url2 + '/connections/' + connection_id + '/remove')
                 invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true').json()['invitation_url']
-                FileHandler = open("connection_iam.txt", "w")
+                FileHandler = open("connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
             # Uses the latest created INVITATION, if it has not been used yet
             else:
-                FileHandler = open("connection_iam.txt", "r")
+                FileHandler = open("connection_pharmacy", "r")
                 invitation_link = FileHandler.read()
             FileHandler.close()
             qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600"
             context['qr_code'] = qr_code
-    return render(request, 'work/login.html', context)
+    return render(request, 'pharmacy/login.html', context)
 
 def login_loading_view(request):
     # Deletes old PROOF requests & presentations
@@ -143,7 +143,7 @@ def login_loading_view(request):
     context = {
         'title': 'Waiting for Proof Presentation',
     }
-    return render(request, 'work/login-loading.html', context)
+    return render(request, 'pharmacy/login-loading.html', context)
 
 def login_result_view(request):
     x = 0
@@ -152,7 +152,7 @@ def login_result_view(request):
         # redirect to the login page after 2 minutes of not receiving a proof presentation
         x += 1
         if x > 23:
-            return redirect('work-login')
+            return redirect('pharmacy-connection')
     else:
         proof = requests.get(url2 + '/present-proof/records').json()['results'][0]
         verified = proof['verified']
@@ -160,7 +160,7 @@ def login_result_view(request):
             'title': 'Log In Success',
             'verified': verified
         }
-        return render(request, 'work/login-result.html', context)
+        return render(request, 'pharmacy/login-result.html', context)
 
 def logged_in_view(request):
     if request.method == 'POST':
@@ -170,7 +170,7 @@ def logged_in_view(request):
             pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
             requests.post(url2 + '/present-proof/records/' + pres_ex_id + '/remove')
             x -= 1
-        return redirect('work-login')
+        return redirect('pharmacy-connection')
     proof = requests.get(url2 + '/present-proof/records?state=verified').json()['results']
     if len(proof) > 0:
         name = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_name_uuid']['raw']
@@ -179,9 +179,9 @@ def logged_in_view(request):
             'name': name,
             'date': datetime.date.today().strftime('%d - %b - %Y')
         }
-        return render(request, 'work/logged_in.html', context)
+        return render(request, 'pharmacy/logged_in.html', context)
     else:
-        return redirect('work-login')
+        return redirect('pharmacy-connection')
 
 @require_POST
 @csrf_exempt

@@ -11,7 +11,7 @@ from pathlib import Path
 url = 'http://0.0.0.0:7080'
 
 def home_view(request):
-    return render(request, 'hr/base_hr.html', {'title': 'HR'})
+    return render(request, 'doctor/base_doctor.html', {'title': 'Doctor'})
 
 def connection_view(request):
     form = ConnectionForm(request.POST or None)
@@ -19,7 +19,7 @@ def connection_view(request):
         form.save()
         form = ConnectionForm()
     context = {
-        'title': 'Establish Connection (HR)',
+        'title': 'Establish Connection (Doctor)',
         'form': form
     }
     if request.method == 'POST':
@@ -38,7 +38,7 @@ def connection_view(request):
         # Generating the QR code
         qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600"
         context['qr_code'] = qr_code
-    return render(request, 'hr/connection.html', context)
+    return render(request, 'doctor/connection.html', context)
 
 def schema_view(request):
     created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
@@ -54,17 +54,25 @@ def schema_view(request):
     if request.method == 'POST':
         schema = {
             "attributes": [
-                "Name",
-                "Company",
-                "Division",
-                "Job Title"
+                "doctor_fullname",
+                "doctor_type",
+                "doctor_address",
+                "issued",
+                "patient_fullname",
+                "patient_birthday",
+                "medical",
+                "number",
+                "expiration",
+                "prescription_id",
+                "contractAddress",
+                "spendingKey"
             ],
             "schema_name": str(time.time())[:10],
             "schema_version": "1.0"
         }
         requests.post(url + '/schemas', json=schema)
         return redirect('.')
-    return render(request, 'hr/schema.html', context)
+    return render(request, 'doctor/schema.html', context)
 
 def cred_def_view(request):
     context = {
@@ -85,13 +93,13 @@ def cred_def_view(request):
             if request.method == 'POST':
                 schema_id = created_schema[0]
                 credential_definition = {
-                    "tag": "Employment_Cert",
+                    "tag": "ePrescription",
                     "support_revocation": True,
                     "schema_id": schema_id
                 }
                 requests.post(url + '/credential-definitions', json=credential_definition)
                 return redirect('.')
-    return render(request, 'hr/cred_def.html', context)
+    return render(request, 'doctor/cred_def.html', context)
 
 def rev_reg_view(request):
     context = {
@@ -129,33 +137,33 @@ def rev_reg_view(request):
                         #print(os.path.dirname(os.path.realpath(__file__)))
                         #print(os.path.join(Path(__file__).resolve().parent.parent, 'start'))
                         #os.chdir(os.path.join(Path(__file__).resolve().parent.parent))
-                        if os.path.exists(os.path.join(Path(__file__).resolve().parent.parent, 'git-test')):
+                        if os.path.exists(os.path.join(Path(__file__).resolve().parent.parent, 'TailsFiles')):
                             #print('yes')
-                            os.chdir(os.path.join(Path(__file__).resolve().parent.parent, 'git-test'))
-                            os.system('git pull "https://github.com/Jana-Gl/git-test.git"')
+                            os.chdir(os.path.join(Path(__file__).resolve().parent.parent, 'TailsFiles'))
+                            os.system('git pull "https://github.com/prescriptionMaster/TailsFiles.git"')
                             #print(os.getcwd())
                         else:
                             #print('no')
                             os.chdir(Path(__file__).resolve().parent.parent)
-                            os.system('git clone https://github.com/Jana-Gl/git-test')
-                            os.chdir('git-test')
+                            os.system('git clone https://github.com/prescriptionMaster/TailsFiles')
+                            os.chdir('TailsFiles')
                             #print(os.getcwd())
                         rev_reg = requests.get(url + '/revocation/registries/created?state=generated').json()['rev_reg_ids'][0]
                         link = requests.get(url + '/revocation/registry/' + rev_reg + '/tails-file').url[14:500]
                         filename = str(time.time())[:10]
                         urllib.request.urlretrieve('http://127.0.0.1' + link, filename)
 
-                        #os.system('mv ' + filename + ' ~/Demo/git-test/')
+                        #os.system('mv ' + filename + ' ~/Demo/TailsFiles/')
                         os.system('git add ' + filename)
                         os.system('git commit -m "Upload via demo"')
-                        os.system('git push https://Jana-Gl:ycRMtJtmmEZNDs3@github.com/Jana-Gl/git-test.git --all')
+                        os.system('git push https://prescriptionMaster:ZYN586xGacRvabUIhvt9@github.com/prescriptionMaster/TailsFiles.git --all')
                         os.chdir('../')
                         #if os.path.exists(filename):
                         #    os.remove(filename)
                         #else:
                         #    pass
                         tails_public_uri = {
-                            "tails_public_uri": "https://github.com/Jana-Gl/git-test/raw/master/" + filename
+                            "tails_public_uri": "https://prescriptionMaster:ZYN586xGacRvabUIhvt9@github.com/prescriptionMaster/TailsFiles.git/raw/master/" + filename
                         }
                         print("Updating revocation registry tails file url")
                         ans = requests.patch(url + '/revocation/registry/' + rev_reg, json=tails_public_uri)
@@ -176,7 +184,7 @@ def rev_reg_view(request):
 
                 except Exception as e:
                         print(e)
-    return render(request, 'hr/rev_reg.html', context)
+    return render(request, 'doctor/rev_reg.html', context)
 
 def issue_cred_view(request):
     # Updates the STATE of all CONNECTIONS that do not have the state 'active' or 'response'
@@ -267,7 +275,7 @@ def issue_cred_view(request):
                     Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
                     context['form'] = form
                     context['name'] = request.POST.get('fullname')
-    return render(request, 'hr/issue_cred.html', context)
+    return render(request, 'doctor/issue_cred.html', context)
 
 def revoke_cred_view(request):
     # Updates all issued Credentials
@@ -285,7 +293,7 @@ def revoke_cred_view(request):
         'object_list': queryset,
         'len': len(queryset)
     }
-    return render(request, 'hr/revoke_cred.html', context)
+    return render(request, 'doctor/revoke_cred.html', context)
 
 def cred_detail_view(request, id):
     obj = get_object_or_404(Credential, id=id)
@@ -305,4 +313,4 @@ def cred_detail_view(request, id):
         'title': 'Credential Detail',
         'object': obj
     }
-    return render(request, 'hr/cred_detail.html', context)
+    return render(request, 'doctor/cred_detail.html', context)

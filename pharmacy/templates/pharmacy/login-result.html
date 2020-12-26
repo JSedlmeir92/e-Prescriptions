@@ -1,10 +1,10 @@
-{% extends 'work/base_work.html' %}
+{% extends 'pharmacy/base_work.html' %}
 
 {% block head %}
     {% if verified == 'true' %}
         <meta http-equiv="refresh" content="2;URL={% url 'work-logged_in' %}">
     {% else %}
-        <meta http-equiv="refresh" content="3;URL={% url 'work-login' %}">
+        <meta http-equiv="refresh" content="3;URL={% url 'pharmacy-connection' %}">
     {% endif %}
 {% endblock %}
 

@@ -1,11 +1,11 @@
-{% extends 'work/base_work.html' %}
+{% extends 'pharmacy/base_work.html' %}
 
 {% block head %}
     {% if name %}
     {% elif available_schema %}
     {% elif available_cred_def %}
     {% else %}
-        <meta http-equiv="refresh" content="1;URL={% url 'work-login_result' %}">
+        <meta http-equiv="refresh" content="1;URL={% url 'pharmacy-connection_result' %}">
     {% endif %}
 {% endblock %}
 
@@ -58,18 +58,18 @@
         <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd; margin-left: auto; margin-right: auto; width: 300px">Log in with SSI</button><br>
         <h3 style="color: darkred; text-align: center">You can't use 'Log in with SSI' right now.</h3><br>
         <h5 style="color: darkred">{{ available_schema }}</h5><br>
-        <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'hr-schema' %}';">Go Back</button><br><br>
+        <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'doctor-schema' %}';">Go Back</button><br><br>
     {% elif available_cred_def %}
         <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd; margin-left: auto; margin-right: auto; width: 300px">Log in with SSI</button><br>
         <h3 style="color: darkred; text-align: center">You can't use 'Log in with SSI' right now.</h3><br>
         <h5 style="color: darkred">{{ available_cred_def }}</h5><br>
-        <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'hr-cred_def' %}';">Go Back</button><br><br>
+        <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Go Back</button><br><br>
     {% else %}
         {% if name %}
-            <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'work-login_loading' %}';">Log in as - {{ name }} -</button><br><br><br>
+            <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'pharmacy-connection_loading' %}';">Log in as - {{ name }} -</button><br><br><br>
             <h5>If you are not {{ name }}, please click this button to generate a new invitation:</h5><br>
             <form method="post">{% csrf_token %}
-                <button class="button" name="submit_new_invitation" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'work-login_loading' %}';">Generate Invitation</button>
+                <button class="button" name="submit_new_invitation" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'pharmacy-connection_loading' %}';">Generate Invitation</button>
             </form>
         {% else %}
             <button class="button" style="pointer-events: none; margin-left: auto; margin-right: auto; width: 300px">Log in with SSI</button><br>

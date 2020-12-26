@@ -4,27 +4,41 @@ from django.db.models import Q
 
 class CredentialForm(forms.ModelForm):
     # Creating dropdown list with all the available divisions
-    Divisions = [
-        ('Printer Division', 'Printer Division'),
-        ('Camera Division', 'Camera Division'),
-        ('Tablet Division', 'Tablet Division'),
-        ('Smartphone Division', 'Smartphone Division')
+    Doctors = [
+        ('A', 'AA'),
+        ('B', 'BB'),
+        ('C', 'CC'),
+        ('D', 'DD')
     ]
 
-    connection_id   = forms.ChoiceField(choices=[], widget=[])
-    fullname        = forms.CharField(label='Full Name', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    company         = forms.CharField(initial='Electronic Company', widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:700px; background-color: #bfbfbf'}))
-    division        = forms.CharField(widget=forms.Select(choices=Divisions, attrs={'style': 'width:700px'}))
-    jobtitle        = forms.CharField(label='Job Title', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    connection_id    = forms.ChoiceField(choices=[], widget=[])
+    doctor_fullname  = forms.CharField(label='Full Name', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    doctor_type      = forms.CharField(initial='Mr Smith', widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:700px; background-color: #bfbfbf'}))
+    doctor_address   = forms.CharField(widget=forms.Select(choices=Doctors, attrs={'style': 'width:700px'}))
+    patient_fullname = forms.CharField(widget=forms.Select(choices=Doctors, attrs={'style': 'width:700px'}))
+    patient_birthday = forms.CharField(label='Patient Birthday', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    medical          = forms.CharField(label='Medical', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    number           = forms.CharField(label='Number', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    expiration       = forms.CharField(label='Expiration', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    prescription_id  = forms.CharField(label='Id', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    contractAddress  = forms.CharField(label='ContractAddress', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    spendingKey      = forms.CharField(label='spendingKey', widget=forms.TextInput(attrs={'style': 'width:700px'}))
 
     class Meta:
         model = Credential
         fields = [
             'connection_id',
-            'fullname',
-            'company',
-            'division',
-            'jobtitle'
+            'doctor_fullname',
+            'doctor_type',
+            'doctor_address',
+            'patient_fullname',
+            'patient_birthday',
+            'medical',
+            'number',
+            'expiration',
+            'prescription_id',
+            'contractAddress',
+            'spendingKey'
         ]
 
     # Updating the dropdown list with all the available connections (which have either the state 'active' or 'response') every time the page loads

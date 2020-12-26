@@ -1,4 +1,4 @@
-{% extends 'work/base_work.html' %}
+{% extends 'pharmacy/base_work.html' %}
 
 {% block head %}{% endblock %}
 
@@ -136,10 +136,10 @@
         <tr>
             <td><h1 style="margin-right: 100px">Welcome {{ name }}!</h1></td>
             <!--<form method="post">{% csrf_token %}
-                <td><button class="button" style="width: 370px" onclick="window.location.href='{% url 'work-login' %}';">Log out</button><br><br></td>
+                <td><button class="button" style="width: 370px" onclick="window.location.href='{% url 'pharmacy-connection' %}';">Log out</button><br><br></td>
             </form>-->
             <td></td>
-            <td><button class="button" style="width: 370px" onclick="window.location.href='{% url 'hr-revoke_cred' %}';">Continue</button><br><br></td>
+            <td><button class="button" style="width: 370px" onclick="window.location.href='{% url 'doctor-revoke_cred' %}';">Continue</button><br><br></td>
         </tr>
         <tr>
             <td></td>

@@ -1,4 +1,4 @@
-{% extends 'hr/base_hr.html' %}
+{% extends 'doctor/base_doctor.html' %}
 
 {% block head %}
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -37,5 +37,5 @@
             <img id='barcode' src={{ qr_code }} title="Invitation Link" width="400" height="400" class="center"/><br>
         </div>
     {% endif %}
-    <button class="button" onclick="window.location.href='{% url 'hr-issue_cred' %}'">Continue</button><br>
+    <button class="button" onclick="window.location.href='{% url 'doctor-issue_cred' %}'">Continue</button><br>
 {% endblock %}

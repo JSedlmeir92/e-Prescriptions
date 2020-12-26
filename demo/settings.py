@@ -32,8 +32,10 @@ ALLOWED_HOSTS = [
     'localhost',
     '0.0.0.0',
     '127.0.0.1',
-    FileHandler.read()
+    FileHandler.read().replace("\n", "")
 ]
+
+print(ALLOWED_HOSTS);
 
 
 # Application definition

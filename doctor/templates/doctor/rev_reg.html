@@ -1,4 +1,4 @@
-{% extends 'hr/base_hr.html' %}
+{% extends 'doctor/base_doctor.html' %}
 
 {% block head %}{% endblock %}
 
@@ -8,16 +8,16 @@
     <h1>Available Active Revocation Registry</h1><br>
     {% if available_schema %}
         <h5 style="color: darkred">{{ available_schema }}</h5><br>
-        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'hr-schema' %}';">Go Back</button><br><br>
+        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-schema' %}';">Go Back</button><br><br>
     {% elif available_cred_def %}
         <h5 style="color: darkred">{{ available_cred_def }}</h5><br>
-        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'hr-cred_def' %}';">Go Back</button><br><br>
+        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Go Back</button><br><br>
     {% elif rev_reg %}
         <h5>The following revocation registry is active:</h5><br>
         <h5><strong>{{ rev_reg }}</strong></h5><br>
         <h5 style="color: mediumseagreen"> It is not necessary to publish a new revocation registry.</h5><br>
         <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd">Publish New Revocation Registry</button><br>
-        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'hr-connection' %}';">Continue</button><br><br>
+        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-connection' %}';">Continue</button><br><br>
     {% else %}
         <h5 style="color: darkred">There is no active revocation registry available. Please publish a new one.</h5><br>
         <form method="post">{% csrf_token %}

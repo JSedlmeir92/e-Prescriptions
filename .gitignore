@@ -1,5 +1,8 @@
-quorum_client/node_modules/*
+quorum_client/node_modules/
+.idea/
 *.pyc
 
 ip_address_vm
 ip_address_quorum_node
+
+db.sqlite3

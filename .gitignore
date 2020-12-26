@@ -1,2 +1,5 @@
 quorum_client/node_modules/*
 *.pyc
+
+ip_address_vm
+ip_address_quorum_node

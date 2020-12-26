@@ -51,14 +51,22 @@
                     <form action="." method="post">{% csrf_token %}
                         <label for='{{ form.connection_id }}'>Choose a Connection:</label><br>
                         {{ form.connection_id }}<br><br>
-                        <label for='{{ form.fullname }}'>Full Name:</label><br>
-                        {{ form.fullname }}<br><br>
-                        <label for='{{ form.company }}'>Company:</label><br>
-                        {{ form.company }}<br><br>
-                        <label for='{{ form.division }}'>Division:</label><br>
-                        {{ form.division }}<br><br>
-                        <label for='{{ form.jobtitle }}'>Job Title:</label><br>
-                        {{ form.jobtitle }}<br><br><br>
+                        <label for='{{ form.doctor_fullname }}'>Doctor's Full Name:</label><br>
+                        {{ form.doctor_fullname }}<br><br>
+                        <label for='{{ form.doctor_type }}'>Doctor's Type:</label><br>
+                        {{ form.doctor_type }}<br><br>
+                        <label for='{{ form.doctor_address }}'>Doctor's Address:</label><br>
+                        {{ form.doctor_address }}<br><br>
+                        <label for='{{ form.patient_fullname }}'>Patient's Full Name:</label><br>
+                        {{ form.patient_fullname }}<br><br>
+                        <label for='{{ form.patient_birthday }}'>Patient's Birthday:</label><br>
+                        {{ form.patient_birthday }}<br><br>
+                        <label for='{{ form.medical }}'>Medical :</label><br>
+                        {{ form.medical }}<br><br>
+                        <label for='{{ form.number }}'>Number:</label><br>
+                        {{ form.number }}<br><br>
+                        <label for='{{ form.expiration }}'>Expiration:</label><br>
+                        {{ form.expiration }}<br><br>
                         <button class="button" type="submit" value="save">Issue Credential (Revocable)</button><br>
                     </form>
                 </td>

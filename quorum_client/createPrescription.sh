@@ -1,4 +1,4 @@
 #!/bin/bash
 
-res=$(node createPrescription.js --id "$1")
-echo "$res"
+res=$(node quorum_client/createPrescription.js --id "$1")
+echo "$res" > quorum_client/spendingKey

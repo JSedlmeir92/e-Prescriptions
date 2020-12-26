@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Connections:</h1>
+    <table>
+        <tr>
+            <th>HR Department</th>
+            <th>IAM</th>
+            <th>Reset both Agents</th>
+        </tr>
+        <tr>
+            <td><p>Quantity: {{ connections_quantity }}</p></td>
+            <td><p>Quantity: {{ connections_quantity2 }}</p></td>
+            <td><p>Connections, credentials and proofs are deleted.</p></td>
+        </tr>
+        <tr>
+            <td><button class="button" style="width: 400px" onclick="window.location.href='{% url 'manage_agent_1-remove_connection' %}';">Remove all Connections</button></td>
+            <td><button class="button" style="width: 400px" onclick="window.location.href='{% url 'manage_agent_2-remove_connection' %}';">Remove all Connections</button></td>
+            <td><button class="button" style="width: 400px" onclick="window.location.href='{% url 'manage_agent-reset' %}';">Reset both Agents</button></td>
+        </tr>
+    </table>
+    <br>
+    <h1>Credentials:</h1>
+    <table>
+        <tr>
+            <th>HR Department</th>
+            <th>IAM</th>
+        </tr>
+        <tr>
+            <td><p>Quantity: {{ credential_quantity }}</p></td>
+            <td><p>Quantity: {{ credential_quantity2 }}</p></td>
+        </tr>
+        <tr>
+            <td><button class="button" style="width: 400px" onclick="window.location.href='{% url 'manage_agent_1-remove_credential' %}';">Remove Credentials</button></td>
+            <td><button class="button" style="width: 400px" onclick="window.location.href='{% url 'manage_agent_2-remove_credential' %}';">Remove Credentials</button></td>
+        </tr>
+    </table>
+    <br>
+    <h1>Proofs:</h1>
+    <table>
+        <tr>
+            <th>HR Department</th>
+            <th>IAM</th>
+        </tr>
+        <tr>
+            <td><p>Quantity: {{ proof_quantity }}</p></td>
+            <td><p>Quantity: {{ proof_quantity2 }}</p></td>
+        </tr>
+        <tr>
+            <td><button class="button" style="width: 400px" onclick="window.location.href='{% url 'manage_agent_1-remove_proof' %}';">Remove Proofs</button></td>
+            <td><button class="button" style="width: 400px" onclick="window.location.href='{% url 'manage_agent_2-remove_proof' %}';">Remove Proofs</button></td>
+        </tr>
+    </table>
+    <br>
+    <h1>Invitations:</h1>
+    <table>
+        <tr>
+            <th>HR Department</th>
+            <th>IAM</th>
+        </tr>
+        <tr>
+            <td><p>Quantity: {{ connections_invitation }}</p></td>
+            <td><p>Quantity: {{ connections_invitation2 }}</p></td>
+        </tr>
+        <tr>
+            <td><button class="button" style="width: 400px" onclick="window.location.href='{% url 'manage_agent_1-remove_invitation' %}';">Delete Invitations</button></td>
+            <td><button class="button" style="width: 400px" onclick="window.location.href='{% url 'manage_agent_2-remove_invitation' %}';">Delete Invitations</button></td>
+        </tr>
+    </table>
+    <br>
+{% endblock %}

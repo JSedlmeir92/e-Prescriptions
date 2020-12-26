@@ -1,0 +1,44 @@
+<style>
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #333;
+    }
+
+    li {
+        float: left;
+    }
+
+    li a {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+    li a:hover {
+        color: white;
+        text-decoration: none;
+    }
+
+    li a:hover:not(.active) {
+        background-color: #111;
+    }
+
+    .active {
+        background-color: #4CAF50;
+        color: white;
+    }
+</style>
+
+<nav>
+    <ul>
+        <li><a class="active" href="{% url 'start-home' %}">Demo Start</a></li>
+        <li><a href="{% url 'hr-connection' %}">HR Demo</a></li>
+        <li><a href="{% url 'work-login' %}">Work Demo</a></li>
+        <li><a href="{% url 'manage_agent-home' %}">Manage Agent</a></li>
+    </ul>
+</nav>

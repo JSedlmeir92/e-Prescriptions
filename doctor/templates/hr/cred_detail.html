@@ -1,0 +1,69 @@
+{% extends 'hr/base_hr.html' %}
+
+{% block head %}{% endblock %}
+
+{% block style %}
+    <style>
+        .button2 {
+            border: none;
+            background-color: #008CBA;
+            color: white;
+            max-width: 100%;
+            width: 700px;
+            min-height: 50px;
+            font-size: 30px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+        }
+
+        .button2:hover {
+            background-color: darkred;
+            color: white;
+        }
+    </style>
+{% endblock %}
+
+{% block extracontent %}
+    <h1>Credential {{ object.id }}</h1><br>
+    <table>
+        <tr>
+            <th>Full Name:</th>
+            <td>{{ object.fullname }}</td>
+        </tr>
+        <tr>
+            <th>Company:</th>
+            <td>{{ object.company }}</td>
+        </tr>
+        <tr>
+            <th>Division:</th>
+            <td>{{ object.division }}</td>
+        </tr>
+        <tr>
+            <th>Job Title:</th>
+            <td>{{ object.jobtitle }}</td>
+        </tr>
+        <tr>
+            <th>Revoked:</th>
+            <td>{{ object.revoked }}</td>
+        </tr>
+        <tr>
+            <th>Issued on:</th>
+            <td>{{ object.issued }}</td>
+        </tr>
+        <tr>
+            <th>Revocation ID:</th>
+            <td>{% if object.rev_id == None %}<p>Test</p>{% else %}{{ object.rev_id }}{% endif %}</td>
+        </tr>
+    </table><br>
+    {% if object.revoked == False %}
+    <form action="." method="post">{% csrf_token %}
+        <h3>Do you want to revoke this credential?</h3>
+        <p><input type="submit" class="button2" value="Yes"/></p>
+    </form>
+    {% endif %}
+    <button class="button" onclick="window.location.href='{% url 'hr-revoke_cred' %}';">Go Back</button><br><br>
+{% endblock %}

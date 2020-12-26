@@ -1,0 +1,274 @@
+{% extends 'work/base_work.html' %}
+
+{% block head %}{% endblock %}
+
+{% block style %}
+    <style>
+        .dark{
+            margin-right: 65px;
+        }
+
+        .calendar{
+            width:370px;
+            height: 725px;
+            box-shadow: 0px 0px 35px -16px rgba(0,0,0,0.75);
+            font-family: 'Roboto', sans-serif;
+            padding: 20px 30px;
+            color: #363b41;
+            display: inline-block;
+        }
+
+        .calendar_header{
+            border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .header_copy{
+            color:lightgray;
+            font-size:30px;
+        }
+        .calendar_plan{
+            margin:20px 0 40px;
+        }
+
+        .cl_plan{
+            width:100%;
+            height: 140px;
+            background-image: linear-gradient(-222deg, #97ecb7, #b6f2ca);
+            box-shadow: 0px 0px 52px -18px rgba(0, 0, 0, 0.75);
+            padding:30px;
+            color:#fff;
+        }
+
+        .cl_mail{
+            width:100%;
+            height: 140px;
+            background-image: linear-gradient(-222deg, #FF8494, #ffa9b7);
+            box-shadow: 0px 0px 52px -18px rgba(0, 0, 0, 0.75);
+            padding:30px;
+            color:#fff;
+        }
+
+        .cl_news{
+            width:100%;
+            height: 140px;
+            background-image: linear-gradient(-222deg, #97cdec, #b6def2);
+            box-shadow: 0px 0px 52px -18px rgba(0, 0, 0, 0.75);
+            padding:30px;
+            color:#fff;
+        }
+
+        .cl_title{}
+
+        .cl_copy{
+            font-size:20px;
+            display: inline-block;
+        }
+
+        .cl_add{
+            display: inline-block;
+            width: 40px;
+            height:40px;
+            border-radius:50%;
+            background-color: #fff;
+            cursor: pointer;
+            margin:0 0 0 65px;
+            color:#c2c2c2;
+            padding: 11px 13px;
+        }
+
+        .calendar_events{
+            color: lightgray;
+        }
+
+        .ce_title{
+            font-size:14px;
+        }
+
+        .event_item{
+            margin: 18px 0;
+            padding:5px;
+            cursor: pointer;
+        }
+
+        .ei_Dot,.ei_Title{
+            display:inline-block;
+        }
+
+        .ei_Dot{
+            border-radius:50%;
+            width:10px;
+            height: 10px;
+            background-color: lightgray;
+            box-shadow: 0px 0px 52px -18px rgba(0, 0, 0, 0.75);
+        }
+        .dot_active{
+            background-color: #97ecb7;
+        }
+
+        .dot_active_mail{
+            background-color: #FF8494;
+        }
+
+        .dot_active_news{
+            background-color: #97cdec;
+        }
+
+        .ei_Title{
+            margin-left:10px;
+            color: whitesmoke;
+        }
+
+        .ei_Copy{
+            font-size:12px;
+            margin-left:27px;
+        }
+
+        .dark{
+            background-image: linear-gradient(-222deg, #646464, #454545);
+            color:#fff;
+          }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <br>
+    <table>
+        <tr>
+            <td><h1 style="margin-right: 100px">Welcome {{ name }}!</h1></td>
+            <!--<form method="post">{% csrf_token %}
+                <td><button class="button" style="width: 370px" onclick="window.location.href='{% url 'work-login' %}';">Log out</button><br><br></td>
+            </form>-->
+            <td></td>
+            <td><button class="button" style="width: 370px" onclick="window.location.href='{% url 'hr-revoke_cred' %}';">Continue</button><br><br></td>
+        </tr>
+        <tr>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="calendar dark">
+                    <div class="calendar_header">
+                        <p class="header_copy"> Calendar</p>
+                    </div>
+                    <div class="calendar_plan">
+                        <div class="cl_plan">
+                            <div class="cl_title">Today</div>
+                            <div class="cl_copy">{{ date }}</div>
+                            <div class="cl_add"><i class="fas fa-plus"></i></div>
+                        </div>
+                    </div>
+                    <div class="calendar_events">
+                        <p class="ce_title">Today's Events</p>
+                        <div class="event_item">
+                            <div class="ei_Dot dot_active"></div>
+                            <div class="ei_Title">10:30 am</div>
+                            <div class="ei_Copy">Monday briefing with the team</div>
+                        </div>
+                        <div class="event_item">
+                            <div class="ei_Dot"></div>
+                            <div class="ei_Title">12:00 pm</div>
+                            <div class="ei_Copy">Lunch with Bob</div>
+                        </div>
+                        <div class="event_item">
+                            <div class="ei_Dot"></div>
+                            <div class="ei_Title">13:00 pm</div>
+                            <div class="ei_Copy">Meet with the quality managers <br> @Room 104</div>
+                        </div>
+                        <div class="event_item">
+                            <div class="ei_Dot"></div>
+                            <div class="ei_Title">14:30 pm</div>
+                            <div class="ei_Copy">Plan event night to inspire students</div>
+                        </div>
+                        <div class="event_item">
+                            <div class="ei_Dot"></div>
+                            <div class="ei_Title">15:30 pm</div>
+                            <div class="ei_Copy">Meeting with the marketing team <br> @Room 317</div>
+                        </div>
+                    </div>
+                  </div>
+            </td>
+            <td>
+                <div class="calendar dark">
+                    <div class="calendar_header">
+                        <p class="header_copy"> Mails</p>
+                    </div>
+                    <div class="calendar_plan">
+                        <div class="cl_mail">
+                            <div class="cl_title">You've got</div><br>
+                            <div class="cl_copy">10 unread Mails</div>
+                        </div>
+                    </div>
+                    <div class="calendar_events">
+                        <p class="ce_title">Your Mails</p>
+                        <div class="event_item">
+                            <div class="ei_Dot"></div>
+                            <div class="ei_Title">Bob</div>
+                            <div class="ei_Copy">Parts A679-872-580-09 arrive next week</div>
+                        </div>
+                        <div class="event_item">
+                            <div class="ei_Dot dot_active_mail"></div>
+                            <div class="ei_Title">Lisa</div>
+                            <div class="ei_Copy">Protocol from the team meeting on the ...</div>
+                        </div>
+                        <div class="event_item">
+                            <div class="ei_Dot dot_active_mail"></div>
+                            <div class="ei_Title">Thomas</div>
+                            <div class="ei_Copy">Subject</div>
+                        </div>
+                        <div class="event_item">
+                            <div class="ei_Dot"></div>
+                            <div class="ei_Title">Mike</div>
+                            <div class="ei_Copy">Subject</div>
+                        </div>
+                        <div class="event_item">
+                            <div class="ei_Dot dot_active_mail"></div>
+                            <div class="ei_Title">Anna</div>
+                            <div class="ei_Copy">Subject</div>
+                        </div>
+                    </div>
+                  </div>
+            </td>
+            <td>
+                <div class="calendar dark">
+                    <div class="calendar_header">
+                        <p class="header_copy"> News</p>
+                    </div>
+                    <div class="calendar_plan">
+                        <div class="cl_news">
+                            <div class="cl_copy">Top News of the Day:</div>
+                            <div class="cl_title">The cafeteria will be closed next week.</div>
+                        </div>
+                    </div>
+                    <div class="calendar_events">
+                        <p class="ce_title">Today's Events</p>
+                        <div class="event_item">
+                            <div class="ei_Dot dot_active_news"></div>
+                            <div class="ei_Title">Headline 1</div>
+                            <div class="ei_Copy">Info</div>
+                        </div>
+                        <div class="event_item">
+                            <div class="ei_Dot dot_active_news"></div>
+                            <div class="ei_Title">Headline 2</div>
+                            <div class="ei_Copy">Info</div>
+                        </div>
+                        <div class="event_item">
+                            <div class="ei_Dot"></div>
+                            <div class="ei_Title">Headline 3</div>
+                            <div class="ei_Copy">Info</div>
+                        </div>
+                        <div class="event_item">
+                            <div class="ei_Dot dot_active_news"></div>
+                            <div class="ei_Title">Headline 4</div>
+                            <div class="ei_Copy">Info</div>
+                        </div>
+                        <div class="event_item">
+                            <div class="ei_Dot dot_active_news"></div>
+                            <div class="ei_Title">Headline 5</div>
+                            <div class="ei_Copy">Info</div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table><br><br><br>
+{% endblock %}

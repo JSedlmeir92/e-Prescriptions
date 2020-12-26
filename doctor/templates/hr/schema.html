@@ -1,0 +1,25 @@
+{% extends 'hr/base_hr.html' %}
+
+{% block head %}{% endblock %}
+
+{% block style %}{% endblock %}
+
+{% block extracontent %}
+    <h1>Available Schemas:</h1><br>
+    {% if created_schema %}
+        <h5>The schema <strong>{{ created_schema }}</strong> is available in your wallet.</h5><br>
+        <h5>It has the following attributes:</h5>
+        {% for item in attributes %}
+            <h5>{{ forloop.counter }} - {{ item }}</h5>
+        {% endfor %}<br>
+        <h5 style="color: mediumseagreen"> It is not necessary to publish a new schema</h5><br>
+        <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd">Publish New Schema</button><br>
+        <button class="button" onclick="window.location.href='{% url 'hr-cred_def' %}';">Continue</button><br><br>
+    {% else %}
+        <h5 style="color: darkred">There are no suitable schemas in your wallet<!-- or on the ledger-->. Please publish a new one.</h5><br>
+        <form method="post">{% csrf_token %}
+            <button class="button">Publish New Schema</button><br>
+        </form>
+        <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd">Continue</button><br><br>
+    {% endif %}
+{% endblock %}

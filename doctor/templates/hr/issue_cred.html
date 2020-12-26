@@ -1,0 +1,98 @@
+{% extends 'hr/base_hr.html' %}
+
+{% block head %}{% endblock %}
+
+{% block style %}
+    <style>
+        .alert {
+            padding: 20px;
+            color: white;
+            opacity: 1;
+            transition: opacity 0.6s;
+            margin-bottom: 15px;
+            margin-left: 40px;
+            min-width: 400px;
+        }
+
+        .alert.success {background-color: #4CAF50}
+        .alert.info {background-color: #008CBA}
+
+        .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .closebtn:hover {
+            color: black;
+        }
+    </style>
+{% endblock %}
+
+{% block extracontent %}
+    {% if available_schema %}
+        <h5 style="color: darkred">There are no suitable schemas or credential definitions in your wallet. To issue a credential, please go back and publish new ones first.</h5><br>
+        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'hr-schema' %}';">Go Back</button><br><br>
+    {% elif available_cred_def %}
+        <h5 style="color: darkred">There are no suitable credential definitions in your wallet or on the ledger. To issue a credential, publish a new credential definition first.</h5><br>
+        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'hr-cred_def' %}';">Go Back</button><br><br>
+    {% elif rev_reg %}
+        <h5 style="color: darkred">There are no suitable revocation registries. To issue a credential, publish a new revocation registry.</h5><br>
+        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'hr-rev_reg' %}';">Go Back</button><br><br>
+    {% else %}
+        <table>
+            <tr>
+                <td>
+                    <form action="." method="post">{% csrf_token %}
+                        <label for='{{ form.connection_id }}'>Choose a Connection:</label><br>
+                        {{ form.connection_id }}<br><br>
+                        <label for='{{ form.fullname }}'>Full Name:</label><br>
+                        {{ form.fullname }}<br><br>
+                        <label for='{{ form.company }}'>Company:</label><br>
+                        {{ form.company }}<br><br>
+                        <label for='{{ form.division }}'>Division:</label><br>
+                        {{ form.division }}<br><br>
+                        <label for='{{ form.jobtitle }}'>Job Title:</label><br>
+                        {{ form.jobtitle }}<br><br><br>
+                        <button class="button" type="submit" value="save">Issue Credential (Revocable)</button><br>
+                    </form>
+                </td>
+                <td style="vertical-align: top">
+                    {% if name %}
+                    <div class="alert info">
+                        <span class="closebtn">&times;</span>
+                        <strong>Info!</strong> The credential has been issued to {{ name }}.
+                    </div>
+                    {% endif %}
+
+                    <!--<div class="alert success">
+                        <span class="closebtn">&times;</span>
+                        <strong>Success!</strong> {{ name }} accepted the credential.
+                    </div>-->
+
+                    <script>
+                        var close = document.getElementsByClassName("closebtn");
+                        var i;
+                        for (i = 0; i < close.length; i++) {
+                            close[i].onclick = function(){
+                                var div = this.parentElement;
+                                div.style.opacity = "0";
+                                setTimeout(function(){ div.style.display = "none"; }, 600);
+                            }
+                        }
+                    </script>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="button" onclick="window.location.href='{% url 'work-login' %}';">Continue</button><br><br>
+                </td>
+            </tr>
+        </table>
+    {% endif %}
+{% endblock %}

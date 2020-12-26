@@ -1,0 +1,58 @@
+import asyncio
+import os
+import sys
+import time
+
+print("If you are executing this demo inside a virtual machine, make sure the following ports are open:\n7000 and 7080\n8000\n9000 and 9080\n")
+
+# Getting the VM's IP ADDRESS
+FileHandler = open("ip_address_vm", "a+")
+if os.stat("ip_address_vm").st_size == 0:
+    ip_address = input("\nPlease enter your VM's IP address: ")
+    FileHandler.write(ip_address)
+else:
+    FileHandler = open("ip_address_vm", "r")
+    print("Your VM's current IP address is set to:", FileHandler.read())
+    print("Please change the IP address if necessary.\n")
+FileHandler.close()
+
+# Getting the Quorum node's IP ADDRESS
+FileHandler = open("ip_address_quorum_node", "a+")
+if os.stat("ip_address_quorum_node").st_size == 0:
+    ip_address = input("\nPlease enter your quorum node's IP address: ")
+    FileHandler.write(ip_address)
+else:
+    FileHandler = open("ip_address_quorum_node", "r")
+    print("Your quorum node's current IP address is set to:", FileHandler.read())
+    print("Please change the IP address if necessary.\n")
+FileHandler.close()
+
+print("\nDeploying the ePrescription contract...")
+os.system("cd quorum_client && npm install && truffle migrate --reset --network node0")
+
+
+os.system("python3 manage.py makemigrations")
+os.system("python3 manage.py migrate")
+
+print("\nStarting the Server...")
+os.system("gnome-terminal -- python3 manage.py runserver 0.0.0.0:8000")
+
+print("Starting Agents...")
+os.system("gnome-terminal -- python3 agent_doctor.py")
+time.sleep(20)
+os.system("gnome-terminal -- python3 agent_pharmacy.py")
+
+print("Starting complete")
+
+# todo: stop agents & server, delete wallets
+#async def main():
+#    exit_demo = input("\nTo exit the demo, please type 'x' or 'X': ")
+#    if ((exit_demo == "x") or (exit_demo == "X")):
+#        print("\nShutting down...")
+#        sys.exit()
+#    else:
+#        print("\nIncorrect input. Please try again.\n")
+#        await main()
+#
+#loop = asyncio.get_event_loop()
+#loop.run_until_complete(main())

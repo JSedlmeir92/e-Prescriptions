@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from hr.models import Connection, Credential
+from doctor.models import Connection, Credential
 
 import requests
 

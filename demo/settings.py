@@ -26,9 +26,10 @@ SECRET_KEY = '*t=co&)-zhk!r-a(8_*ukhd!9b%v_75y82#su_wb!xfz@q8wmq'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-FileHandler = open("ip_address.txt", "r")
+FileHandler = open("ip_address_vm", "r")
 
 ALLOWED_HOSTS = [
+    'localhost',
     '0.0.0.0',
     '127.0.0.1',
     FileHandler.read()
@@ -46,8 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # own
     'start',
-    'hr',
-    'work',
+    'doctor',
+    'pharmacy',
 ]
 
 MIDDLEWARE = [

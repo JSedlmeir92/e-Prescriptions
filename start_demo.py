@@ -28,19 +28,18 @@ else:
 FileHandler.close()
 
 print("\nDeploying the ePrescription contract...")
-os.system("cd quorum_client && npm install && truffle migrate --reset --network node0")
+# os.system("cd quorum_client && npm install && truffle migrate --reset --network node0")
 
 
 os.system("python3 manage.py makemigrations")
 os.system("python3 manage.py migrate")
 
 print("\nStarting the Server...")
-os.system("gnome-terminal -- python3 manage.py runserver 0.0.0.0:8000")
+os.system("gnome-terminal --geometry=52x54+480+0 --title=Demo-Server -- python3 manage.py runserver 0.0.0.0:8000")
 
 print("Starting Agents...")
-os.system("gnome-terminal -- python3 agent_doctor.py")
-time.sleep(20)
-os.system("gnome-terminal -- python3 agent_pharmacy.py")
+os.system("gnome-terminal --geometry=52x54+960+0 --title=Doctor-Agent -- bash agent_doctor.sh")
+os.system("gnome-terminal --geometry=52x54+1440+0 --title=Pharmacy-Agent -- bash agent_pharmacy.sh")
 
 print("Starting complete")
 

@@ -54,7 +54,7 @@ def login_view(request):
                 connection_id = connections[0]['connection_id']
                 proof = requests.get(url2 + '/present-proof/records?connection_id=' + connection_id + '&state=verified').json()['results']
                 if (len(proof) > 0):
-                    name = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_medical_uuid']['raw']
+                    name = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_pharmaceutical_uuid']['raw']
                     context['name'] = name
                 else:
                     pass
@@ -75,13 +75,13 @@ def login_view(request):
             invitations = requests.get(url2 + '/connections?alias=' + session_key + '&state=invitation').json()['results']
             # Creates a new INVITATION, if none exists
             if len(invitations) == 0:
-                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
+                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true').json()['invitation_url']
                 FileHandler = open("connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
             elif os.stat("connection_pharmacy").st_size == 0:
                 connection_id = invitations[0]["connection_id"]
                 requests.post(url2 + '/connections/' + connection_id + '/remove')
-                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
+                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true').json()['invitation_url']
                 FileHandler = open("connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
             # Uses the latest created INVITATION, if it has not been used yet
@@ -138,8 +138,8 @@ def login_loading_view(request):
                         }
                     ]
                 },
-                "0_medical_uuid": {
-                    "name": "medical",
+                "0_pharmaceutical_uuid": {
+                    "name": "pharmaceutical",
                     "restrictions": [
                         {
                             "cred_def_id": cred_def_id
@@ -198,8 +198,7 @@ def login_result_view(request):
             return redirect('pharmacy-connection')
     else:
         proof = requests.get(url2 + '/present-proof/records').json()['results'][0]
-        print(proof)
-        print(proof['presentation']['requested_proof'])
+        # print(proof)
         verified = proof['verified']
         contract_address = proof['presentation']['requested_proof']['revealed_attrs']['0_contract_address_uuid']['raw']
         # print("contract_address: " + contract_address)
@@ -211,8 +210,6 @@ def login_result_view(request):
         os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key.replace('0x', '')}")
         FileHandler = open("quorum_client/result", "r")
         result = FileHandler.read().replace("\n", "")
-        # print(result)
-        print(type(verified))
         if (result == "true" and verified == "true"):
             context = {
                 'title': 'Spending Success',
@@ -220,17 +217,17 @@ def login_result_view(request):
             }
         elif (result == "false" and verified == "true"):
             context = {
-                'title': 'Double Spend',
+                'title': 'ePrescription already spent',
                 'verified': 'spent'
             }
         elif (result == "true" and verified == "false"):
             context = {
-                'title': 'Revoked',
+                'title': 'ePrescription revoked',
                 'verified': 'revoked'
             }
         elif (result == "false" and verified == "false"):
             context = {
-                'title': 'Revoked and spent',
+                'title': 'ePrescription revoked and spent',
                 'verified': 'revoked_and_spent'
             }
         else:
@@ -249,13 +246,12 @@ def logged_in_view(request):
         return redirect('pharmacy-connection')
     proof = requests.get(url2 + '/present-proof/records?state=verified').json()['results']
     if len(proof) > 0:
-        print(proof)
-        print(proof[0])
-        medical = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_medical_uuid']['raw']
+        # print(proof[0])
+        pharmaceutical = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_pharmaceutical_uuid']['raw']
         number = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_number_uuid']['raw']
         context = {
             'title': 'Prescription spent',
-            'medical': medical,
+            'pharmaceutical': pharmaceutical,
             'number': number,
             'date': datetime.date.today().strftime('%d - %b - %Y')
         }
@@ -305,8 +301,8 @@ def webhook_connection_view(request):
                         }
                     ]
                 },
-                "0_medical_uuid": {
-                    "name": "medical",
+                "0_pharmaceutical_uuid": {
+                    "name": "pharmaceutical",
                     "restrictions": [
                         {
                             "cred_def_id": cred_def_id

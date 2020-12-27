@@ -13,7 +13,7 @@ class Credential(models.Model):
     issued           = models.DateField(auto_now_add=True),
     patient_fullname = models.CharField(default='Max Mustermann', max_length=120),
     patient_birthday = models.CharField(default='01.01.2000', max_length=120),
-    medical          = models.CharField(default='Aspirin', max_length=120),
+    pharmaceutical          = models.CharField(default='Aspirin', max_length=120),
     number           = models.CharField(default='1', max_length=120),
     expiration       = models.CharField(default='3 months', max_length=120),
     prescription_id  = models.CharField(default='test_id', max_length=120),

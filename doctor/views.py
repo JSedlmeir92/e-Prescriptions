@@ -20,6 +20,36 @@ logger = logging.getLogger(__name__)
 url = 'http://0.0.0.0:7080'
 support_revocation = True
 
+ATTRIBUTES = [
+                "doctor_fullname",
+                "doctor_type",
+                "doctor_address",
+                "patient_fullname",
+                "patient_birthday",
+                "pharmaceutical",
+                "number",
+                "issued",
+                "expiration",
+                "prescription_id",
+                "contract_address",
+                "spending_key"
+            ]
+
+COMMENTS = [
+    "The full name of the doctor",
+    "The exact specialty of the doctor",
+    "The address of the doctor",
+    "The full name of the patient",
+    "The birth date of the patient in the format yyyy-mm-dd",
+    "The pharmaceutical that is prescribed",
+    "The number of units of the pharmaceutical",
+    "The issuance date of the prescription",
+    "The time of validity from issuance date",
+    "The unique id of the prescription to be referred to on the blockchain token",
+    "The address of the smart contract in which the doctor creates the prescription token",
+    "The private key that allows to spend the token (once only)"
+]
+
 def home_view(request):
     return render(request, 'doctor/base_doctor.html', {'title': 'Doctor'})
 
@@ -65,27 +95,19 @@ def schema_view(request):
     }
     if len(created_schema) > 0:
         context['created_schema'] = created_schema[0]
-        context['attributes'] = requests.get(url + '/schemas/' + context['created_schema']).json()['schema']['attrNames']
+        # context['attributes'] = requests.get(url + '/schemas/' + context['created_schema']).json()['schema']['attrNames']
+        # context['attributes'][1], context['attributes'][2], context['attributes'][3], context['attributes'][7], context['attributes'][8], context['attributes'][9], context['attributes'][6], context['attributes'][5], context['attributes'][4], context['attributes'][10], context['attributes'][0] = context['attributes'][0], context['attributes'][1], context['attributes'][2], context['attributes'][3], context['attributes'][4], context['attributes'][5], context['attributes'][6], context['attributes'][7], context['attributes'][8], context['attributes'][9], context['attributes'][10]
+        context['attributes'] = []
+        for index, _ in enumerate(ATTRIBUTES):
+            context['attributes'].append({"attribute": ATTRIBUTES[index].ljust(30), "comment": COMMENTS[index] + "."})
+        print(context)
     else:
         pass
     # Publish a new SCHEMA
     if request.method == 'POST':
         schema = {
-            "attributes": [
-                "doctor_fullname",
-                "doctor_type",
-                "doctor_address",
-                "issued",
-                "patient_fullname",
-                "patient_birthday",
-                "medical",
-                "number",
-                "expiration",
-                "prescription_id",
-                "contract_address",
-                "spending_key"
-            ],
-            "schema_name": str(time.time())[:10],
+            "attributes": ATTRIBUTES,
+            "schema_name": "ePrescriptionSchema_" + str(time.time())[:4],
             "schema_version": "1.0"
         }
         requests.post(url + '/schemas', json=schema)
@@ -189,18 +211,18 @@ def rev_reg_view(request):
                         print("Updating revocation registry tails file url")
                         ans = requests.patch(url + '/revocation/registry/' + rev_reg, json=tails_public_uri)
                         # https://www.w3schools.com/python/ref_requests_response.asp
-                        print(ans)
-                        print(ans.status_code)
-                        print(ans.text)
-                        print(ans.json())
+                        # print(ans)
+                        # print(ans.status_code)
+                        # print(ans.text)
+                        # print(ans.json())
                         # print(url + '/revocation/registry/' + rev_reg + '/publish')
                         print("Publish revocation registry")
                         # ans = requests.patch(url + '/revocation/registry/' + rev_reg + '/set-state?state=active')
                         ans = requests.post(url + '/revocation/registry/' + rev_reg + '/publish')
                         print(ans)
-                        print(ans.status_code)
-                        print(ans.text)
-                        print(ans.json())
+                        # print(ans.status_code)
+                        # print(ans.text)
+                        # print(ans.json())
                         return redirect('.')
 
                 except Exception as e:
@@ -261,12 +283,12 @@ def issue_cred_view(request):
                             "value": request.POST.get('doctor_fullname')
                         },
                         {
-                            "name": "doctor_address",
-                            "value": request.POST.get('doctor_address')
-                        },
-                        {
                             "name": "doctor_type",
                             "value": request.POST.get('doctor_type')
+                        },
+                        {
+                            "name": "doctor_address",
+                            "value": request.POST.get('doctor_address')
                         },
                         {
                             "name": "patient_fullname",
@@ -277,8 +299,8 @@ def issue_cred_view(request):
                             "value": request.POST.get('patient_birthday')
                         },
                         {
-                            "name": "medical",
-                            "value": request.POST.get('medical')
+                            "name": "pharmaceutical",
+                            "value": request.POST.get('pharmaceutical')
                         },
                         {
                             "name": "number",
@@ -374,6 +396,9 @@ def revoke_cred_view(request):
         'object_list': queryset,
         'len': len(queryset)
     }
+    # print(queryset.values('Patient doctor_fullname'))
+    # print(context)
+    # print(context['object_list'][0].doctor_fullname)
     return render(request, 'doctor/revoke_cred.html', context)
 
 def cred_detail_view(request, id):

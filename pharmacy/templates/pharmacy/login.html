@@ -47,18 +47,18 @@
 
 {% block content %}
     {% if available_schema %}
-        <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd; margin-left: auto; margin-right: auto; width: 300px">Spend e-Prescription</button><br>
+        <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd; margin-left: auto; margin-right: auto; width: 300px">Spend ePrescription</button><br>
         <h3 style="color: darkred; text-align: center">You can't use the functionality yet.</h3><br>
         <h5 style="color: darkred">{{ available_schema }}</h5><br>
         <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'doctor-schema' %}';">Go Back</button><br><br>
     {% elif available_cred_def %}
-        <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd; margin-left: auto; margin-right: auto; width: 300px">Spend e-Prescription</button><br>
+        <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd; margin-left: auto; margin-right: auto; width: 300px">Spend ePrescription</button><br>
         <h3 style="color: darkred; text-align: center">You can't use the functionality yet.</h3><br>
         <h5 style="color: darkred">{{ available_cred_def }}</h5><br>
         <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Go Back</button><br><br>
     {% else %}
-        <button class="button" style="pointer-events: none; margin-left: auto; margin-right: auto; width: 300px">Spend e-Prescription</button><br>
-        <h5>Please scan the following QR-Code to establish a connection:</h5><br>
+        <button class="button" style="pointer-events: none; margin-left: auto; margin-right: auto; width: 300px">Spend ePrescription</button><br>
+        <h5>Please scan the following QR-Code to show and spend your ePrescription:</h5><br>
         <img id='barcode'
              src={{ qr_code }}
              alt=""

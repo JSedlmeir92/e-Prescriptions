@@ -1,3 +1,5 @@
+from distutils.command.config import config
+
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
@@ -8,12 +10,13 @@ import time
 import datetime
 import os
 import json
+import base64
 
 url = 'http://0.0.0.0:7080'
 url2 = 'http://0.0.0.0:9080'
 
 def home_view(request):
-    return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Work'})
+    return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
 
 @csrf_exempt
 def login_view(request):
@@ -51,7 +54,7 @@ def login_view(request):
                 connection_id = connections[0]['connection_id']
                 proof = requests.get(url2 + '/present-proof/records?connection_id=' + connection_id + '&state=verified').json()['results']
                 if (len(proof) > 0):
-                    name = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_name_uuid']['raw']
+                    name = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_medical_uuid']['raw']
                     context['name'] = name
                 else:
                     pass
@@ -72,13 +75,13 @@ def login_view(request):
             invitations = requests.get(url2 + '/connections?alias=' + session_key + '&state=invitation').json()['results']
             # Creates a new INVITATION, if none exists
             if len(invitations) == 0:
-                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true').json()['invitation_url']
+                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
                 FileHandler = open("connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
             elif os.stat("connection_pharmacy").st_size == 0:
                 connection_id = invitations[0]["connection_id"]
                 requests.post(url2 + '/connections/' + connection_id + '/remove')
-                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true').json()['invitation_url']
+                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
                 FileHandler = open("connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
             # Uses the latest created INVITATION, if it has not been used yet
@@ -86,6 +89,14 @@ def login_view(request):
                 FileHandler = open("connection_pharmacy", "r")
                 invitation_link = FileHandler.read()
             FileHandler.close()
+            invitation_splitted = invitation_link.split("=", 1)
+            temp = json.loads(base64.b64decode(invitation_splitted[1]))
+            # Icon for the wallet app
+            temp.update({"imageUrl": "https://cdn.pixabay.com/photo/2014/04/03/11/47/pharmacy-312139_960_720.png"})
+            temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
+            invitation_splitted[1] = temp
+            invitation_link = "=".join(invitation_splitted)
+            print(invitation_link)
             qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600"
             context['qr_code'] = qr_code
     return render(request, 'pharmacy/login.html', context)
@@ -108,27 +119,59 @@ def login_loading_view(request):
     proof_request = {
         "connection_id": connection_id,
         "proof_request": {
-            "name": "Proof of Division",
+            "name": "Proof of Receipt",
             "version": "1.0",
             "requested_attributes": {
-                "0_name_uuid": {
-                    "name": "Name",
+                "0_doctor_fullname_uuid": {
+                    "name": "doctor_fullname",
                     "restrictions": [
                         {
                             "cred_def_id": cred_def_id
                         }
                     ]
                 },
-                "0_company_uuid": {
-                    "name": "Company",
+                "0_doctor_address_uuid": {
+                    "name": "doctor_address",
                     "restrictions": [
                         {
                             "cred_def_id": cred_def_id
                         }
                     ]
                 },
-                "0_division_uuid": {
-                    "name": "Division",
+                "0_medical_uuid": {
+                    "name": "medical",
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                },
+                "0_number_uuid": {
+                    "name": "number",
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                },
+                "0_prescription_id_uuid": {
+                    "name": "prescription_id",
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                },
+                "0_spending_key_uuid": {
+                    "name": "spending_key",
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                },
+                "0_contract_address_uuid": {
+                    "name": "contract_address",
                     "restrictions": [
                         {
                             "cred_def_id": cred_def_id
@@ -155,11 +198,44 @@ def login_result_view(request):
             return redirect('pharmacy-connection')
     else:
         proof = requests.get(url2 + '/present-proof/records').json()['results'][0]
+        print(proof)
+        print(proof['presentation']['requested_proof'])
         verified = proof['verified']
-        context = {
-            'title': 'Log In Success',
-            'verified': verified
-        }
+        contract_address = proof['presentation']['requested_proof']['revealed_attrs']['0_contract_address_uuid']['raw']
+        # print("contract_address: " + contract_address)
+        prescription_id = proof['presentation']['requested_proof']['revealed_attrs']['0_prescription_id_uuid']['raw']
+        # print("prescription_id: " + prescription_id)
+        spending_key = proof['presentation']['requested_proof']['revealed_attrs']['0_spending_key_uuid']['raw']
+        # print("spending_key: " + spending_key)
+
+        os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key.replace('0x', '')}")
+        FileHandler = open("quorum_client/result", "r")
+        result = FileHandler.read().replace("\n", "")
+        # print(result)
+        print(type(verified))
+        if (result == "true" and verified == "true"):
+            context = {
+                'title': 'Spending Success',
+                'verified': "true"
+            }
+        elif (result == "false" and verified == "true"):
+            context = {
+                'title': 'Double Spend',
+                'verified': 'spent'
+            }
+        elif (result == "true" and verified == "false"):
+            context = {
+                'title': 'Revoked',
+                'verified': 'revoked'
+            }
+        elif (result == "false" and verified == "false"):
+            context = {
+                'title': 'Revoked and spent',
+                'verified': 'revoked_and_spent'
+            }
+        else:
+            print("Invalid result: ")
+            print(result)
         return render(request, 'pharmacy/login-result.html', context)
 
 def logged_in_view(request):
@@ -173,10 +249,14 @@ def logged_in_view(request):
         return redirect('pharmacy-connection')
     proof = requests.get(url2 + '/present-proof/records?state=verified').json()['results']
     if len(proof) > 0:
-        name = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_name_uuid']['raw']
+        print(proof)
+        print(proof[0])
+        medical = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_medical_uuid']['raw']
+        number = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_number_uuid']['raw']
         context = {
-            'title': 'Logged in',
-            'name': name,
+            'title': 'Prescription spent',
+            'medical': medical,
+            'number': number,
             'date': datetime.date.today().strftime('%d - %b - %Y')
         }
         return render(request, 'pharmacy/logged_in.html', context)
@@ -206,35 +286,67 @@ def webhook_connection_view(request):
         proof_request = {
             "connection_id": connection_id,
             "proof_request": {
-                "name": "Proof of Division",
-                "version": "1.0",
-                "requested_attributes": {
-                    "0_name_uuid": {
-                        "name": "Name",
-                        "restrictions": [
-                            {
-                                "cred_def_id": cred_def_id
-                            }
-                        ]
-                    },
-                    "0_company_uuid": {
-                        "name": "Company",
-                        "restrictions": [
-                            {
-                                "cred_def_id": cred_def_id
-                            }
-                        ]
-                    },
-                    "0_division_uuid": {
-                        "name": "Division",
-                        "restrictions": [
-                            {
-                                "cred_def_id": cred_def_id
-                            }
-                        ]
-                    }
+                            "name": "Proof of Receipt",
+            "version": "1.0",
+            "requested_attributes": {
+                "0_doctor_fullname_uuid": {
+                    "name": "doctor_fullname",
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
                 },
-                "requested_predicates": {}
+                "0_doctor_address_uuid": {
+                    "name": "doctor_address",
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                },
+                "0_medical_uuid": {
+                    "name": "medical",
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                },
+                "0_number_uuid": {
+                    "name": "number",
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                },
+                "0_prescription_id_uuid": {
+                    "name": "prescription_id",
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                },
+                "0_spending_key_uuid": {
+                    "name": "spending_key",
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                },
+                "0_contract_address_uuid": {
+                    "name": "contract_address",
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                }
+            },
+            "requested_predicates": {}
             }
         }
         requests.post(url2 + '/present-proof/send-request', json=proof_request)

@@ -20,9 +20,9 @@ class CredentialForm(forms.ModelForm):
     medical          = forms.CharField(label='Medical', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     number           = forms.CharField(label='Number', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     expiration       = forms.CharField(label='Expiration', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    prescription_id  = forms.CharField(label='Id', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    contractAddress  = forms.CharField(label='ContractAddress', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    spendingKey      = forms.CharField(label='spendingKey', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    # prescription_id  = forms.CharField(label='Id', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    # contractAddress  = forms.CharField(label='ContractAddress', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    # spendingKey      = forms.CharField(label='spendingKey', widget=forms.TextInput(attrs={'style': 'width:700px'}))
 
     class Meta:
         model = Credential
@@ -35,10 +35,10 @@ class CredentialForm(forms.ModelForm):
             'patient_birthday',
             'medical',
             'number',
-            'expiration',
-            'prescription_id',
-            'contractAddress',
-            'spendingKey'
+            'expiration'
+            # 'prescription_id',
+            # 'contractAddress',
+            # 'spendingKey'
         ]
 
     # Updating the dropdown list with all the available connections (which have either the state 'active' or 'response') every time the page loads

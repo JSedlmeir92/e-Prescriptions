@@ -21,9 +21,9 @@
         <tr>
             <th>{{ forloop.counter }}</th>
             <td>-</td>
-            <td><a href="{{ instance.get_absolute_url }}">{{ instance.fullname }}</a>,</td>
-            <td>{{ instance.division }},</td>
-            <td>{{ instance.jobtitle }},</td>
+            <td><a href="{{ instance.get_absolute_url }}">{{ instance.patient_fullname }}</a>,</td>
+            <td>{{ instance.medical }},</td>
+            <td>{{ instance.number }},</td>
             <td>issued on: {{ instance.issued }}</td>
         </tr>
     {% endfor %}

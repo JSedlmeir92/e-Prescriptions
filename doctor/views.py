@@ -10,7 +10,15 @@ import urllib.request
 import os
 from pathlib import Path
 
+import base64
+
+from datetime import datetime
+import pprint
+import logging
+logger = logging.getLogger(__name__)
+
 url = 'http://0.0.0.0:7080'
+support_revocation = True
 
 def home_view(request):
     return render(request, 'doctor/base_doctor.html', {'title': 'Doctor'})
@@ -38,6 +46,14 @@ def connection_view(request):
         Connection.objects.filter(id=Connection.objects.latest('date_added').id).update(invitation_link=invitation_link)
         Connection.objects.filter(id=Connection.objects.latest('date_added').id).update(connection_id=connection_id)
         # Generating the QR code
+        invitation_splitted = invitation_link.split("=", 1)
+        temp = json.loads(base64.b64decode(invitation_splitted[1]))
+        # Icon for the wallet app
+        temp.update({"imageUrl": "https://cdn.pixabay.com/photo/2016/03/31/20/12/doctor-1295581_960_720.png"})
+        temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
+        invitation_splitted[1] = temp
+        invitation_link = "=".join(invitation_splitted)
+        print(invitation_link)
         qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600"
         context['qr_code'] = qr_code
     return render(request, 'doctor/connection.html', context)
@@ -66,8 +82,8 @@ def schema_view(request):
                 "number",
                 "expiration",
                 "prescription_id",
-                "contractAddress",
-                "spendingKey"
+                "contract_address",
+                "spending_key"
             ],
             "schema_name": str(time.time())[:10],
             "schema_version": "1.0"
@@ -96,7 +112,7 @@ def cred_def_view(request):
                 schema_id = created_schema[0]
                 credential_definition = {
                     "tag": "ePrescription",
-                    "support_revocation": True,
+                    "support_revocation": support_revocation,
                     "schema_id": schema_id
                 }
                 requests.post(url + '/credential-definitions', json=credential_definition)
@@ -107,6 +123,9 @@ def rev_reg_view(request):
     context = {
         'title': 'Revocation Registry'
     }
+    # if support_revocation == False:
+        # return render(request, 'doctor/rev_reg.html', context)
+
     # Checks if there are suitable SCHEMA in the wallet
     created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
     if len(created_schema) < 1:
@@ -165,7 +184,7 @@ def rev_reg_view(request):
                         #else:
                         #    pass
                         tails_public_uri = {
-                            "tails_public_uri": "https://prescriptionMaster:ZYN586xGacRvabUIhvt9@github.com/prescriptionMaster/TailsFiles.git/raw/master/" + filename
+                            "tails_public_uri": "https://github.com/prescriptionMaster/TailsFiles/raw/master/" + filename
                         }
                         print("Updating revocation registry tails file url")
                         ans = requests.patch(url + '/revocation/registry/' + rev_reg, json=tails_public_uri)
@@ -238,44 +257,48 @@ def issue_cred_view(request):
                     attributes = [
                         {
                             # "mime-type": "image/jpeg",
-                            "name": "Doctor's Full Name",
+                            "name": "doctor_fullname",
                             "value": request.POST.get('doctor_fullname')
                         },
                         {
-                            "name": "Doctor's Address",
+                            "name": "doctor_address",
                             "value": request.POST.get('doctor_address')
                         },
                         {
-                            "name": "Doctor's Type",
+                            "name": "doctor_type",
                             "value": request.POST.get('doctor_type')
                         },
                         {
-                            "name": "Patient's Full Name",
+                            "name": "patient_fullname",
                             "value": request.POST.get('patient_fullname')
                         },
                         {
-                            "name": "Patient's Birthday",
+                            "name": "patient_birthday",
                             "value": request.POST.get('patient_birthday')
                         },
                         {
-                            "name": "Medical",
+                            "name": "medical",
                             "value": request.POST.get('medical')
                         },
                         {
-                            "name": "Number",
+                            "name": "number",
                             "value": request.POST.get('number')
                         },
                         {
-                            "name": "Expiration",
+                            "name": "issued",
+                            "value": f"{datetime.now()}"
+                        },
+                        {
+                            "name": "expiration",
                             "value": request.POST.get('expiration')
                         }
                     ]
 
-                    prescription_id = hashlib.sha256((json.dumps(attributes)).encode('utf-8')).hexdigest()
-                    print("ID: " + prescription_id)
-                    attributed.append(
+                    prescription_id = "0x" + hashlib.sha256((json.dumps(attributes)).encode('utf-8')).hexdigest()
+                    # print("ID: " + prescription_id)
+                    attributes.append(
                     {
-                        "name": "Prescription Id",
+                        "name": "prescription_id",
                         "value": prescription_id
                     })
 
@@ -283,48 +306,56 @@ def issue_cred_view(request):
                         contract = json.load(file)
 
                     contract_address = contract["networks"]['10']['address']
-                    print("contract_address: " + contract_address)
+                    # print("contract_address: " + contract_address)
                     attributes.append(
                     {
-                        "name": "Contract Address",
+                        "name": "contract_address",
                         "value": contract_address
                     })
 
-                    os.system(f"quorum_client/createPresecription.sh {prescription_id}")
-                    FileHandler = open("ip_address_vm", "r")
+                    os.system(f"quorum_client/createPrescription.sh {prescription_id}")
+                    FileHandler = open("quorum_client/spendingKey", "r")
                     spending_key = FileHandler.read().replace("\n", "")
-                    print("Spending key: " + spending_key)
-                    attributes.append(
-                    {
-                        "name": "Spending Key",
-                        "value": spending_key
-                    })
+                    # print("Spending key: " + spending_key)
+                    if spending_key[0:2] != "0x":
+                        print("Is not a hex")
+                    else:
+                        attributes.append(
+                        {
+                            "name": "spending_key",
+                            "value": spending_key
+                        })
 
-                    credential = {
-                        "schema_name": schema_name,
-                        "auto_remove": True,
-                        "revoc_reg_id": rev_reg_id,
-                        "schema_issuer_did": schema_issuer_did,
-                        "schema_version": schema_version,
-                        "schema_id": schema_id,
-                        "credential_proposal": {
-                            "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/credential-preview",
-                            "attributes": attributes,
-                        },
-                        "credential_def_id": credential_definition_id,
-                        "issuer_did": issuer_did,
-                        "connection_id": connection_id,
-                        "trace": False
-                    }
-                    issue_cred = requests.post(url + '/issue-credential/send', json=credential)
-                    # Updating the object in the database with the thread-id
-                    # print(issue_cred)
-                    # print(issue_cred.status_code)
-                    # print(issue_cred.text)
-                    thread_id = issue_cred.json()['credential_offer_dict']['@id']
-                    Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
-                    context['form'] = form
-                    context['name'] = request.POST.get('fullname')
+                        credential = {
+                            "schema_name": schema_name,
+                            "auto_remove": True,
+                            "revoc_reg_id": rev_reg_id,
+                            "schema_issuer_did": schema_issuer_did,
+                            "schema_version": schema_version,
+                            "schema_id": schema_id,
+                            "credential_proposal": {
+                                "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/credential-preview",
+                                "attributes": attributes,
+                            },
+                            "credential_def_id": credential_definition_id,
+                            "issuer_did": issuer_did,
+                            "connection_id": connection_id,
+                            "trace": False
+                        }
+                        # pprint.pprint(credential)
+                        issue_cred = requests.post(url + '/issue-credential/send', json=credential)
+                        # Updating the object in the database with the thread-id
+                        # print(issue_cred)
+                        # print(issue_cred.status_code)
+                        # print(issue_cred.text)
+                        thread_id = issue_cred.json()['credential_offer_dict']['@id']
+                        Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
+                        context['form'] = form
+                        context['name'] = request.POST.get('fullname')
+
+                # else:
+                    # print("Form invalid")
+                    # print(form.errors)
     return render(request, 'doctor/issue_cred.html', context)
 
 def revoke_cred_view(request):

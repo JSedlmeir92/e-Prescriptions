@@ -6,3 +6,6 @@ ip_address_vm
 ip_address_quorum_node
 
 db.sqlite3
+
+result
+spendingKey

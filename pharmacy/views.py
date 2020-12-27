@@ -75,20 +75,23 @@ def login_view(request):
             invitations = requests.get(url2 + '/connections?alias=' + session_key + '&state=invitation').json()['results']
             # Creates a new INVITATION, if none exists
             if len(invitations) == 0:
-                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true').json()['invitation_url']
+                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
                 FileHandler = open("connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
+                FileHandler.close()
             elif os.stat("connection_pharmacy").st_size == 0:
                 connection_id = invitations[0]["connection_id"]
                 requests.post(url2 + '/connections/' + connection_id + '/remove')
-                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true').json()['invitation_url']
+                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
                 FileHandler = open("connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
+                FileHandler.close()
             # Uses the latest created INVITATION, if it has not been used yet
             else:
                 FileHandler = open("connection_pharmacy", "r")
                 invitation_link = FileHandler.read()
-            FileHandler.close()
+                FileHandler.close()
+
             invitation_splitted = invitation_link.split("=", 1)
             temp = json.loads(base64.b64decode(invitation_splitted[1]))
             # Icon for the wallet app
@@ -192,6 +195,7 @@ def login_result_view(request):
     x = 0
     while len(requests.get(url2 + '/present-proof/records?state=verified').json()['results']) == 0:
         time.sleep(5)
+        print("waiting...")
         # redirect to the login page after 2 minutes of not receiving a proof presentation
         x += 1
         if x > 23:
@@ -200,16 +204,18 @@ def login_result_view(request):
         proof = requests.get(url2 + '/present-proof/records').json()['results'][0]
         # print(proof)
         verified = proof['verified']
+        print("verified: " + verified)
         contract_address = proof['presentation']['requested_proof']['revealed_attrs']['0_contract_address_uuid']['raw']
-        # print("contract_address: " + contract_address)
+        print("contract_address: " + contract_address)
         prescription_id = proof['presentation']['requested_proof']['revealed_attrs']['0_prescription_id_uuid']['raw']
-        # print("prescription_id: " + prescription_id)
+        print("prescription_id: " + prescription_id)
         spending_key = proof['presentation']['requested_proof']['revealed_attrs']['0_spending_key_uuid']['raw']
-        # print("spending_key: " + spending_key)
+        print("spending_key: " + spending_key)
 
         os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key.replace('0x', '')}")
         FileHandler = open("quorum_client/result", "r")
         result = FileHandler.read().replace("\n", "")
+        print("result: " + result)
         if (result == "true" and verified == "true"):
             context = {
                 'title': 'Spending Success',

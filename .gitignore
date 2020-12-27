@@ -7,4 +7,8 @@ ip_address_quorum_node
 
 db.sqlite3
 
+
 package-lock.json
+
+result
+spendingKey

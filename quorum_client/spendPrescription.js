@@ -38,21 +38,22 @@ const instance = new web3.eth.Contract(artifact.abi, args.address);
 
 async function spendPrescription(secret, id) {
         let patientAccount = await web3.eth.accounts.privateKeyToAccount(secret);
-		web3.eth.accounts.wallet.add(secret.toString());
+	web3.eth.accounts.wallet.add(secret.toString());
         let returnValue = await instance.methods.spend(id).send({
             from: patientAccount.address.toString(),
             gas: 300000
         }).catch(err => {
-		    //console.log(err);
-			console.log("false");
-			return;
-			//return Promise.reject(err);
-		});
-		try {
+		//console.log(err);
+		//console.log("false");
+		return;
+		//return Promise.reject(err);
+	});
+        //console.log(returnValue);
+	try {
             console.log(returnValue.status);
-		} catch (err) {
-			//console.log("false");
-		};
+	} catch (err) {
+	    console.log("false");
+	};
         return;
 }
 

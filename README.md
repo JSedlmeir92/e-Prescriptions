@@ -36,4 +36,5 @@ echo "export PATH=$PATH:/home/$USER/.nvm/versions/node/v8.16.0/bin" >> "/home/$U
 
 npm install -g truffle@5.1.39
 
+cd /home/$USER/ssi-prescriptions/quorum_client && npm install
 

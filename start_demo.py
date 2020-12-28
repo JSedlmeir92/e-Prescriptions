@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 import asyncio
 import os
 import sys
@@ -57,4 +55,3 @@ print("Starting complete")
 #
 #loop = asyncio.get_event_loop()
 #loop.run_until_complete(main())
->>>>>>> 81fe818656d4121d0096cd6ef712b7e833456996

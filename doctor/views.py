@@ -83,7 +83,7 @@ def connection_view(request):
         temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
         invitation_splitted[1] = temp
         invitation_link = "=".join(invitation_splitted)
-        print(invitation_link)
+        # print(invitation_link)
         qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600"
         context['qr_code'] = qr_code
     return render(request, 'doctor/connection.html', context)
@@ -373,7 +373,7 @@ def issue_cred_view(request):
                         thread_id = issue_cred.json()['credential_offer_dict']['@id']
                         Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
                         context['form'] = form
-                        context['name'] = request.POST.get('fullname')
+                        context['name'] = request.POST.get('doctor_fullname')
 
                 # else:
                     # print("Form invalid")

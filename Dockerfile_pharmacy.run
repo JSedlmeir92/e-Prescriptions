@@ -1,0 +1,21 @@
+FROM bcgovimages/von-image:py36-1.15-0
+
+ENV ENABLE_PTVSD 0
+
+ADD requirements*.txt ./
+
+ADD pool_transactions_genesis ./
+
+RUN pip3 install --no-cache-dir -r requirements.txt -r requirements.dev.txt
+
+ADD aries_cloudagent ./aries_cloudagent
+ADD bin ./bin
+ADD README.md ./
+ADD setup.py ./
+
+RUN pip3 install --no-cache-dir -e .
+
+RUN mkdir logs && chown -R indy:indy logs && chmod -R ug+rw logs
+RUN aca-py provision --wallet-type indy --seed 000000000000000000000000000Agent --wallet-key welldone --wallet-name AgentWallet2 --genesis-file ./pool_transactions_genesis -e http://$ip_address:7000/ 
+
+ENTRYPOINT ["/bin/bash", "-c", "aca-py \"$@\"", "--"]

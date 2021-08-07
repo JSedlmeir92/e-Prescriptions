@@ -1,7 +1,7 @@
 module.exports = {
   networks: {
     node0: {
-      host: "18.159.130.127",
+      host: "localhost",
       port: 22000,
       network_id: "*",
       gasPrice: 0,

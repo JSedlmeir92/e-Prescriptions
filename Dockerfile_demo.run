@@ -1,0 +1,17 @@
+FROM python:3.8-alpine
+
+# ENV PYTHONUNBUFFERED=1
+
+RUN ls
+
+ADD start_demo.py ./
+ADD test.py
+ADD test.sh
+
+ADD demo ./
+ADD images ./
+ADD pharmacy ./
+
+# RUN pip install -r requirements.txt
+
+ENTRYPOINT ["/bin/bash", "test.sh"]

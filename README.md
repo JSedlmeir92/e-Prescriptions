@@ -1,13 +1,13 @@
+### Clone recursively to get aries-cloudagent-python, indy-tails-server and quorum-examples
 
-
-git clone --recursive https://gitlab.fit.fraunhofer.de/vincent.schlatt/sso-prescriptions.git
+git clone --recurse-submodules https://github.com/JSedlmeir92/e-Prescriptions.git
 
 ### PART 1: Prerequisites: ### 
 sudo apt-get update
 sudo apt-get -y upgrade
 
 sudo apt-get install -y docker.io
-sudo apt-get install -y docker-compose
+sudo apt-get install -y docker-compose (make sure docker-compose is version 1.29.2 or higher)
 
 sudo usermod -aG docker "$USER"
 newgrp docker
@@ -16,7 +16,6 @@ sudo reboot
 
 
 ### END PART 1 ###
-
 
 sudo apt-get install -y python3-pip
 python3 -m pip install -y django

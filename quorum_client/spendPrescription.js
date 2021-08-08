@@ -23,7 +23,6 @@ const args = stdio.getopt({
     "id": {key: "id", args: 1, description: "id of the prescription", mandatory: true},
 });
 
-
 const config = require("./config.json")
 const Web3 = require("web3");
 const TruffleContract = require("truffle-contract");
@@ -34,27 +33,34 @@ const account = config.account
 
 const artifact = require("./build/contracts/PrescriptionContract.json");
 
-const instance = new web3.eth.Contract(artifact.abi, args.address);
+const instance = new web3.eth.Contract(artifact.abi, artifact.networks['10'].address);
 
 async function spendPrescription(secret, id) {
-        let patientAccount = await web3.eth.accounts.privateKeyToAccount(secret);
-	web3.eth.accounts.wallet.add(secret.toString());
-        let returnValue = await instance.methods.spend(id).send({
-            from: patientAccount.address.toString(),
-            gas: 300000
-        }).catch(err => {
-		//console.log(err);
-		//console.log("false");
-		return;
-		//return Promise.reject(err);
-	});
-        //console.log(returnValue);
-	try {
-            console.log(returnValue.status);
-	} catch (err) {
-	    console.log("false");
-	};
+    //let patientAccount = await web3.eth.accounts.privateKeyToAccount(secret);
+
+    let adminAccount = await web3.eth.getAccounts().catch(err => {
+        //console.log(err);
+    });
+    //console.log("Admin account: " + adminAccount);
+
+    //web3.eth.accounts.wallet.add(secret.toString());
+    let returnValue = await instance.methods.spend(id).send({
+        from: adminAccount.toString(),
+        gas: 300000
+    }).catch(err => {
+        //console.log(err);
+        //console.log("false");
         return;
+        //return Promise.reject(err);
+    });
+    console.log(returnValue);
+    try {
+        console.log(returnValue.status);
+    } catch (err) {
+        console.log("false");
+    }
+    ;
+    return;
 }
 
 spendPrescription(args.secret, args.id);

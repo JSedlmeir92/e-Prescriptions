@@ -4,3 +4,9 @@
 [submodule "TailsFiles"]
 	path = TailsFiles
 	url = https://github.com/prescriptionMaster/TailsFiles.git
+[submodule "quorum-examples"]
+	path = quorum-examples
+	url = https://github.com/ConsenSys/quorum-examples
+[submodule "indy-tails-server"]
+	path = indy-tails-server
+	url = https://github.com/bcgov/indy-tails-server

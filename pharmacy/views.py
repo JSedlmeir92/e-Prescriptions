@@ -54,7 +54,7 @@ def login_view(request):
                 connection_id = connections[0]['connection_id']
                 proof = requests.get(url2 + '/present-proof/records?connection_id=' + connection_id + '&state=verified').json()['results']
                 if (len(proof) > 0):
-                    name = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_pharmaceutical_uuid']['raw']
+                    name = proof[0]['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
                     context['name'] = name
                 else:
                     pass
@@ -125,56 +125,20 @@ def login_loading_view(request):
             "name": "Proof of Receipt",
             "version": "1.0",
             "requested_attributes": {
-                "0_doctor_fullname_uuid": {
-                    "name": "doctor_fullname",
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                },
-                "0_doctor_address_uuid": {
-                    "name": "doctor_address",
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                },
-                "0_pharmaceutical_uuid": {
-                    "name": "pharmaceutical",
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                },
-                "0_number_uuid": {
-                    "name": "number",
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                },
-                "0_prescription_id_uuid": {
-                    "name": "prescription_id",
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                },
-                "0_spending_key_uuid": {
-                    "name": "spending_key",
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                },
-                "0_contract_address_uuid": {
-                    "name": "contract_address",
+                "e-prescription": {
+                    "names": [
+                        "doctor_fullname",
+                        "doctor_address",
+                        "pharmaceutical",
+                        "number",
+                        "prescription_id",
+                        "spending_key",
+                        "contract_address"
+                    ],
+                    "non_revoked": {
+                        "from": 0,
+                        "to": round(time.time())
+                    },
                     "restrictions": [
                         {
                             "cred_def_id": cred_def_id
@@ -182,7 +146,7 @@ def login_loading_view(request):
                     ]
                 }
             },
-            "requested_predicates": {}
+            "requested_predicates": {},
         }
     }
     requests.post(url2 + '/present-proof/send-request', json=proof_request)
@@ -205,11 +169,11 @@ def login_result_view(request):
         # print(proof)
         verified = proof['verified']
         print("verified: " + verified)
-        contract_address = proof['presentation']['requested_proof']['revealed_attrs']['0_contract_address_uuid']['raw']
+        contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
         print("contract_address: " + contract_address)
-        prescription_id = proof['presentation']['requested_proof']['revealed_attrs']['0_prescription_id_uuid']['raw']
+        prescription_id = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
         print("prescription_id: " + prescription_id)
-        spending_key = proof['presentation']['requested_proof']['revealed_attrs']['0_spending_key_uuid']['raw']
+        spending_key = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
         print("spending_key: " + spending_key)
 
         os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key.replace('0x', '')}")
@@ -253,8 +217,8 @@ def logged_in_view(request):
     proof = requests.get(url2 + '/present-proof/records?state=verified').json()['results']
     if len(proof) > 0:
         # print(proof[0])
-        pharmaceutical = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_pharmaceutical_uuid']['raw']
-        number = proof[0]['presentation']['requested_proof']['revealed_attrs']['0_number_uuid']['raw']
+        pharmaceutical = proof[0]['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['pharmaceutical']['raw']
+        number = proof[0]['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['number']['raw']
         context = {
             'title': 'Prescription spent',
             'pharmaceutical': pharmaceutical,
@@ -291,56 +255,20 @@ def webhook_connection_view(request):
                             "name": "Proof of Receipt",
             "version": "1.0",
             "requested_attributes": {
-                "0_doctor_fullname_uuid": {
-                    "name": "doctor_fullname",
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                },
-                "0_doctor_address_uuid": {
-                    "name": "doctor_address",
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                },
-                "0_pharmaceutical_uuid": {
-                    "name": "pharmaceutical",
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                },
-                "0_number_uuid": {
-                    "name": "number",
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                },
-                "0_prescription_id_uuid": {
-                    "name": "prescription_id",
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                },
-                "0_spending_key_uuid": {
-                    "name": "spending_key",
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                },
-                "0_contract_address_uuid": {
-                    "name": "contract_address",
+                "e-prescription": {
+                    "names": [
+                        "doctor_fullname",
+                        "doctor_address",
+                        "pharmaceutical",
+                        "number",
+                        "prescription_id",
+                        "spending_key",
+                        "contract_address"
+                    ],
+                    "non_revoked": {
+                        "from": 0,
+                        "to": round(time.time())
+                    },
                     "restrictions": [
                         {
                             "cred_def_id": cred_def_id

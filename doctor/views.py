@@ -221,11 +221,11 @@ def rev_reg_view(request):
                         print(ans.status_code)
                         print(ans.text)
                         print(ans.json())
-                        ans = requests.post(url + '/revocation/registry/' + rev_reg + '/publish')
-                        print(ans)
-                        print(ans.status_code)
-                        print(ans.text)
-                        print(ans.json())
+                        # ans = requests.post(url + '/revocation/registry/' + rev_reg + '/publish')
+                        # print(ans)
+                        # print(ans.status_code)
+                        # print(ans.text)
+                        # print(ans.json())
                         return redirect('.')
 
                 except Exception as e:

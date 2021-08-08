@@ -31,5 +31,7 @@ if [ "$OSTYPE" == "msys" ]; then
 fi
 
 RAND_NAME=$(env LC_CTYPE=C tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w 16 | head -n 1)
-$CONTAINER_RUNTIME run --rm -ti -v $PWD/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis --name "aries-cloudagent-runner_${RAND_NAME}" \
+$CONTAINER_RUNTIME run --rm -ti --network host -v $PWD/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis --name "aries-cloudagent-runner_${RAND_NAME}" \
     $ARGS aries-cloudagent-run "$@"
+# $CONTAINER_RUNTIME run --rm -ti -v $PWD/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis -v /home/ubuntu/.indy_client:/home/indy/.indy_client --name "aries-cloudagent-runner_${RA>
+#     $ARGS aries-cloudagent-run "$@"

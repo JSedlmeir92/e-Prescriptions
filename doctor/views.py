@@ -67,7 +67,7 @@ def connection_view(request):
         connections_invitation = requests.get(url + '/connections?initiator=self&state=invitation').json()['results']
         if len(connections_invitation) > 0:
             connection_id = requests.get(url + '/connections?initiator=self&state=invitation').json()['results'][0]["connection_id"]
-            requests.post(url + '/connections/' + connection_id + '/remove')
+            requests.delete(url + '/connections/' + connection_id)
         # Generating the new INVITATION
         alias = request.POST.get('alias')
         response = requests.post(url + '/connections/create-invitation?alias=' + alias + '&auto_accept=true').json()
@@ -369,12 +369,11 @@ def issue_cred_view(request):
                         }
                         # pprint.pprint(credential)
                         issue_cred = requests.post(url + '/issue-credential/send', json=credential)
-                        print(revocatio)
                         # Updating the object in the database with the thread-id
                         # print(issue_cred)
                         # print(issue_cred.status_code)
                         # print(issue_cred.text)
-                        thread_id = issue_cred.json()['credential_offer_dict']['@id'] ##was passiert hier?
+                        thread_id = issue_cred.json()['credential_offer_dict']['@id']
                         Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
                         context['form'] = form
                         context['name'] = request.POST.get('doctor_fullname')
@@ -389,7 +388,7 @@ def revoke_cred_view(request):
     update_credential = Credential.objects.all()
     for object in update_credential:
         credential = requests.get(url + '/issue-credential/records?thread_id=' + str(object.thread_id)).json()['results']
-        print(credential)
+ #       print(credential)
         if len(credential) < 1:
             Credential.objects.filter(id=object.id).delete()
         else:

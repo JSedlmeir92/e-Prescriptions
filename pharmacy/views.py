@@ -35,6 +35,7 @@ def login_view(request):
             context['available_cred_def'] = 'There is no suitable credential definition available. Please go back and publish a new one first.'
         else:
             # If an INVITATION is created for a new user, a new session is created and all proof presentations are removed.
+            ##"submit_new_inivation" is not implemented in the current version @TODO
             if request.method == 'POST' and 'submit_new_invitation' in request.POST:
                 request.session.flush()
                 request.session.save()
@@ -77,19 +78,19 @@ def login_view(request):
             # Creates a new INVITATION, if none exists
             if len(invitations) == 0:
                 invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
-                FileHandler = open("connection_pharmacy", "w")
+                FileHandler = open("pharmacy/connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
                 FileHandler.close()
-            elif os.stat("connection_pharmacy").st_size == 0:
+            elif os.stat("pharmacy/connection_pharmacy").st_size == 0:
                 connection_id = invitations[0]["connection_id"]
                 requests.delete(url2 + '/connections/' + connection_id)
                 invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
-                FileHandler = open("connection_pharmacy", "w")
+                FileHandler = open("pharmacy/connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
                 FileHandler.close()
             # Uses the latest created INVITATION, if it has not been used yet
             else:
-                FileHandler = open("connection_pharmacy", "r")
+                FileHandler = open("pharmacy/connection_pharmacy", "r")
                 invitation_link = FileHandler.read()
                 FileHandler.close()
 
@@ -167,7 +168,7 @@ def login_result_view(request):
             return redirect('pharmacy-connection')
     else:
         proof = requests.get(url2 + '/present-proof/records').json()['results'][0]
-        # print(proof)
+        print(proof)
         verified = proof['verified']
         print("verified: " + verified)
         contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
@@ -180,7 +181,7 @@ def login_result_view(request):
         os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key.replace('0x', '')}")
         FileHandler = open("quorum_client/result", "r")
         result = FileHandler.read().replace("\n", "")
-        print("result: " + result)
+        print("result: " + result + " " + verified)
         if (result == "true" and verified == "true"):
             context = {
                 'title': 'Spending Success',

@@ -12,13 +12,14 @@ import os
 import json
 import base64
 
+
 url = 'http://0.0.0.0:7080'
 url2 = 'http://0.0.0.0:9080'
 
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
 
-@csrf_exempt
+@csrf_exempt #(Security Excemption): The request send via a form doesn't has to originate from my website and can come from some other domain
 def login_view(request):
     context = {
         'title': 'Login',
@@ -41,7 +42,7 @@ def login_view(request):
                 x = len(proof_records)
                 while x > 0:
                     pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-                    requests.post(url2 + '/present-proof/records/' + pres_ex_id + '/remove')
+                    requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
                     x -= 1
                 return redirect('pharmacy-connection')
             # In case the session key is None, the session is stored to get a key
@@ -63,13 +64,13 @@ def login_view(request):
                 x = len(proof_records)
                 while x > 0:
                     pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-                    requests.post(url2 + '/present-proof/records/' + pres_ex_id + '/remove')
+                    requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
                     x -= 1
                 connections = requests.get(url2 + '/connections').json()['results']
                 y = len(connections)
                 while y > 0:
                     connection_id = connections[y - 1]["connection_id"]
-                    requests.post(url2 + '/connections/' + connection_id + '/remove')
+                    requests.delete(url2 + '/connections/' + connection_id)
                     y -= 1
             # Checks if it is necessary to create a new INVITATION QR Code and creates one if necessary
             invitations = requests.get(url2 + '/connections?alias=' + session_key + '&state=invitation').json()['results']
@@ -81,7 +82,7 @@ def login_view(request):
                 FileHandler.close()
             elif os.stat("connection_pharmacy").st_size == 0:
                 connection_id = invitations[0]["connection_id"]
-                requests.post(url2 + '/connections/' + connection_id + '/remove')
+                requests.delete(url2 + '/connections/' + connection_id)
                 invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
                 FileHandler = open("connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
@@ -110,7 +111,7 @@ def login_loading_view(request):
     x = len(proof_records)
     while x > 0:
         pres_ex_id = proof_records[x-1]['presentation_exchange_id']
-        requests.post(url2 + '/present-proof/records/' + pres_ex_id + '/remove')
+        requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
         x -= 1
     # Gets the CONNECTION ID (to which the proof should be sent)
     connection_id = requests.get(url2 + '/connections').json()['results'][0]['connection_id']
@@ -211,7 +212,7 @@ def logged_in_view(request):
         x = len(proof_records)
         while x > 0:
             pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-            requests.post(url2 + '/present-proof/records/' + pres_ex_id + '/remove')
+            requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
             x -= 1
         return redirect('pharmacy-connection')
     proof = requests.get(url2 + '/present-proof/records?state=verified').json()['results']
@@ -239,7 +240,7 @@ def webhook_connection_view(request):
         x = len(proof_records)
         while x > 0:
             pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-            requests.post(url2 + '/present-proof/records/' + pres_ex_id + '/remove')
+            requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
             x -= 1
         # Gets the CONNECTION ID (to which the proof should be sent)
         connection_id = requests.get(url2 + '/connections').json()['results'][0]['connection_id']

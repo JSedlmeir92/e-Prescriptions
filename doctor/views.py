@@ -98,11 +98,11 @@ def schema_view(request):
         # context['attributes'] = requests.get(url + '/schemas/' + context['created_schema']).json()['schema']['attrNames']
         # context['attributes'][1], context['attributes'][2], context['attributes'][3], context['attributes'][7], context['attributes'][8], context['attributes'][9], context['attributes'][6], context['attributes'][5], context['attributes'][4], context['attributes'][10], context['attributes'][0] = context['attributes'][0], context['attributes'][1], context['attributes'][2], context['attributes'][3], context['attributes'][4], context['attributes'][5], context['attributes'][6], context['attributes'][7], context['attributes'][8], context['attributes'][9], context['attributes'][10]
         context['attributes'] = []
-        for index, _ in enumerate(ATTRIBUTES):
+        for index, _ in enumerate(ATTRIBUTES): #displays the ATTRIBUTES with the describing comments
             context['attributes'].append({"attribute": ATTRIBUTES[index].ljust(30), "comment": COMMENTS[index] + "."})
         print(context)
     else:
-        pass
+        pass ##null operation. Nothing happens when the satatement executes.
     # Publish a new SCHEMA
     if request.method == 'POST':
         schema = {
@@ -265,10 +265,10 @@ def issue_cred_view(request):
                 context['rev_reg'] = True
             else:
                 if form.is_valid():
-                    # Saving the data in the database
+                    # Saving the data in the database <-- which database?
                     form.save()
                     form = CredentialForm()
-                    # Sending the data to the employee
+                    # Sending the data to the employee <-- which employee?
                     schema = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']
                     schema_name = schema['name']
                     schema_id = schema['id']
@@ -369,11 +369,12 @@ def issue_cred_view(request):
                         }
                         # pprint.pprint(credential)
                         issue_cred = requests.post(url + '/issue-credential/send', json=credential)
+                        print(revocatio)
                         # Updating the object in the database with the thread-id
                         # print(issue_cred)
                         # print(issue_cred.status_code)
                         # print(issue_cred.text)
-                        thread_id = issue_cred.json()['credential_offer_dict']['@id']
+                        thread_id = issue_cred.json()['credential_offer_dict']['@id'] ##was passiert hier?
                         Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
                         context['form'] = form
                         context['name'] = request.POST.get('doctor_fullname')

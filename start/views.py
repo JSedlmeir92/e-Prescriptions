@@ -12,7 +12,7 @@ def remove_connections_agent_1():
     x = len(connections)
     while x > 0:
         connection_id = connections[x-1]["connection_id"]
-        requests.post(url + '/connections/' + connection_id + '/remove')
+        requests.delete(url + '/connections/' + connection_id)
         x -= 1
 
 def remove_connections_agent_2():
@@ -20,7 +20,7 @@ def remove_connections_agent_2():
     y = len(connections)
     while y > 0:
         connection_id = connections[y-1]["connection_id"]
-        requests.post(url2 + '/connections/' + connection_id + '/remove')
+        requests.delete(url2 + '/connections/' + connection_id)
         y -= 1
 
 def remove_credentials_agent_1():
@@ -29,7 +29,7 @@ def remove_credentials_agent_1():
     x = len(issue_credential)
     while x > 0:
         credential_exchange_id = issue_credential[x-1]['credential_exchange_id']
-        requests.post(url + '/issue-credential/records/' + credential_exchange_id + '/remove')
+        requests.delete(url + '/issue-credential/records/' + credential_exchange_id)
         x -= 1
 
 def remove_credentials_agent_2():
@@ -37,7 +37,7 @@ def remove_credentials_agent_2():
     y = len(issue_credential)
     while y > 0:
         credential_exchange_id = issue_credential[y-1]['credential_exchange_id']
-        requests.post(url2 + '/issue-credential/records/' + credential_exchange_id + '/remove')
+        requests.delete(url2 + '/issue-credential/records/' + credential_exchange_id)
         y -= 1
 
 def remove_proofs_agent_1():
@@ -45,7 +45,7 @@ def remove_proofs_agent_1():
     x = len(proof_records)
     while x > 0:
         presentation_exchange_id = proof_records[x-1]['presentation_exchange_id']
-        requests.post(url + '/present-proof/records/' + presentation_exchange_id + '/remove')
+        requests.delete(url + '/present-proof/records/' + presentation_exchange_id)
         x -= 1
 
 def remove_proofs_agent_2():
@@ -53,7 +53,7 @@ def remove_proofs_agent_2():
     y = len(proof_records)
     while y > 0:
         presentation_exchange_id = proof_records[y-1]['presentation_exchange_id']
-        requests.post(url2 + '/present-proof/records/' + presentation_exchange_id + '/remove')
+        requests.delete(url2 + '/present-proof/records/' + presentation_exchange_id)
         y -= 1
 
 def home_view(request):
@@ -105,7 +105,7 @@ def remove_invitation_1(request):
     connections_invitation = requests.get(url + '/connections?initiator=self&state=invitation').json()['results']
     if len(connections_invitation) > 0:
         connection_id = requests.get(url + '/connections?initiator=self&state=invitation').json()['results'][0]["connection_id"]
-        requests.post(url + '/connections/' + connection_id + '/remove')
+        requests.delete(url + '/connections/' + connection_id)
     else:
         pass
     return redirect('..')
@@ -114,7 +114,8 @@ def remove_invitation_2(request):
     connections_invitation = requests.get(url2 + '/connections?initiator=self&state=invitation').json()['results']
     if len(connections_invitation) > 0:
         connection_id = requests.get(url2 + '/connections?initiator=self&state=invitation').json()['results'][0]["connection_id"]
-        requests.post(url2 + '/connections/' + connection_id + '/remove')
+        requests.delete(url2 + '/connections/' + connection_id)
+        print("connection id: " + connection_id)
     else:
         pass
     return redirect('..')

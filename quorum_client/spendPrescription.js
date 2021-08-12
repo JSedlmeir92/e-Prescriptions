@@ -39,7 +39,7 @@ async function spendPrescription(secret, id) {
     //let patientAccount = await web3.eth.accounts.privateKeyToAccount(secret);
 
     let adminAccount = await web3.eth.getAccounts().catch(err => {
-        //console.log(err);
+        console.log(err);
     });
     //console.log("Admin account: " + adminAccount);
 
@@ -48,12 +48,12 @@ async function spendPrescription(secret, id) {
         from: adminAccount.toString(),
         gas: 300000
     }).catch(err => {
-        //console.log(err);
+        console.log(err);
         //console.log("false");
         return;
         //return Promise.reject(err);
     });
-    console.log(returnValue);
+//    console.log(returnValue);
     try {
         console.log(returnValue.status);
     } catch (err) {

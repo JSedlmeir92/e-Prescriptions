@@ -12,3 +12,8 @@ package-lock.json
 
 result
 spendingKey
+.vscode/settings.json
+.gitignore
+.DS_Store
+quorum_client/build/contracts/PrescriptionContract.json
+quorum_client/build/contracts/Migrations.json

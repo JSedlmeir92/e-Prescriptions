@@ -7,9 +7,9 @@ contract PrescriptionContract {
     address admin;
     
     struct Prescription {
-        address issuer; //a public key
+        address issuer; //a public key 
         string id; //the hash or serial number of an off-chain prescription VC, referenced also in the prescription VC
-        uint value; //0 = 0 times spend
+        uint value; //0 = 0 times spendable
     }
     
     constructor() public {

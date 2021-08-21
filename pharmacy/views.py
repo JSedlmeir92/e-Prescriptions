@@ -268,7 +268,7 @@ def webhook_connection_view(request):
                         "contract_address"
                     ],
                     "non_revoked": {
-                        "from": 0,
+                            "from": 0,
                         "to": round(time.time())
                     },
                     "restrictions": [
@@ -278,7 +278,22 @@ def webhook_connection_view(request):
                     ]
                 }
             },
-            "requested_predicates": {}
+             "requested_predicates": {
+                 "e-prescription": {
+                     "name": "expiration",
+                     "non_revoked": {
+                            "from": 0,
+                         "to": round(time.time())
+                     },
+                     "p_type": ">=", 
+                     "p_value": round(time.time()), # @TODO: Aufrunden auf Tagesende
+                     "restrictions": [
+                         {
+                             "cred_def_id": cred_def_id
+                         }
+                     ]
+                 }
+             }
             }
         }
         requests.post(url2 + '/present-proof/send-request', json=proof_request)

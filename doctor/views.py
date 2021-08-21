@@ -265,10 +265,10 @@ def issue_cred_view(request):
                 context['rev_reg'] = True
             else:
                 if form.is_valid():
-                    # Saving the data in the database <-- which database?
+                    # Saving the data in the database
                     form.save()
                     form = CredentialForm()
-                    # Sending the data to the employee <-- which employee?
+                    # Sending the data to the patient
                     schema = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']
                     schema_name = schema['name']
                     schema_id = schema['id']
@@ -319,6 +319,8 @@ def issue_cred_view(request):
                         }
                     ]
 
+                    #TODO: Define expiration in unixtime 
+
                     prescription_id = "0x" + hashlib.sha256((json.dumps(attributes)).encode('utf-8')).hexdigest()
                     # print("ID: " + prescription_id)
                     attributes.append(
@@ -350,7 +352,7 @@ def issue_cred_view(request):
                             "name": "spending_key",
                             "value": spending_key
                         })
-
+                        print(attributes)
                         credential = {
                             "schema_name": schema_name,
                             "auto_remove": True,
@@ -388,7 +390,7 @@ def revoke_cred_view(request):
     update_credential = Credential.objects.all()
     for object in update_credential:
         credential = requests.get(url + '/issue-credential/records?thread_id=' + str(object.thread_id)).json()['results']
- #       print(credential)
+        print(credential)
         if len(credential) < 1:
             Credential.objects.filter(id=object.id).delete()
         else:

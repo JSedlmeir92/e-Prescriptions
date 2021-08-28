@@ -135,6 +135,7 @@ def login_loading_view(request):
                         "number",
                         "prescription_id",
                         "spending_key",
+                        "expiration",
                         "contract_address"
                     ],
                     "non_revoked": {
@@ -148,7 +149,22 @@ def login_loading_view(request):
                     ]
                 }
             },
-            "requested_predicates": {},
+            "requested_predicates": {
+                "e-prescription": {
+                    "name": "expiration",
+                        "non_revoked": {
+                            "from": 0,
+                            "to": round(time.time())
+                            },
+                    "p_type": ">=", 
+                    "p_value": round(time.time()),
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                }
+            }
         }
     }
     requests.post(url2 + '/present-proof/send-request', json=proof_request)
@@ -168,7 +184,6 @@ def login_result_view(request):
             return redirect('pharmacy-connection')
     else:
         proof = requests.get(url2 + '/present-proof/records').json()['results'][0]
-        print(proof)
         verified = proof['verified']
         print("verified: " + verified)
         contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
@@ -178,9 +193,8 @@ def login_result_view(request):
         spending_key = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
         print("spending_key: " + spending_key)
 
-        os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key.replace('0x', '')}")
-        FileHandler = open("quorum_client/result", "r")
-        result = FileHandler.read().replace("\n", "")
+        os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
+        result = os.popen("tail -n 1 %s" % "quorum_client/result").read().replace("\n", "")
         print("result: " + result + " " + verified)
         if (result == "true" and verified == "true"):
             context = {
@@ -267,10 +281,6 @@ def webhook_connection_view(request):
                         "spending_key",
                         "contract_address"
                     ],
-                    "non_revoked": {
-                            "from": 0,
-                        "to": round(time.time())
-                    },
                     "restrictions": [
                         {
                             "cred_def_id": cred_def_id
@@ -278,24 +288,29 @@ def webhook_connection_view(request):
                     ]
                 }
             },
-             "requested_predicates": {
-                 "e-prescription": {
-                     "name": "expiration",
-                     "non_revoked": {
-                            "from": 0,
-                         "to": round(time.time())
-                     },
-                     "p_type": ">=", 
-                     "p_value": round(time.time()), # @TODO: Aufrunden auf Tagesende
-                     "restrictions": [
-                         {
-                             "cred_def_id": cred_def_id
-                         }
-                     ]
-                 }
-             }
+            "requested_predicates": {
+                # "e-prescription": {
+                #     "name": "expiration",
+                #         "non_revoked": {
+                #             "from": 0,
+                #             "to": round(time.time())
+                #             },
+                #     "p_type": ">=", 
+                #     "p_value": round(time.time()),
+                #     "restrictions": [
+                #         {
+                #             "cred_def_id": cred_def_id
+                #         }
+                #     ]
+                # }
+            },
+            "non_revoked": {
+                "from": 0,
+                "to": round(time.time())
+            },
             }
         }
+        print(proof_records)
         requests.post(url2 + '/present-proof/send-request', json=proof_request)
     else:
         pass

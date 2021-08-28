@@ -12,7 +12,8 @@ from pathlib import Path
 
 import base64
 
-from datetime import datetime
+from datetime import datetime, date
+from dateutil.relativedelta import *
 import pprint
 import logging
 logger = logging.getLogger(__name__)
@@ -44,7 +45,7 @@ COMMENTS = [
     "The pharmaceutical that is prescribed",
     "The number of units of the pharmaceutical",
     "The issuance date of the prescription",
-    "The time of validity from issuance date",
+    "The expiration date of the recipe",
     "The unique id of the prescription to be referred to on the blockchain token",
     "The address of the smart contract in which the doctor creates the prescription token",
     "The private key that allows to spend the token (once only)"
@@ -265,9 +266,6 @@ def issue_cred_view(request):
                 context['rev_reg'] = True
             else:
                 if form.is_valid():
-                    # Saving the data in the database
-                    form.save()
-                    form = CredentialForm()
                     # Sending the data to the patient
                     schema = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']
                     schema_name = schema['name']
@@ -312,14 +310,20 @@ def issue_cred_view(request):
                         {
                             "name": "issued",
                             "value": f"{datetime.now()}"
-                        },
-                        {
-                            "name": "expiration",
-                            "value": request.POST.get('expiration')
+                        # },
+                        # {
+                        #     "name": "expiration",
+                        #     "value": request.POST.get('expiration')
                         }
                     ]
 
-                    #TODO: Define expiration in unixtime 
+                    expiration = int(request.POST.get('expiration'))
+                    expiration = date.today() + relativedelta(months=+1)
+                    attributes.append(
+                    {
+                        "name": "expiration",
+                        "value": expiration.isoformat()
+                    })
 
                     prescription_id = "0x" + hashlib.sha256((json.dumps(attributes)).encode('utf-8')).hexdigest()
                     # print("ID: " + prescription_id)
@@ -369,6 +373,9 @@ def issue_cred_view(request):
                             "connection_id": connection_id,
                             "trace": False
                         }
+                        # Saving the data in the database
+                        form.save()
+                        form = CredentialForm()                        
                         # pprint.pprint(credential)
                         issue_cred = requests.post(url + '/issue-credential/send', json=credential)
                         # Updating the object in the database with the thread-id

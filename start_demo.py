@@ -37,6 +37,9 @@ os.system("python3 manage.py migrate") ##
 print("\nStarting the Server...")
 os.system("python3 manage.py runserver 0.0.0.0:8000")
 
+#print("\nStarting Dockr-Server....")
+#os.system()
+
 #print("Starting Agents...")
 #os.system("gnome-terminal --geometry=52x54+960+0 --title=Doctor-Agent -- bash agent_doctor.sh") 
 #os.system("gnome-terminal --geometry=52x54+1440+0 --title=Pharmacy-Agent -- bash agent_pharmacy.sh")

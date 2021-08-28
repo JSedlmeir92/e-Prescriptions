@@ -30,7 +30,7 @@ ATTRIBUTES = [
                 "pharmaceutical",
                 "number",
                 "issued",
-                "expiration",
+                "expiration_date",
                 "prescription_id",
                 "contract_address",
                 "spending_key"
@@ -310,19 +310,16 @@ def issue_cred_view(request):
                         {
                             "name": "issued",
                             "value": f"{datetime.now()}"
-                        # },
-                        # {
-                        #     "name": "expiration",
-                        #     "value": request.POST.get('expiration')
                         }
                     ]
 
                     expiration = int(request.POST.get('expiration'))
-                    expiration = date.today() + relativedelta(months=+1)
+                    expiration = date.today() + relativedelta(months=+expiration)
+                    expiration = time.mktime(expiration.timetuple())
                     attributes.append(
                     {
-                        "name": "expiration",
-                        "value": expiration.isoformat()
+                        "name": "expiration_date",
+                        "value": f"{int(expiration)}"
                     })
 
                     prescription_id = "0x" + hashlib.sha256((json.dumps(attributes)).encode('utf-8')).hexdigest()

@@ -11,6 +11,9 @@ import datetime
 import os
 import json
 import base64
+from datetime import datetime, date
+from dateutil.relativedelta import *
+
 
 
 url = 'http://0.0.0.0:7080'
@@ -121,52 +124,43 @@ def login_loading_view(request):
     schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
     cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids'][0]
     # Creates the PROOF REQUEST
-    proof_request = {
-        "connection_id": connection_id,
-        "proof_request": {
-            "name": "Proof of Receipt",
-            "version": "1.0",
-            "requested_attributes": {
-                "e-prescription": {
-                    "names": [
-                        "doctor_fullname",
-                        "doctor_address",
-                        "pharmaceutical",
-                        "number",
-                        "prescription_id",
-                        "spending_key",
-                        "expiration",
-                        "contract_address"
-                    ],
-                    "non_revoked": {
-                        "from": 0,
-                        "to": round(time.time())
-                    },
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                }
-            },
-            "requested_predicates": {
-                "e-prescription": {
-                    "name": "expiration",
-                        "non_revoked": {
-                            "from": 0,
-                            "to": round(time.time())
-                            },
-                    "p_type": ">=", 
-                    "p_value": round(time.time()),
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                }
-            }
-        }
-    }
+    # proof_request = {
+    #     "connection_id": connection_id,
+    #     "proof_request": {
+    #                     "name": "Proof of Receipt",
+    #     "version": "1.0",
+    #     "requested_attributes": {
+    #         "e-prescription": {
+    #             "names": [
+    #                 "doctor_fullname",
+    #                 "doctor_address",
+    #                 "pharmaceutical",
+    #                 "number",
+    #                 "prescription_id",
+    #                 "spending_key",
+    #                 "contract_address"
+    #             ],
+    #             "restrictions": [
+    #                 {
+    #                     "cred_def_id": cred_def_id
+    #                 }
+    #             ]
+    #         }
+    #     },
+    #     "requested_predicates": {
+    #         "e-prescription": {
+    #             "name": "expiration_date",
+    #             "p_type": ">=", 
+    #             "p_value": 11
+    #         }
+    #     },
+    #     "non_revoked": {
+    #         "from": 0,
+    #         "to": round(time.time())
+    #         },
+    #     }
+    # }
+    print("TODO: Check line 127. Wird der Code überhaupt verwendet?")
     requests.post(url2 + '/present-proof/send-request', json=proof_request)
     context = {
         'title': 'Waiting for Proof Presentation',
@@ -239,7 +233,7 @@ def logged_in_view(request):
             'title': 'Prescription spent',
             'pharmaceutical': pharmaceutical,
             'number': number,
-            'date': datetime.date.today().strftime('%d - %b - %Y')
+            'date': date.today()
         }
         return render(request, 'pharmacy/logged_in.html', context)
     else:
@@ -264,6 +258,10 @@ def webhook_connection_view(request):
         schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
         cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()[
             'credential_definition_ids'][0]
+
+        # Gets the unixstamp from the next day
+        expiration = date.today() + relativedelta(days=+1, hour=0, minute=0)
+        expiration = int(time.mktime(expiration.timetuple()))
         # Creates the PROOF REQUEST
         proof_request = {
             "connection_id": connection_id,
@@ -289,25 +287,21 @@ def webhook_connection_view(request):
                 }
             },
             "requested_predicates": {
-                # "e-prescription": {
-                #     "name": "expiration",
-                #         "non_revoked": {
-                #             "from": 0,
-                #             "to": round(time.time())
-                #             },
-                #     "p_type": ">=", 
-                #     "p_value": round(time.time()),
-                #     "restrictions": [
-                #         {
-                #             "cred_def_id": cred_def_id
-                #         }
-                #     ]
-                # }
+                "e-prescription": {
+                    "name": "expiration_date",
+                    "p_type": ">=", 
+                    "p_value": expiration,
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                }
             },
             "non_revoked": {
                 "from": 0,
                 "to": round(time.time())
-            },
+                },
             }
         }
         print(proof_records)

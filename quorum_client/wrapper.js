@@ -75,7 +75,7 @@ class ePrescription {
 	web3.eth.accounts.wallet.add(this.prescriptionPrivateKey.toString());
         let returnValue = await this.instance.methods.spend("Receipt1").send({
             from: patientAccount.address.toString(),
-            gas: 300000
+            gas: 300000000
         }).catch(err => {return Promise.reject(err)});
         console.log(returnValue);
         return Promise.resolve(1);

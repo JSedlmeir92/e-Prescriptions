@@ -33,15 +33,14 @@ const account = config.account
 
 const artifact = require("./build/contracts/PrescriptionContract.json");
 
-const instance = new web3.eth.Contract(artifact.abi, artifact.networks['10'].address);
+const instance = new web3.eth.Contract(artifact.abi, artifact.networks['10'].address, {from: '0xed9d02e382b34818e88B88a309c7fe71E65f419d'});
 
 async function spendPrescription(secret, id) {
     let patientAccount = await web3.eth.accounts.privateKeyToAccount(secret);
-    //console.log(patientAccount);
 
-    //let adminAccount = await web3.eth.getAccounts().catch(err => {
-    //    console.log(err);
-    //});
+//    let adminAccount = await web3.eth.getAccounts().catch(err => {
+//       console.log(err);
+//    });
     //console.log("Admin account: " + adminAccount);
 
     web3.eth.accounts.wallet.add(secret.toString());
@@ -54,7 +53,7 @@ async function spendPrescription(secret, id) {
         return;
         //return Promise.reject(err);
     });
-//    console.log(returnValue);
+    console.log(returnValue);
     try {
         console.log(returnValue.status);
     } catch (err) {

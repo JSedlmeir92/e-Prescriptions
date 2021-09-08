@@ -11,6 +11,9 @@ import datetime
 import os
 import json
 import base64
+from datetime import datetime, date
+from dateutil.relativedelta import *
+
 
 
 url = 'http://0.0.0.0:7080'
@@ -35,6 +38,7 @@ def login_view(request):
             context['available_cred_def'] = 'There is no suitable credential definition available. Please go back and publish a new one first.'
         else:
             # If an INVITATION is created for a new user, a new session is created and all proof presentations are removed.
+            ##"submit_new_inivation" is not implemented in the current version @TODO
             if request.method == 'POST' and 'submit_new_invitation' in request.POST:
                 request.session.flush()
                 request.session.save()
@@ -77,19 +81,19 @@ def login_view(request):
             # Creates a new INVITATION, if none exists
             if len(invitations) == 0:
                 invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
-                FileHandler = open("connection_pharmacy", "w")
+                FileHandler = open("pharmacy/connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
                 FileHandler.close()
-            elif os.stat("connection_pharmacy").st_size == 0:
+            elif os.stat("pharmacy/connection_pharmacy").st_size == 0:
                 connection_id = invitations[0]["connection_id"]
                 requests.delete(url2 + '/connections/' + connection_id)
                 invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
-                FileHandler = open("connection_pharmacy", "w")
+                FileHandler = open("pharmacy/connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
                 FileHandler.close()
             # Uses the latest created INVITATION, if it has not been used yet
             else:
-                FileHandler = open("connection_pharmacy", "r")
+                FileHandler = open("pharmacy/connection_pharmacy", "r")
                 invitation_link = FileHandler.read()
                 FileHandler.close()
 
@@ -120,36 +124,43 @@ def login_loading_view(request):
     schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
     cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids'][0]
     # Creates the PROOF REQUEST
-    proof_request = {
-        "connection_id": connection_id,
-        "proof_request": {
-            "name": "Proof of Receipt",
-            "version": "1.0",
-            "requested_attributes": {
-                "e-prescription": {
-                    "names": [
-                        "doctor_fullname",
-                        "doctor_address",
-                        "pharmaceutical",
-                        "number",
-                        "prescription_id",
-                        "spending_key",
-                        "contract_address"
-                    ],
-                    "non_revoked": {
-                        "from": 0,
-                        "to": round(time.time())
-                    },
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                }
-            },
-            "requested_predicates": {},
-        }
-    }
+    # proof_request = {
+    #     "connection_id": connection_id,
+    #     "proof_request": {
+    #                     "name": "Proof of Receipt",
+    #     "version": "1.0",
+    #     "requested_attributes": {
+    #         "e-prescription": {
+    #             "names": [
+    #                 "doctor_fullname",
+    #                 "doctor_address",
+    #                 "pharmaceutical",
+    #                 "number",
+    #                 "prescription_id",
+    #                 "spending_key",
+    #                 "contract_address"
+    #             ],
+    #             "restrictions": [
+    #                 {
+    #                     "cred_def_id": cred_def_id
+    #                 }
+    #             ]
+    #         }
+    #     },
+    #     "requested_predicates": {
+    #         "e-prescription": {
+    #             "name": "expiration_date",
+    #             "p_type": ">=", 
+    #             "p_value": 11
+    #         }
+    #     },
+    #     "non_revoked": {
+    #         "from": 0,
+    #         "to": round(time.time())
+    #         },
+    #     }
+    # }
+    print("TODO: Check line 127. Wird der Code überhaupt verwendet?")
     requests.post(url2 + '/present-proof/send-request', json=proof_request)
     context = {
         'title': 'Waiting for Proof Presentation',
@@ -167,7 +178,6 @@ def login_result_view(request):
             return redirect('pharmacy-connection')
     else:
         proof = requests.get(url2 + '/present-proof/records').json()['results'][0]
-        # print(proof)
         verified = proof['verified']
         print("verified: " + verified)
         contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
@@ -177,10 +187,9 @@ def login_result_view(request):
         spending_key = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
         print("spending_key: " + spending_key)
 
-        os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key.replace('0x', '')}")
-        FileHandler = open("quorum_client/result", "r")
-        result = FileHandler.read().replace("\n", "")
-        print("result: " + result)
+        os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
+        result = os.popen("tail -n 1 %s" % "quorum_client/result").read().replace("\n", "")
+        print("result: " + result + " " + verified)
         if (result == "true" and verified == "true"):
             context = {
                 'title': 'Spending Success',
@@ -224,7 +233,7 @@ def logged_in_view(request):
             'title': 'Prescription spent',
             'pharmaceutical': pharmaceutical,
             'number': number,
-            'date': datetime.date.today().strftime('%d - %b - %Y')
+            'date': date.today()
         }
         return render(request, 'pharmacy/logged_in.html', context)
     else:
@@ -249,6 +258,10 @@ def webhook_connection_view(request):
         schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
         cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()[
             'credential_definition_ids'][0]
+
+        # Gets the unixstamp from the next day
+        expiration = date.today() + relativedelta(days=+1, hour=0, minute=0)
+        expiration = int(time.mktime(expiration.timetuple()))
         # Creates the PROOF REQUEST
         proof_request = {
             "connection_id": connection_id,
@@ -266,10 +279,6 @@ def webhook_connection_view(request):
                         "spending_key",
                         "contract_address"
                     ],
-                    "non_revoked": {
-                        "from": 0,
-                        "to": round(time.time())
-                    },
                     "restrictions": [
                         {
                             "cred_def_id": cred_def_id
@@ -277,9 +286,25 @@ def webhook_connection_view(request):
                     ]
                 }
             },
-            "requested_predicates": {}
+            "requested_predicates": {
+                "e-prescription": {
+                    "name": "expiration_date",
+                    "p_type": ">=", 
+                    "p_value": expiration,
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                }
+            },
+            "non_revoked": {
+                "from": 0,
+                "to": round(time.time())
+                },
             }
         }
+        print(proof_records)
         requests.post(url2 + '/present-proof/send-request', json=proof_request)
     else:
         pass

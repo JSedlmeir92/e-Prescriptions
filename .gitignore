@@ -19,3 +19,10 @@ spendingKey
 .DS_Store
 quorum_client/build/contracts/PrescriptionContract.json
 quorum_client/build/contracts/Migrations.json
+quorum_client/build/contracts/PrescriptionContract.json
+quorum_client/build/contracts/Migrations.json
+quorum_client/build/contracts/Migrations.json
+quorum_client/build/contracts/PrescriptionContract.json
+indy-tails-server
+pharmacy/connection_pharmacy
+pharmacy/connection_pharmacy

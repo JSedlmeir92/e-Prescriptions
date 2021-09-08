@@ -128,6 +128,7 @@ services:
         --outbound-transport http 
         --genesis-file /var/lib/indy/my-net/pool_transactions_genesis 
         --log-level info
+        --debug-connections
         --seed 000000000000000000000000000Agent
         --wallet-type indy 
         --wallet-key StewardWallet3 

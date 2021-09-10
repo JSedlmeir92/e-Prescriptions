@@ -58,18 +58,11 @@
         <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Go Back</button><br><br>
     {% else %}
         <button class="button" style="pointer-events: none; margin-left: auto; margin-right: auto; width: 300px">Spend ePrescription</button><br>
-        <h5>Please scan the following QR-Code to show and spend your ePrescription:</h5><br>
-        <img id='barcode'
-             src={{ qr_code }}
-             alt=""
-             title="Invitation Link"
-             width="300"
-             height="300"
-             class="center"
-        /><br>
+        <h5>Please klick on the following link to show and spend your ePrescription:</h5><br>
+        <a href="{{ invitation }}/">{{ invitation }}</a>
         <h5>(Afterwards you will automatically receive a proof request on your smartphone)</h5>
     {% endif %}
     <br>
-    <button class="button" style="margin-left: auto; margin-right: auto; width: 300px"; onclick="window.location.href='{% url 'pharmacy-connectionless_url' %}'">Click here for Connectionless Proof</button><br>
+    <button class="button" style="margin-left: auto; margin-right: auto; width: 300px"; onclick="window.location.href='{% url 'doctor-revoke_cred' %}'">Continue to doctor-rev</button><br>
     <br><br><br><br>
 {% endblock %}

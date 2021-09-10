@@ -1,9 +1,13 @@
 from distutils.command.config import config
+from django.http.response import HttpResponseRedirect
 
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
+from django.http import HttpResponse 
+from django.http import HttpResponseRedirect
+from django.http import JsonResponse
+
 
 import requests
 import time
@@ -18,6 +22,7 @@ from dateutil.relativedelta import *
 
 url = 'http://0.0.0.0:7080'
 url2 = 'http://0.0.0.0:9080'
+url3 = 'http://192.168.178.49:8000/'
 
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
@@ -106,23 +111,24 @@ def login_view(request):
             invitation_link = "=".join(invitation_splitted)
             print(invitation_link)
             qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600"
+            #qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://192.168.178.49:8000/pharmacy/login_url"
             context['qr_code'] = qr_code
     return render(request, 'pharmacy/login.html', context)
 
-def login_loading_view(request):
-    # Deletes old PROOF requests & presentations
-    proof_records = requests.get(url2 + '/present-proof/records').json()['results']
-    x = len(proof_records)
-    while x > 0:
-        pres_ex_id = proof_records[x-1]['presentation_exchange_id']
-        requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
-        x -= 1
-    # Gets the CONNECTION ID (to which the proof should be sent)
-    connection_id = requests.get(url2 + '/connections').json()['results'][0]['connection_id']
-    # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
-    created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
-    schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
-    cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids'][0]
+# def login_loading_view(request):
+#     # Deletes old PROOF requests & presentations
+#     proof_records = requests.get(url2 + '/present-proof/records').json()['results']
+#     x = len(proof_records)
+#     while x > 0:
+#         pres_ex_id = proof_records[x-1]['presentation_exchange_id']
+#         requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
+#         x -= 1
+#     # Gets the CONNECTION ID (to which the proof should be sent)
+#     connection_id = requests.get(url2 + '/connections').json()['results'][0]['connection_id']
+#     # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
+#     created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
+#     schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
+#     cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids'][0]
     # Creates the PROOF REQUEST
     # proof_request = {
     #     "connection_id": connection_id,
@@ -160,12 +166,12 @@ def login_loading_view(request):
     #         },
     #     }
     # }
-    print("TODO: Check line 127. Wird der Code überhaupt verwendet?")
-    requests.post(url2 + '/present-proof/send-request', json=proof_request)
-    context = {
-        'title': 'Waiting for Proof Presentation',
-    }
-    return render(request, 'pharmacy/login-loading.html', context)
+    # print("TODO: Check line 127. Wird der Code überhaupt verwendet?")
+    # requests.post(url2 + '/present-proof/send-request', json=proof_request)
+    # context = {
+    #     'title': 'Waiting for Proof Presentation',
+    # }
+    # return render(request, 'pharmacy/login-loading.html', context)
 
 def login_result_view(request):
     x = 0
@@ -239,10 +245,100 @@ def logged_in_view(request):
     else:
         return redirect('pharmacy-connection')
 
+def login_url_view(request):
+    context = {
+        'title': 'Login',
+    }
+    invitation = requests.post('http://localhost:9080/connections/create-invitation').json()
+
+    # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
+    created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
+    schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
+    cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()[
+        'credential_definition_ids'][0]
+    print("cred_def_id " + cred_def_id)
+    # Gets the unixstamp of the next day
+    expiration = date.today() + relativedelta(days=+1, hour=0, minute=0)
+    expiration = int(time.mktime(expiration.timetuple()))
+    proof_request = {
+        "proof_request":{
+            "name": "Proof of Receipt",
+            "version": "1.0",
+            "requested_attributes": {
+                "e-prescription": {
+                "names": [
+                    "doctor_fullname",
+                    "doctor_address",
+                    "pharmaceutical",
+                    "number",
+                    "prescription_id",
+                    "spending_key",
+                    "contract_address"
+                ],
+                "restrictions": [
+                    {
+                        "cred_def_id": cred_def_id
+                    }
+                ]
+                }
+            },
+            "requested_predicates": {
+                "e-prescription": {
+                "name": "expiration_date",
+                "p_type": ">=",
+                "p_value": expiration,
+                "restrictions": [
+                    {
+                        "cred_def_id": cred_def_id
+                    }
+                ]
+                }
+            },
+            "non_revoked":{
+                "from": 0,
+                "to": round(time.time())
+            }
+        }
+    }
+    present_proof = requests.post(url2 + '/present-proof/create-request', json=proof_request).json()
+    present_proof_encodedBytes = base64.b64encode(str(present_proof["presentation_request"]).encode("utf-8"))
+    present_proof_encodedStr = str(present_proof_encodedBytes, "utf-8")
+    reciepentKeys = invitation["invitation"]["recipientKeys"]
+    verkey = requests.get(url2 + '/wallet/did').json()["results"][0]["verkey"]
+    serviceEndPoint = invitation["invitation"]["serviceEndpoint"]
+    proof_request_conless = {
+        "request_presentations~attach": [
+            {
+                "@id": "libindy-request-presentation-0",
+                "mime-type": "application/json",
+                "data": {
+                    "base64" : present_proof_encodedStr
+                }
+            }
+        ],
+        "@id" : present_proof["presentation_request_dict"]["@id"],
+        "@type": present_proof["presentation_request_dict"]["@type"],
+        "~service": {
+            "recipientKeys": reciepentKeys,
+            "serviceEndpoint": serviceEndPoint,
+            "routingKeys": []
+        }
+        }
+    invitation_string = base64.urlsafe_b64encode(str(proof_request_conless).encode("utf-8"))
+    invitation_string = str(invitation_string, "utf-8")
+    invitation_url = "id.streetcred://launch?c_i=" + str(invitation_string)
+    print(invitation_url)
+    context['invitation'] = invitation_url
+    return render(request, 'pharmacy/login_2.html', context)
+
+def login_link_view(request):
+    return HttpResponse()
+
 @require_POST
 @csrf_exempt
 def webhook_connection_view(request):
     state = json.loads(request.body)['state']
+    print(state)
     if state == 'response': #((state == 'active') or (state == 'response')):
         # Deletes old PROOF requests & presentations
         proof_records = requests.get(url2 + '/present-proof/records').json()['results']
@@ -258,8 +354,7 @@ def webhook_connection_view(request):
         schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
         cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()[
             'credential_definition_ids'][0]
-
-        # Gets the unixstamp from the next day
+        # Gets the unixstamp of the next day
         expiration = date.today() + relativedelta(days=+1, hour=0, minute=0)
         expiration = int(time.mktime(expiration.timetuple()))
         # Creates the PROOF REQUEST
@@ -313,4 +408,6 @@ def webhook_connection_view(request):
 @require_POST
 @csrf_exempt
 def webhook_proof_view(request):
+    state = json.loads(request.body)['state']
+    print("webhook! + State: " + state)
     return HttpResponse()

@@ -2,6 +2,8 @@ quorum_client/node_modules/
 .idea/
 *.pyc
 
+.env
+
 ip_address_vm
 ip_address_quorum_node
 

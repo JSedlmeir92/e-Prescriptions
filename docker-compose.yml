@@ -103,7 +103,7 @@ services:
         -e http://${ip_address}:7000/ 
         -l Doctor
     volumes:
-      - /Users/chef/MA/e-Prescriptions/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      - ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
 
   pharmacy-agent:
     container_name: pharmacy-agent
@@ -138,7 +138,7 @@ services:
         -e http://${ip_address}:9000/ 
         -l Pharmacy
     volumes:
-      - /Users/chef/MA/e-Prescriptions/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      - ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
 
   quorum-node1:
     << : *quorum-def

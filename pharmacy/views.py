@@ -249,8 +249,6 @@ def login_url_view(request):
     context = {
         'title': 'Login',
     }
-    invitation = requests.post('http://localhost:9080/connections/create-invitation').json()
-
     # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
     created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
     schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
@@ -301,18 +299,21 @@ def login_url_view(request):
         }
     }
     present_proof = requests.post(url2 + '/present-proof/create-request', json=proof_request).json()
-    present_proof_encodedBytes = base64.b64encode(str(present_proof["presentation_request"]).encode("utf-8"))
-    present_proof_encodedStr = str(present_proof_encodedBytes, "utf-8")
+    presentation_request = json.dumps(present_proof["presentation_request"])
+    presentation_request = base64.b64encode(presentation_request.encode('utf-8')).decode('ascii')
+    invitation = requests.post(url2 + '/connections/create-invitation').json()
+
     reciepentKeys = invitation["invitation"]["recipientKeys"]
     verkey = requests.get(url2 + '/wallet/did').json()["results"][0]["verkey"]
     serviceEndPoint = invitation["invitation"]["serviceEndpoint"]
+    #routingkeys = invitation["invitation"]["routing_keys"]
     proof_request_conless = {
         "request_presentations~attach": [
             {
                 "@id": "libindy-request-presentation-0",
                 "mime-type": "application/json",
                 "data": {
-                    "base64" : present_proof_encodedStr
+                    "base64" : presentation_request
                 }
             }
         ],
@@ -323,13 +324,17 @@ def login_url_view(request):
             "serviceEndpoint": serviceEndPoint,
             "routingKeys": []
         }
-        }
-    invitation_string = base64.urlsafe_b64encode(str(proof_request_conless).encode("utf-8"))
-    invitation_string = str(invitation_string, "utf-8")
-    invitation_url = "id.streetcred://launch?c_i=" + str(invitation_string)
-    print(invitation_url)
-    context['invitation'] = invitation_url
-    return render(request, 'pharmacy/login_2.html', context)
+    }
+    print(proof_request_conless)
+    invitation_string = json.dumps(proof_request_conless)
+    invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
+    invitation_url = "login_link?c_i=" + str(invitation_string)
+    invitation_url_deep = "id.streetcred://launch?c_i=" + str(invitation_string)
+    #context['invitation'] = invitation_url
+    response = HttpResponse("", status=302)
+    response['Location'] = invitation_url_deep
+    #return HttpResponseRedirect(reverse(invitation_url2))
+    return response
 
 def login_link_view(request):
     return HttpResponse()

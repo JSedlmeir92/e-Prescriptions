@@ -382,7 +382,7 @@ def issue_cred_view(request):
                         thread_id = issue_cred.json()['credential_offer_dict']['@id']
                         Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
                         context['form'] = form
-                        context['name'] = request.POST.get('doctor_fullname')
+                        context['name'] = request.POST.get('patient_fullname')
 
                 # else:
                     # print("Form invalid")

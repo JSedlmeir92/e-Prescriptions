@@ -27,6 +27,12 @@ else:
     print("Please change the IP address if necessary.\n")
 FileHandler.close()
 
+#Resetting and Starting Docker images
+os.system("docker-compose rm")
+os.system("docker-compose up -d")
+
+
+
 print("\nDeploying the ePrescription contract...") ##
 os.system("cd quorum_client && npm install && truffle migrate --reset --network node0")
 

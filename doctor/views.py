@@ -175,60 +175,7 @@ def rev_reg_view(request):
                             "credential_definition_id": cred_def_id
                         }
                         requests.post(url + '/revocation/create-registry', json=registry)
-                        # commit file to Github
-                        # todo Pfad abändern?
-                        #print(os.getcwd())
-                        #print(os.path.dirname(os.path.realpath(__file__)))
-                        #print(os.path.join(Path(__file__).resolve().parent.parent, 'start'))
-                        #os.chdir(os.path.join(Path(__file__).resolve().parent.parent))
-                        if os.path.exists(os.path.join(Path(__file__).resolve().parent.parent, 'TailsFiles')):
-                            #print('yes')
-                            os.chdir(os.path.join(Path(__file__).resolve().parent.parent, 'TailsFiles'))
-                            os.system('git pull "https://github.com/prescriptionMaster/TailsFiles.git"')
-                            #print(os.getcwd())
-                        else:
-                            #print('no')
-                            os.chdir(Path(__file__).resolve().parent.parent)
-                            os.system('git clone https://github.com/prescriptionMaster/TailsFiles')
-                            os.chdir('TailsFiles')
-                            #print(os.getcwd())
-                        rev_reg = requests.get(url + '/revocation/registries/created?state=generated').json()['rev_reg_ids'][0]
-                        link = requests.get(url + '/revocation/registry/' + rev_reg + '/tails-file').url[14:500]
-                        filename = str(time.time())[:10]
-                        urllib.request.urlretrieve('http://127.0.0.1' + link, filename)
-
-                        #os.system('mv ' + filename + ' ~/Demo/TailsFiles/')
-                        os.system('git add ' + filename)
-                        os.system('git commit -m "Upload via demo"')
-                        os.system('git push https://prescriptionMaster:ZYN586xGacRvabUIhvt9@github.com/prescriptionMaster/TailsFiles.git --all')
-                        os.chdir('../')
-                        #if os.path.exists(filename):
-                        #    os.remove(filename)
-                        #else:
-                        #    pass
-                        tails_public_uri = {
-                            "tails_public_uri": "https://github.com/prescriptionMaster/TailsFiles/raw/master/" + filename
-                        }
-                        print("Updating revocation registry tails file url")
-                        ans = requests.patch(url + '/revocation/registry/' + rev_reg, json=tails_public_uri)
-                        # https://www.w3schools.com/python/ref_requests_response.asp
-                        # print(ans)
-                        # print(ans.status_code)
-                        # print(ans.text)
-                        # print(ans.json())
-                        # print(url + '/revocation/registry/' + rev_reg + '/publish')
-                        print("Publish revocation registry")
-                        ans = requests.patch(url + '/revocation/registry/' + rev_reg + '/set-state?state=active')
-                        print(ans.status_code)
-                        print(ans.text)
-                        print(ans.json())
-                        # ans = requests.post(url + '/revocation/registry/' + rev_reg + '/publish')
-                        # print(ans)
-                        # print(ans.status_code)
-                        # print(ans.text)
-                        # print(ans.json())
                         return redirect('.')
-
                 except Exception as e:
                         print(e)
     return render(request, 'doctor/rev_reg.html', context)
@@ -394,7 +341,6 @@ def revoke_cred_view(request):
     update_credential = Credential.objects.all()
     for object in update_credential:
         credential = requests.get(url + '/issue-credential/records?thread_id=' + str(object.thread_id)).json()['results']
-        print(credential)
         if len(credential) < 1:
             Credential.objects.filter(id=object.id).delete()
         else:
@@ -419,10 +365,9 @@ def cred_detail_view(request, id):
             rev_id = credential['revocation_id']
             obj.rev_id = rev_id
     if request.method == 'POST':
-        rev_reg_id = requests.get(url + '/revocation/registries/created?state=active').json()['rev_reg_ids'][0]
+        rev_reg_id = requests.get(url + '/revocation/registries/created?state=active').json()['rev_reg_ids'][1]
         requests.post(url + '/revocation/revoke?cred_rev_id=' + obj.rev_id + '&rev_reg_id=' + rev_reg_id + '&publish=true')
-        print(url + '/revocation/revoke?cred_rev_id=' + obj.rev_id + '&rev_reg_id=' + rev_reg_id + '&publish=true')
-        #obj.revoked = True
+        obj.revoked = True
         obj.save()
         return redirect('.')
     context = {

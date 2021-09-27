@@ -351,9 +351,6 @@ def revoke_cred_view(request):
         'object_list': queryset,
         'len': len(queryset)
     }
-    # print(queryset.values('Patient doctor_fullname'))
-    # print(context)
-    # print(context['object_list'][0].doctor_fullname)
     return render(request, 'doctor/revoke_cred.html', context)
 
 def cred_detail_view(request, id):

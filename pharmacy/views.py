@@ -1,4 +1,6 @@
 from distutils.command.config import config
+from pharmacy.models import Prescription
+from doctor.models import Credential
 from django.http.response import HttpResponseRedirect
 
 from django.shortcuts import render, redirect
@@ -22,7 +24,9 @@ from dateutil.relativedelta import *
 
 url = 'http://0.0.0.0:7080'
 url2 = 'http://0.0.0.0:9080'
-url3 = 'http://192.168.178.49:8000/'
+url_agent = 'http://192.168.178.49:9000'
+
+#TODO: Retrieving IP-Adress from start_demo.py / .env
 
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
@@ -43,7 +47,6 @@ def login_view(request):
             context['available_cred_def'] = 'There is no suitable credential definition available. Please go back and publish a new one first.'
         else:
             # If an INVITATION is created for a new user, a new session is created and all proof presentations are removed.
-            ##"submit_new_inivation" is not implemented in the current version @TODO
             if request.method == 'POST' and 'submit_new_invitation' in request.POST:
                 request.session.flush()
                 request.session.save()
@@ -110,70 +113,14 @@ def login_view(request):
             invitation_splitted[1] = temp
             invitation_link = "=".join(invitation_splitted)
             print(invitation_link)
-            qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600"
-            #qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://192.168.178.49:8000/pharmacy/login_url"
+            #qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600" ##"Connection-based" inivitation
+            qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://192.168.178.49:8000/pharmacy/login_url"
             context['qr_code'] = qr_code
     return render(request, 'pharmacy/login.html', context)
 
-# def login_loading_view(request):
-#     # Deletes old PROOF requests & presentations
-#     proof_records = requests.get(url2 + '/present-proof/records').json()['results']
-#     x = len(proof_records)
-#     while x > 0:
-#         pres_ex_id = proof_records[x-1]['presentation_exchange_id']
-#         requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
-#         x -= 1
-#     # Gets the CONNECTION ID (to which the proof should be sent)
-#     connection_id = requests.get(url2 + '/connections').json()['results'][0]['connection_id']
-#     # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
-#     created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
-#     schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
-#     cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids'][0]
-    # Creates the PROOF REQUEST
-    # proof_request = {
-    #     "connection_id": connection_id,
-    #     "proof_request": {
-    #                     "name": "Proof of Receipt",
-    #     "version": "1.0",
-    #     "requested_attributes": {
-    #         "e-prescription": {
-    #             "names": [
-    #                 "doctor_fullname",
-    #                 "doctor_address",
-    #                 "pharmaceutical",
-    #                 "number",
-    #                 "prescription_id",
-    #                 "spending_key",
-    #                 "contract_address"
-    #             ],
-    #             "restrictions": [
-    #                 {
-    #                     "cred_def_id": cred_def_id
-    #                 }
-    #             ]
-    #         }
-    #     },
-    #     "requested_predicates": {
-    #         "e-prescription": {
-    #             "name": "expiration_date",
-    #             "p_type": ">=", 
-    #             "p_value": 11
-    #         }
-    #     },
-    #     "non_revoked": {
-    #         "from": 0,
-    #         "to": round(time.time())
-    #         },
-    #     }
-    # }
-    # print("TODO: Check line 127. Wird der Code überhaupt verwendet?")
-    # requests.post(url2 + '/present-proof/send-request', json=proof_request)
-    # context = {
-    #     'title': 'Waiting for Proof Presentation',
-    # }
-    # return render(request, 'pharmacy/login-loading.html', context)
 
 def login_result_view(request):
+    #TODO: Tabelle einfügen
     x = 0
     while len(requests.get(url2 + '/present-proof/records?state=verified').json()['results']) == 0:
         time.sleep(5)
@@ -306,7 +253,7 @@ def login_url_view(request):
     reciepentKeys = invitation["invitation"]["recipientKeys"]
     verkey = requests.get(url2 + '/wallet/did').json()["results"][0]["verkey"]
     serviceEndPoint = invitation["invitation"]["serviceEndpoint"]
-    #routingkeys = invitation["invitation"]["routing_keys"]
+    #routingkeys = invitation["invitation"]["routing_keys"] #TODO: Relevant?
     proof_request_conless = {
         "request_presentations~attach": [
             {
@@ -328,12 +275,10 @@ def login_url_view(request):
     print(proof_request_conless)
     invitation_string = json.dumps(proof_request_conless)
     invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
-    invitation_url = "login_link?c_i=" + str(invitation_string)
-    invitation_url_deep = "id.streetcred://launch?c_i=" + str(invitation_string)
-    #context['invitation'] = invitation_url
+    invitation_url = url_agent + "/?c_i=" + str(invitation_string)
+    context['invitation'] = invitation_url
     response = HttpResponse("", status=302)
-    response['Location'] = invitation_url_deep
-    #return HttpResponseRedirect(reverse(invitation_url2))
+    response['Location'] = invitation_url
     return response
 
 def login_link_view(request):
@@ -368,6 +313,7 @@ def webhook_connection_view(request):
             "proof_request": {
                             "name": "Proof of Receipt",
             "version": "1.0",
+            "imageUrl": "https://cdn.pixabay.com/photo/2014/04/03/11/47/pharmacy-312139_960_720.png",
             "requested_attributes": {
                 "e-prescription": {
                     "names": [
@@ -413,6 +359,24 @@ def webhook_connection_view(request):
 @require_POST
 @csrf_exempt
 def webhook_proof_view(request):
-    state = json.loads(request.body)['state']
-    print("webhook! + State: " + state)
+    proof = json.loads(request.body)
+    #proof_attributes = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']
+    #TODO: Smart Contract Integration
+    #TODO: Fixing Revocation-Check
+    if proof['state'] == 'verified': 
+        print(proof['state'])
+        spent = False
+        credential = Prescription(
+            doctor_fullname  =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_fullname']['raw'],
+            doctor_address   =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_address']['raw'],
+            pharmaceutical   =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['pharmaceutical']['raw'],
+            number           =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['number']['raw'],
+            #expiration       =  proof_attributes['doctor_fullname']['raw'], ##
+            contractAddress  =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw'],
+            prescription_id  =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw'],
+            spendingKey      =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw'],
+            revoked          =  proof['state'] == "verified",
+            spent            =  spent
+        )
+        credential.save()
     return HttpResponse()

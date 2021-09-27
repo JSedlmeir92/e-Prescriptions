@@ -67,9 +67,8 @@
              height="300"
              class="center"
         /><br>
-        <h5>(Afterwards you will automatically receive a proof request on your smartphone)</h5>
+        {% comment %} <h5>(Afterwards you will automatically receive a proof request on your smartphone)</h5> {% endcomment %}
     {% endif %}
     <br>
-    <button class="button" style="margin-left: auto; margin-right: auto; width: 300px"; onclick="window.location.href='{% url 'pharmacy-connectionless_url' %}'">Click here for Connectionless Proof</button><br>
     <br><br><br><br>
 {% endblock %}

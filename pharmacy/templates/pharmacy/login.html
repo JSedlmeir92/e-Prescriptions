@@ -47,7 +47,7 @@
 
 {% block content %}
     {% if available_schema %}
-        <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd; margin-left: auto; margin-right: auto; width: 300px">Spend ePrescription</button><br>
+        <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd; margin-left: auto; margin-right: auto; width: 500px">Spend ePrescription</button><br>
         <h3 style="color: darkred; text-align: center">You can't use the functionality yet.</h3><br>
         <h5 style="color: darkred">{{ available_schema }}</h5><br>
         <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'doctor-schema' %}';">Go Back</button><br><br>
@@ -57,7 +57,7 @@
         <h5 style="color: darkred">{{ available_cred_def }}</h5><br>
         <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Go Back</button><br><br>
     {% else %}
-        <button class="button" style="pointer-events: none; margin-left: auto; margin-right: auto; width: 300px">Spend ePrescription</button><br>
+        <button class="button" style="pointer-events: none; margin-left: auto; margin-right: auto; width: 300px">Spend ePrescription the old way</button><br>
         <h5>Please scan the following QR-Code to show and spend your ePrescription:</h5><br>
         <img id='barcode'
              src={{ qr_code }}
@@ -67,7 +67,17 @@
              height="300"
              class="center"
         /><br>
-        {% comment %} <h5>(Afterwards you will automatically receive a proof request on your smartphone)</h5> {% endcomment %}
+        {% if way == 1 %}
+            <button style="margin-left: auto; margin-right: auto; width: 300px" class="button" onclick="window.location.href='{% url 'pharmacy-connection' way=2 %}';">"Connectionbased" Proof</button>
+        {% endif %}
+
+        {% if way == 2 %}
+            <h5>(Afterwards you will automatically receive a proof request on your smartphone)</h5></br></br>
+            <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'pharmacy-connection' way=1 %}';">Connectionless Proof</button>
+
+
+        {% endif %}
+
     {% endif %}
     <br>
     <br><br><br><br>

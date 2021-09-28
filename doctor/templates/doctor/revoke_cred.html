@@ -24,7 +24,7 @@
             <td><a href="{{ instance.get_absolute_url }}">{{ instance.patient_fullname }}</a>,</td>
             <td>{{ instance.pharmaceutical }},</td>
             <td>{{ instance.number }},</td>
-            <td>issued on: {{ instance.issued }}</td>
+            <td>issued on: {{ instance.date_issued }}</td>
         </tr>
     {% endfor %}
     </table><br><br>

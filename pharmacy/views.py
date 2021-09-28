@@ -1,4 +1,4 @@
-from distutils.command.config import config
+from django.http.response import HttpResponseRedirect
 from pharmacy.models import Prescription
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -9,34 +9,33 @@ from django.views.generic import ListView
 from .tables import PrescriptionTable
 
 
-
 import requests
 import time
 import os
 import json
 import base64
-from datetime import datetime, date
+from datetime import date
 from dateutil.relativedelta import *
 
 url = 'http://0.0.0.0:7080'
 url2 = 'http://0.0.0.0:9080'
-url_agent = 'http://192.168.178.49:9000'
-#TODO: Retrieving IP-Adress from start_demo.py / .env
+
+FileHandler = open("ip_address_vm", "r")
+ip_adress_vm = FileHandler.read()
+url_agent = str(ip_adress_vm + ":9000")
 
 class PrescriptionListView(ListView):
     model = Prescription
     table_class = PrescriptionTable
     template_name = 'pharmacy/presciption.html'
-    
-
-
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
 
 @csrf_exempt #(Security Excemption): The request send via a form doesn't has to originate from my website and can come from some other domain
-def login_view(request):
+def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbased" proof
     context = {
         'title': 'Login',
+        'way': way,
     }
     # Checks if a SCHEMA and a CREDENTIAL DEFINITION are available.
     created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
@@ -48,126 +47,151 @@ def login_view(request):
         if len(cred_def) < 1:
             context['available_cred_def'] = 'There is no suitable credential definition available. Please go back and publish a new one first.'
         else:
-            # If an INVITATION is created for a new user, a new session is created and all proof presentations are removed.
-            if request.method == 'POST' and 'submit_new_invitation' in request.POST:
-                request.session.flush()
-                request.session.save()
-                proof_records = requests.get(url2 + '/present-proof/records').json()['results']
-                x = len(proof_records)
-                while x > 0:
-                    pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-                    requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
-                    x -= 1
-                return redirect('pharmacy-connection')
-            # In case the session key is None, the session is stored to get a key
-            if not request.session.session_key:
-                request.session.save()
-            # Checks if there is a CONNECTION with the current session key and a verified proof
-            session_key = request.session.session_key
-            connections = requests.get(url2 + '/connections?alias=' + session_key + '&state=active').json()['results']
-            if len(connections) > 0:
-                connection_id = connections[0]['connection_id']
-                proof = requests.get(url2 + '/present-proof/records?connection_id=' + connection_id + '&state=verified').json()['results']
-                if (len(proof) > 0):
-                    name = proof[0]['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
-                    context['name'] = name
+            if way == 1:
+                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + ip_adress_vm + "8000/pharmacy/login_url"
+            else:
+                # If an INVITATION is created for a new user, a new session is created and all proof presentations are removed.
+                if request.method == 'POST' and 'submit_new_invitation' in request.POST:
+                    request.session.flush()
+                    request.session.save()
+                    proof_records = requests.get(url2 + '/present-proof/records').json()['results']
+                    x = len(proof_records)
+                    while x > 0:
+                        pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
+                        requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
+                        x -= 1
+                    return redirect('pharmacy-connection')
+                # In case the session key is None, the session is stored to get a key
+                if not request.session.session_key:
+                    request.session.save()
+                # Checks if there is a CONNECTION with the current session key and a verified proof
+                session_key = request.session.session_key
+                connections = requests.get(url2 + '/connections?alias=' + session_key + '&state=active').json()['results']
+                if len(connections) > 0:
+                    connection_id = connections[0]['connection_id']
+                    proof = requests.get(url2 + '/present-proof/records?connection_id=' + connection_id + '&state=verified').json()['results']
+                    if (len(proof) > 0):
+                        name = proof[0]['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
+                        context['name'] = name
+                    else:
+                        pass
                 else:
-                    pass
-            else:
-                proof_records = requests.get(url2 + '/present-proof/records').json()['results']
-                x = len(proof_records)
-                while x > 0:
-                    pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-                    requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
-                    x -= 1
-                connections = requests.get(url2 + '/connections').json()['results']
-                y = len(connections)
-                while y > 0:
-                    connection_id = connections[y - 1]["connection_id"]
+                    proof_records = requests.get(url2 + '/present-proof/records').json()['results']
+                    x = len(proof_records)
+                    while x > 0:
+                        pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
+                        requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
+                        x -= 1
+                    connections = requests.get(url2 + '/connections').json()['results']
+                    y = len(connections)
+                    while y > 0:
+                        connection_id = connections[y - 1]["connection_id"]
+                        requests.delete(url2 + '/connections/' + connection_id)
+                        y -= 1
+                # Checks if it is necessary to create a new INVITATION QR Code and creates one if necessary
+                invitations = requests.get(url2 + '/connections?alias=' + session_key + '&state=invitation').json()['results']
+                # Creates a new INVITATION, if none exists
+                if len(invitations) == 0:
+                    invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
+                    FileHandler = open("pharmacy/connection_pharmacy", "w")
+                    FileHandler.write(invitation_link)
+                    FileHandler.close()
+                elif os.stat("pharmacy/connection_pharmacy").st_size == 0:
+                    connection_id = invitations[0]["connection_id"]
                     requests.delete(url2 + '/connections/' + connection_id)
-                    y -= 1
-            # Checks if it is necessary to create a new INVITATION QR Code and creates one if necessary
-            invitations = requests.get(url2 + '/connections?alias=' + session_key + '&state=invitation').json()['results']
-            # Creates a new INVITATION, if none exists
-            if len(invitations) == 0:
-                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
-                FileHandler = open("pharmacy/connection_pharmacy", "w")
-                FileHandler.write(invitation_link)
-                FileHandler.close()
-            elif os.stat("pharmacy/connection_pharmacy").st_size == 0:
-                connection_id = invitations[0]["connection_id"]
-                requests.delete(url2 + '/connections/' + connection_id)
-                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
-                FileHandler = open("pharmacy/connection_pharmacy", "w")
-                FileHandler.write(invitation_link)
-                FileHandler.close()
-            # Uses the latest created INVITATION, if it has not been used yet
-            else:
-                FileHandler = open("pharmacy/connection_pharmacy", "r")
-                invitation_link = FileHandler.read()
-                FileHandler.close()
+                    invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
+                    FileHandler = open("pharmacy/connection_pharmacy", "w")
+                    FileHandler.write(invitation_link)
+                    FileHandler.close()
+                # Uses the latest created INVITATION, if it has not been used yet
+                else:
+                    FileHandler = open("pharmacy/connection_pharmacy", "r")
+                    invitation_link = FileHandler.read()
+                    FileHandler.close()
 
-            invitation_splitted = invitation_link.split("=", 1)
-            temp = json.loads(base64.b64decode(invitation_splitted[1]))
-            # Icon for the wallet app
-            temp.update({"imageUrl": "https://cdn.pixabay.com/photo/2014/04/03/11/47/pharmacy-312139_960_720.png"})
-            temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
-            invitation_splitted[1] = temp
-            invitation_link = "=".join(invitation_splitted)
-            print(invitation_link)
-            #qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600" ##"Connection-based" inivitation
-            qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://192.168.178.49:8000/pharmacy/login_url"
+                invitation_splitted = invitation_link.split("=", 1)
+                temp = json.loads(base64.b64decode(invitation_splitted[1]))
+                # Icon for the wallet app
+                temp.update({"imageUrl": "https://cdn.pixabay.com/photo/2014/04/03/11/47/pharmacy-312139_960_720.png"})
+                temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
+                invitation_splitted[1] = temp
+                invitation_link = "=".join(invitation_splitted)
+                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600" ##"Connection-based" inivitation
             context['qr_code'] = qr_code
     return render(request, 'pharmacy/login.html', context)
 
+def login_connectionless_view(request):
+    context = {
+        'title': 'Login',
+    } 
+    qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://192.168.178.49:8000/pharmacy/login_url"
+    context['qr_code'] = qr_code
+    return render(request, 'pharmacy/login_connectionless.html', context)
 
-def login_result_view(request):
-    x = 0
-    while len(requests.get(url2 + '/present-proof/records?state=verified').json()['results']) == 0:
-        time.sleep(5)
-        print("waiting...")
-        # redirect to the login page after 2 minutes of not receiving a proof presentation
-        x += 1
-        if x > 23:
-            return redirect('pharmacy-connection')
-    else:
-        proof = requests.get(url2 + '/present-proof/records').json()['results'][0]
-        verified = proof['verified']
-        print("verified: " + verified)
-        contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
-        print("contract_address: " + contract_address)
-        prescription_id = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
-        print("prescription_id: " + prescription_id)
-        spending_key = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
-        print("spending_key: " + spending_key)
-
-        os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
-        result = os.popen("tail -n 1 %s" % "quorum_client/result").read().replace("\n", "")
-        print("result: " + result + " " + verified)
-        if (result == "true" and verified == "true"):
-            context = {
-                'title': 'Spending Success',
-                'verified': "true"
-            }
-        elif (result == "false" and verified == "true"):
-            context = {
-                'title': 'ePrescription already spent',
-                'verified': 'spent'
-            }
-        elif (result == "true" and verified == "false"):
-            context = {
-                'title': 'ePrescription revoked',
-                'verified': 'revoked'
-            }
-        elif (result == "false" and verified == "false"):
-            context = {
-                'title': 'ePrescription revoked and spent',
-                'verified': 'revoked_and_spent'
-            }
+def login_result_view(request, id = 0):
+    if id != 0: #Gets the attributes from the database when id is provided
+        print(id)
+        obj = get_object_or_404(Prescription, id=id)
+        verified = obj.revoked
+        print(verified)
+        contract_address = obj.contract_address
+        prescription_id = obj.prescription_id
+        spending_key = obj.spending_key
+    else: #Old way
+        x = 0
+        while len(requests.get(url2 + '/present-proof/records?state=verified').json()['results']) == 0:
+            time.sleep(5)
+            print("waiting...")
+            # redirect to the login page after 2 minutes of not receiving a proof presentation
+            x += 1
+            if x > 23:
+                return redirect('pharmacy-connection')
         else:
-            print("Invalid result: ")
-            print(result)
-        return render(request, 'pharmacy/login-result.html', context)
+            proof = requests.get(url2 + '/present-proof/records').json()['results'][0]
+            print(proof['verified'])
+            verified = proof['verified'] == 'true'
+            print(str(verified))
+            contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
+            print("contract_address: " + contract_address)
+            prescription_id = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
+            print("prescription_id: " + prescription_id)
+            spending_key = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
+            print("spending_key: " + spending_key)
+            #gets Object.ID
+            if Prescription.objects.filter(prescription_id=prescription_id).exists() == False:
+                print("Wait for webhook...")
+                time.sleep(10)
+            id = Prescription.objects.filter(prescription_id=prescription_id).values('id')[0]['id']
+            print(id)
+
+    os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
+    result = os.popen("tail -n 1 %s" % "quorum_client/result").read().replace("\n", "") == 'true' #Converts result to boolean
+    
+    if (result == True and verified == True):
+        context = {
+            'title': 'Spending Success',
+            'verified': "true"
+        }
+    elif (result == False and verified == True):
+        context = {
+            'title': 'ePrescription already spent',
+            'verified': 'spent'
+        }
+    elif (result == True and verified == False):
+        context = {
+            'title': 'ePrescription revoked',
+            'verified': 'revoked'
+        }
+    elif (result == False and verified == False):
+        context = {
+            'title': 'ePrescription revoked and spent',
+            'verified': 'revoked_and_spent'
+        }
+    else:
+        print("Invalid result: ")
+        print(result)
+    Prescription.objects.filter(id=id).delete()
+    return render(request, 'pharmacy/login-result.html', context)
 
 
 def logged_in_view(request):
@@ -196,7 +220,6 @@ def logged_in_view(request):
 
 def login_url_view(request):
     context = {
-        'title': 'Login',
     }
     # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
     created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
@@ -253,7 +276,7 @@ def login_url_view(request):
     invitation = requests.post(url2 + '/connections/create-invitation').json()
 
     reciepentKeys = invitation["invitation"]["recipientKeys"]
-    verkey = requests.get(url2 + '/wallet/did').json()["results"][0]["verkey"]
+    #verkey = requests.get(url2 + '/wallet/did').json()["results"][0]["verkey"]
     serviceEndPoint = invitation["invitation"]["serviceEndpoint"]
     #routingkeys = invitation["invitation"]["routing_keys"] #TODO: Relevant?
     proof_request_conless = {
@@ -274,45 +297,37 @@ def login_url_view(request):
             "routingKeys": []
         }
     }
-    print(proof_request_conless)
     invitation_string = json.dumps(proof_request_conless)
     invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
-    invitation_url = url_agent + "/?c_i=" + str(invitation_string)
+    invitation_url = "http://" + url_agent + "/?c_i=" + str(invitation_string)
     context['invitation'] = invitation_url
-    response = HttpResponse("", status=302)
-    response['Location'] = invitation_url
-    return response
-
-def login_link_view(request):
-    return HttpResponse()
+    return HttpResponseRedirect(invitation_url)
 
 def prescription_table_view(request):
     table = PrescriptionTable(Prescription.objects.all())
-    print("test")
     return render(request, "pharmacy/presciption.html", {
         "table": table
     })
 
 def prescription_detail_view(request, id):
     obj = get_object_or_404(Prescription, id=id)
-    print(obj)
+    if request.method == 'POST':
+        if 'delete' in request.POST:
+            Prescription.objects.filter(id=id).delete()
+            return redirect('pharmacy-prescription-table')
     context = {
-        'title': 'Credential Detail',
+        'title': 'Prescription Detail',
         'object': obj
     }
     return render(request, 'pharmacy/prescription_detail.html', context)
 
 def prescription_delete_item_view(request, id):
-
     Prescription.objects.filter(id=id).delete()
+    return redirect('pharmacy-prescription-table')
 
-    items = Prescription.objects.all()
-
-    context = {
-    'items': items
-    }
-
-    return render(request, 'pharmacy/prescription_delete_confirmation.html', context)
+def prescription_check_item_view(request, id):
+    #TODO: Check revocation status and token's value
+    return redirect('pharmacy-prescription-table')
 
 ##Webhooks
 
@@ -345,7 +360,6 @@ def webhook_connection_view(request):
             "proof_request": {
                             "name": "Proof of Receipt",
             "version": "1.0",
-            "imageUrl": "https://cdn.pixabay.com/photo/2014/04/03/11/47/pharmacy-312139_960_720.png",
             "requested_attributes": {
                 "e-prescription": {
                     "names": [
@@ -396,26 +410,25 @@ def webhook_proof_view(request):
     #TODO: Fixing Revocation-Check
     if proof['state'] == 'verified': 
         contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
-        print(contract_address)
         prescription_id  = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
-        print(prescription_id)
         spending_key     = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
-        print(spending_key)
         os.system(f"quorum_client/checkPrescription.sh {contract_address} {prescription_id} {spending_key}")
-        spent = os.popen("tail -n 1 %s" % "quorum_client/check").read().replace("\n", "") == 'false'
-        print(spent)
-        print(proof['state'])
+        not_spent = os.popen("tail -n 1 %s" % "quorum_client/check").read().replace("\n", "") == 'true'
+        #checks wheter the credential was previously shown and deletes the entry
+        if Prescription.objects.filter(prescription_id=prescription_id).exists():
+            id = Prescription.objects.filter(prescription_id=prescription_id).values('id')[0]['id']
+            Prescription.objects.filter(id=id).delete()
         credential = Prescription(
-            doctor_fullname  =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_fullname']['raw'],
-            doctor_address   =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_address']['raw'],
-            pharmaceutical   =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['pharmaceutical']['raw'],
-            number           =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['number']['raw'],
-            #expiration       =  proof_attributes['doctor_fullname']['raw'], ##
-            contract_address  =  str(contract_address),
-            prescription_id  =  str(prescription_id),
-            spending_key      =  str(spending_key),
-            revoked          =  proof['state'] == "verified",
-            spent            =  spent
-        )
+            doctor_fullname     = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_fullname']['raw'],
+            doctor_address      = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_address']['raw'],
+            pharmaceutical      = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['pharmaceutical']['raw'],
+            number              = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['number']['raw'],
+            contract_address    = str(contract_address),
+            prescription_id     = str(prescription_id),
+            spending_key        = str(spending_key),
+            revoked             = proof['state'] == "true",
+            not_spent           = not_spent,
+            #date_issued         = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['date_issued']['raw']
+        )  
         credential.save()
     return HttpResponse()

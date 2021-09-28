@@ -32,7 +32,7 @@
     <table>
         <tr>
             <th>Patient Full Name:</th>
-            <td>{{ object.doctor_fullname }}</td>
+            <td>{{ object.patient_fullname }}</td>
         </tr>
         <tr>
             <th>Pharmaceutical:</th>
@@ -43,27 +43,42 @@
             <td>{{ object.number }}</td>
         </tr>
         <tr>
-            <th>Patient Full Name:</th>
-            <td>{{ object.patient_fullname }}</td>
+            <th>Doctor Full Name:</th>
+            <td>{{ object.doctor_fullname }}</td>
+        </tr>
+        <tr>
+            <th>Doctor Type:</th>
+            <td>{{ object.doctor_type }}</td>
+        </tr>
+        <tr>
+            <th>Doctor Address:</th>
+            <td>{{ object.doctor_address }}</td>
         </tr>
         <tr>
             <th>Revoked:</th>
             <td>{{ object.revoked }}</td>
         </tr>
         <tr>
-            <th>Issued on:</th>
-            <td>{{ object.issued }}</td>
+            <th>not_spent:</th>
+            <td>{{ object.not_spent }}</td>
         </tr>
         <tr>
-            <th>Revocation ID:</th>
-            <td>{% if object.rev_id == None %}<p>Test</p>{% else %}{{ object.rev_id }}{% endif %}</td>
+            <th>Issued on:</th>
+            <td>{{ object.date_issued }}</td>
+        </tr>
+        <tr>
+            <th>Presented at:</th>
+            <td>{{ object.date_presented }}</td>
         </tr>
     </table><br>
-    {% if object.revoked == False %}
-    <form action="." method="post">{% csrf_token %}
-        <h3>Do you want to redeem this prescription?</h3>
-        <p><input type="submit" class="button2" value="Yes"/></p>
-    </form>
+    {% if object.revoked == False and object.not_spent == False%}
+    <button class="button" onclick="window.location.href='{% url 'pharmacy-connection_result' id=object.id %}';">Redeem the ePrescription</button>
     {% endif %}
-    <button class="button" onclick="window.location.href='{% url 'doctor-revoke_cred' %}';">Go Back</button><br><br>
+    {% if object.revoked != False or object.not_spent != False%}
+    <button class="button"><strike>Reedeem the ePrescription</strike></button>
+    {% endif %}
+    <form action="" method="post">{% csrf_token %}
+        <p><input type="submit" name="delete" class="button2" value="Delete the Prescription"/></p> 
+    </form>
+    <button class="button" onclick="window.location.href='{% url 'pharmacy-prescription-table' %}';">Go Back</button><br><br>
 {% endblock %}

@@ -6,7 +6,6 @@ import hashlib
 import json
 import requests
 import time
-import urllib.request
 import os
 from pathlib import Path
 
@@ -14,7 +13,6 @@ import base64
 
 from datetime import datetime, date
 from dateutil.relativedelta import *
-import pprint
 import logging
 logger = logging.getLogger(__name__)
 
@@ -29,7 +27,7 @@ ATTRIBUTES = [
                 "patient_birthday",
                 "pharmaceutical",
                 "number",
-                "issued",
+                "date_issued",
                 "expiration_date",
                 "prescription_id",
                 "contract_address",

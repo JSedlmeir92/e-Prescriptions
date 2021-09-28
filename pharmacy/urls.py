@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from pharmacy.views import PrescriptionListView
 
 urlpatterns = [
     path('', views.home_view, name='pharmacy-home'),
@@ -9,8 +10,11 @@ urlpatterns = [
     # Pharmacy - Proof Request Recration --> auskommentiert
     # path('logging-in/', views.login_loading_view, name='pharmacy-connection_loading'),
     # Pharmarcy - Connectionless presentation-functionality
-    path('login_url', views.login_url_view, name='pharmacy-connectionless_url'),
-    path('login_link', views.login_link_view, name='pharmacy-connectionless_link'),
+    path('login_url/', views.login_url_view, name='pharmacy-connectionless_url'),
+    path('login_link/', views.login_link_view, name='pharmacy-connectionless_link'),
+    path("prescription/", views.prescription_table_view, name="pharmacy-prescription-table"),
+    path('prescription/delete_item/<int:id>', views.prescription_delete_item_view, name="prescription_delete_item_"),
+    path('prescription/detail/<int:id>/', views.prescription_detail_view, name='prescription_detail'),
 
     # Pharmacy - prescription check  
     path('login-result/', views.login_result_view, name='pharmacy-connection_result'),

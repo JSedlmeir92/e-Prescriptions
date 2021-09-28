@@ -11,7 +11,9 @@ package-lock.json
 result
 spendingKey
 .vscode/settings.json
-.gitignore
 .DS_Store
 pharmacy/connection_pharmacy
 quorum_client/build/contracts/
+quorum_client/check
+pharmacy/migrations/
+doctor/migrations/

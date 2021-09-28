@@ -1,32 +1,34 @@
 from distutils.command.config import config
 from pharmacy.models import Prescription
-from doctor.models import Credential
-from django.http.response import HttpResponseRedirect
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse 
-from django.http import HttpResponseRedirect
-from django.http import JsonResponse
+from django.views.generic import ListView
+from .tables import PrescriptionTable
+
 
 
 import requests
 import time
-import datetime
 import os
 import json
 import base64
 from datetime import datetime, date
 from dateutil.relativedelta import *
 
-
-
 url = 'http://0.0.0.0:7080'
 url2 = 'http://0.0.0.0:9080'
 url_agent = 'http://192.168.178.49:9000'
-
 #TODO: Retrieving IP-Adress from start_demo.py / .env
+
+class PrescriptionListView(ListView):
+    model = Prescription
+    table_class = PrescriptionTable
+    template_name = 'pharmacy/presciption.html'
+    
+
 
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
@@ -120,7 +122,6 @@ def login_view(request):
 
 
 def login_result_view(request):
-    #TODO: Tabelle einfügen
     x = 0
     while len(requests.get(url2 + '/present-proof/records?state=verified').json()['results']) == 0:
         time.sleep(5)
@@ -167,6 +168,7 @@ def login_result_view(request):
             print("Invalid result: ")
             print(result)
         return render(request, 'pharmacy/login-result.html', context)
+
 
 def logged_in_view(request):
     if request.method == 'POST':
@@ -284,6 +286,36 @@ def login_url_view(request):
 def login_link_view(request):
     return HttpResponse()
 
+def prescription_table_view(request):
+    table = PrescriptionTable(Prescription.objects.all())
+    print("test")
+    return render(request, "pharmacy/presciption.html", {
+        "table": table
+    })
+
+def prescription_detail_view(request, id):
+    obj = get_object_or_404(Prescription, id=id)
+    print(obj)
+    context = {
+        'title': 'Credential Detail',
+        'object': obj
+    }
+    return render(request, 'pharmacy/prescription_detail.html', context)
+
+def prescription_delete_item_view(request, id):
+
+    Prescription.objects.filter(id=id).delete()
+
+    items = Prescription.objects.all()
+
+    context = {
+    'items': items
+    }
+
+    return render(request, 'pharmacy/prescription_delete_confirmation.html', context)
+
+##Webhooks
+
 @require_POST
 @csrf_exempt
 def webhook_connection_view(request):
@@ -361,20 +393,27 @@ def webhook_connection_view(request):
 def webhook_proof_view(request):
     proof = json.loads(request.body)
     #proof_attributes = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']
-    #TODO: Smart Contract Integration
     #TODO: Fixing Revocation-Check
     if proof['state'] == 'verified': 
+        contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
+        print(contract_address)
+        prescription_id  = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
+        print(prescription_id)
+        spending_key     = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
+        print(spending_key)
+        os.system(f"quorum_client/checkPrescription.sh {contract_address} {prescription_id} {spending_key}")
+        spent = os.popen("tail -n 1 %s" % "quorum_client/check").read().replace("\n", "") == 'false'
+        print(spent)
         print(proof['state'])
-        spent = False
         credential = Prescription(
             doctor_fullname  =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_fullname']['raw'],
             doctor_address   =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_address']['raw'],
             pharmaceutical   =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['pharmaceutical']['raw'],
             number           =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['number']['raw'],
             #expiration       =  proof_attributes['doctor_fullname']['raw'], ##
-            contractAddress  =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw'],
-            prescription_id  =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw'],
-            spendingKey      =  proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw'],
+            contract_address  =  str(contract_address),
+            prescription_id  =  str(prescription_id),
+            spending_key      =  str(spending_key),
             revoked          =  proof['state'] == "verified",
             spent            =  spent
         )

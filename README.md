@@ -3,22 +3,17 @@
 git clone --recurse-submodules https://github.com/JSedlmeir92/e-Prescriptions.git
 
 ### PART 1: Prerequisites: ### 
-sudo apt-get update
-sudo apt-get -y upgrade
-
-sudo apt-get install -y docker.io
-sudo apt-get install -y docker-compose (make sure docker-compose is version 1.29.2 or higher)
-
-sudo usermod -aG docker "$USER"
-newgrp docker
-
-sudo reboot
+1. Updating system: ```sudo apt-get update && sudo apt-get -y upgrade```
+2. Installing docker and docker-compose: 
+    1. ```sudo apt-get install -y docker.io && sudo apt-get install -y docker-compose``` (make sure docker-compose is version 1.29.2 or higher)
+    2. ```sudo usermod -aG docker "$USER" && newgrp docker```
+3. Reboot: ```sudo reboot```
 
 
 ### END PART 1 ###
 
-sudo apt-get install -y python3-pip
-python3 -m pip install -y django
+1. Install python: ```sudo apt-get install -y python3-pip```
+2. Install django: ```python3 -m pip install -y django```
 
 
 # Node installation: 

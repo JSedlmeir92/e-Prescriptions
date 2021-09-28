@@ -30,7 +30,7 @@ FileHandler.close()
 os.system("rm db.sqlite3")
 
 #Resetting and Starting Docker images
-#os.system("docker-compose rm")
+os.system("docker-compose rm")
 os.system("docker-compose up -d")
 
 

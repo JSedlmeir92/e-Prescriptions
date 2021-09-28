@@ -47,75 +47,76 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
         if len(cred_def) < 1:
             context['available_cred_def'] = 'There is no suitable credential definition available. Please go back and publish a new one first.'
         else:
-            if way == 1:
-                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + ip_adress_vm + "8000/pharmacy/login_url"
+            # If an INVITATION is created for a new user, a new session is created and all proof presentations are removed.
+            if request.method == 'POST' and 'submit_new_invitation' in request.POST:
+                request.session.flush()
+                request.session.save()
+                proof_records = requests.get(url2 + '/present-proof/records').json()['results']
+                x = len(proof_records)
+                while x > 0:
+                    pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
+                    requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
+                    x -= 1
+                return redirect('pharmacy-connection')
+            # In case the session key is None, the session is stored to get a key
+            if not request.session.session_key:
+                request.session.save()
+            # Checks if there is a CONNECTION with the current session key and a verified proof
+            session_key = request.session.session_key
+            connections = requests.get(url2 + '/connections?alias=' + session_key + '&state=active').json()['results']
+            if len(connections) > 0:
+                connection_id = connections[0]['connection_id']
+                proof = requests.get(url2 + '/present-proof/records?connection_id=' + connection_id + '&state=verified').json()['results']
+                if (len(proof) > 0):
+                    name = proof[0]['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
+                    context['name'] = name
+                else:
+                    pass
             else:
-                # If an INVITATION is created for a new user, a new session is created and all proof presentations are removed.
-                if request.method == 'POST' and 'submit_new_invitation' in request.POST:
-                    request.session.flush()
-                    request.session.save()
-                    proof_records = requests.get(url2 + '/present-proof/records').json()['results']
-                    x = len(proof_records)
-                    while x > 0:
-                        pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-                        requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
-                        x -= 1
-                    return redirect('pharmacy-connection')
-                # In case the session key is None, the session is stored to get a key
-                if not request.session.session_key:
-                    request.session.save()
-                # Checks if there is a CONNECTION with the current session key and a verified proof
-                session_key = request.session.session_key
-                connections = requests.get(url2 + '/connections?alias=' + session_key + '&state=active').json()['results']
-                if len(connections) > 0:
-                    connection_id = connections[0]['connection_id']
-                    proof = requests.get(url2 + '/present-proof/records?connection_id=' + connection_id + '&state=verified').json()['results']
-                    if (len(proof) > 0):
-                        name = proof[0]['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
-                        context['name'] = name
-                    else:
-                        pass
-                else:
-                    proof_records = requests.get(url2 + '/present-proof/records').json()['results']
-                    x = len(proof_records)
-                    while x > 0:
-                        pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-                        requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
-                        x -= 1
-                    connections = requests.get(url2 + '/connections').json()['results']
-                    y = len(connections)
-                    while y > 0:
-                        connection_id = connections[y - 1]["connection_id"]
-                        requests.delete(url2 + '/connections/' + connection_id)
-                        y -= 1
-                # Checks if it is necessary to create a new INVITATION QR Code and creates one if necessary
-                invitations = requests.get(url2 + '/connections?alias=' + session_key + '&state=invitation').json()['results']
-                # Creates a new INVITATION, if none exists
-                if len(invitations) == 0:
-                    invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
-                    FileHandler = open("pharmacy/connection_pharmacy", "w")
-                    FileHandler.write(invitation_link)
-                    FileHandler.close()
-                elif os.stat("pharmacy/connection_pharmacy").st_size == 0:
-                    connection_id = invitations[0]["connection_id"]
+                proof_records = requests.get(url2 + '/present-proof/records').json()['results']
+                x = len(proof_records)
+                while x > 0:
+                    pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
+                    requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
+                    x -= 1
+                connections = requests.get(url2 + '/connections').json()['results']
+                y = len(connections)
+                while y > 0:
+                    connection_id = connections[y - 1]["connection_id"]
                     requests.delete(url2 + '/connections/' + connection_id)
-                    invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
-                    FileHandler = open("pharmacy/connection_pharmacy", "w")
-                    FileHandler.write(invitation_link)
-                    FileHandler.close()
-                # Uses the latest created INVITATION, if it has not been used yet
-                else:
-                    FileHandler = open("pharmacy/connection_pharmacy", "r")
-                    invitation_link = FileHandler.read()
-                    FileHandler.close()
+                    y -= 1
+            # Checks if it is necessary to create a new INVITATION QR Code and creates one if necessary
+            invitations = requests.get(url2 + '/connections?alias=' + session_key + '&state=invitation').json()['results']
+            # Creates a new INVITATION, if none exists
+            if len(invitations) == 0:
+                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
+                FileHandler = open("pharmacy/connection_pharmacy", "w")
+                FileHandler.write(invitation_link)
+                FileHandler.close()
+            elif os.stat("pharmacy/connection_pharmacy").st_size == 0:
+                connection_id = invitations[0]["connection_id"]
+                requests.delete(url2 + '/connections/' + connection_id)
+                invitation_link = requests.post(url2 + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
+                FileHandler = open("pharmacy/connection_pharmacy", "w")
+                FileHandler.write(invitation_link)
+                FileHandler.close()
+            # Uses the latest created INVITATION, if it has not been used yet
+            else:
+                FileHandler = open("pharmacy/connection_pharmacy", "r")
+                invitation_link = FileHandler.read()
+                FileHandler.close()
 
-                invitation_splitted = invitation_link.split("=", 1)
-                temp = json.loads(base64.b64decode(invitation_splitted[1]))
-                # Icon for the wallet app
-                temp.update({"imageUrl": "https://cdn.pixabay.com/photo/2014/04/03/11/47/pharmacy-312139_960_720.png"})
-                temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
-                invitation_splitted[1] = temp
-                invitation_link = "=".join(invitation_splitted)
+            invitation_splitted = invitation_link.split("=", 1)
+            temp = json.loads(base64.b64decode(invitation_splitted[1]))
+            # Icon for the wallet app
+            temp.update({"imageUrl": "https://cdn.pixabay.com/photo/2014/04/03/11/47/pharmacy-312139_960_720.png"})
+            temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
+            invitation_splitted[1] = temp
+            invitation_link = "=".join(invitation_splitted)
+            if way == 1:
+                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + ip_adress_vm + ":8000/pharmacy/login_url"
+                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://192.168.178.49:8000/pharmacy/login_url"
+            else:
                 qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600" ##"Connection-based" inivitation
             context['qr_code'] = qr_code
     return render(request, 'pharmacy/login.html', context)
@@ -150,7 +151,7 @@ def login_result_view(request, id = 0):
             proof = requests.get(url2 + '/present-proof/records').json()['results'][0]
             print(proof['verified'])
             verified = proof['verified'] == 'true'
-            print(str(verified))
+            print("revoked" + str(verified))
             contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
             print("contract_address: " + contract_address)
             prescription_id = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
@@ -158,10 +159,10 @@ def login_result_view(request, id = 0):
             spending_key = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
             print("spending_key: " + spending_key)
             #gets Object.ID
-            if Prescription.objects.filter(prescription_id=prescription_id).exists() == False:
-                print("Wait for webhook...")
-                time.sleep(10)
-            id = Prescription.objects.filter(prescription_id=prescription_id).values('id')[0]['id']
+            # if Prescription.objects.filter(prescription_id=prescription_id).exists() == False:
+            #     print("Wait for webhook...")
+            #     time.sleep(10)
+            #id = Prescription.objects.filter(prescription_id=prescription_id).values('id')[0]['id']
             print(id)
 
     os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
@@ -190,7 +191,7 @@ def login_result_view(request, id = 0):
     else:
         print("Invalid result: ")
         print(result)
-    Prescription.objects.filter(id=id).delete()
+    #Prescription.objects.filter(id=id).delete()
     return render(request, 'pharmacy/login-result.html', context)
 
 
@@ -426,7 +427,7 @@ def webhook_proof_view(request):
             contract_address    = str(contract_address),
             prescription_id     = str(prescription_id),
             spending_key        = str(spending_key),
-            revoked             = proof['state'] == "true",
+            revoked             = proof['verified'] == "true",
             not_spent           = not_spent,
             #date_issued         = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['date_issued']['raw']
         )  

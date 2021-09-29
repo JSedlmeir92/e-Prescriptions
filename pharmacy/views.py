@@ -22,7 +22,6 @@ url2 = 'http://0.0.0.0:9080'
 
 FileHandler = open("ip_address_vm", "r")
 ip_adress_vm = FileHandler.read()
-url_agent = str(ip_adress_vm + ":9000")
 
 class PrescriptionListView(ListView):
     model = Prescription
@@ -114,8 +113,7 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
             invitation_splitted[1] = temp
             invitation_link = "=".join(invitation_splitted)
             if way == 1:
-                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + ip_adress_vm + ":8000/pharmacy/login_url"
-                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://192.168.178.49:8000/pharmacy/login_url"
+                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://" + ip_adress_vm + ":8000/pharmacy/login_url"
             else:
                 qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600" ##"Connection-based" inivitation
             context['qr_code'] = qr_code
@@ -300,7 +298,7 @@ def login_url_view(request):
     }
     invitation_string = json.dumps(proof_request_conless)
     invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
-    invitation_url = "http://" + url_agent + "/?c_i=" + str(invitation_string)
+    invitation_url = "http://" + str(ip_adress_vm + ":9000") + "/?c_i=" + str(invitation_string)
     context['invitation'] = invitation_url
     return HttpResponseRedirect(invitation_url)
 
@@ -355,7 +353,7 @@ def webhook_connection_view(request):
         # Gets the unixstamp of the next day
         expiration = date.today() + relativedelta(days=+1, hour=0, minute=0)
         expiration = int(time.mktime(expiration.timetuple()))
-        # Creates the PROOF REQUEST
+        # Creates the PROOF REQUEST #TODO: proof-Request als Variable für beide Methoden
         proof_request = {
             "connection_id": connection_id,
             "proof_request": {
@@ -408,14 +406,13 @@ def webhook_connection_view(request):
 def webhook_proof_view(request):
     proof = json.loads(request.body)
     #proof_attributes = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']
-    #TODO: Fixing Revocation-Check
     if proof['state'] == 'verified': 
         contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
         prescription_id  = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
         spending_key     = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
         os.system(f"quorum_client/checkPrescription.sh {contract_address} {prescription_id} {spending_key}")
         not_spent = os.popen("tail -n 1 %s" % "quorum_client/check").read().replace("\n", "") == 'true'
-        #checks wheter the credential was previously shown and deletes the entry
+        #checks wheter the credential was previously shown and deletes the old entry
         if Prescription.objects.filter(prescription_id=prescription_id).exists():
             id = Prescription.objects.filter(prescription_id=prescription_id).values('id')[0]['id']
             Prescription.objects.filter(id=id).delete()
@@ -429,7 +426,7 @@ def webhook_proof_view(request):
             spending_key        = str(spending_key),
             revoked             = proof['verified'] == "true",
             not_spent           = not_spent,
-            #date_issued         = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['date_issued']['raw']
+            date_issued         = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['date_issued']['raw']
         )  
         credential.save()
     return HttpResponse()

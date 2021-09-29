@@ -242,7 +242,8 @@ def login_url_view(request):
                     "number",
                     "prescription_id",
                     "spending_key",
-                    "contract_address"
+                    "contract_address",
+                    "date_issued"
                 ],
                 "restrictions": [
                     {
@@ -368,7 +369,8 @@ def webhook_connection_view(request):
                         "number",
                         "prescription_id",
                         "spending_key",
-                        "contract_address"
+                        "contract_address",
+                        "date_issued"
                     ],
                     "restrictions": [
                         {
@@ -424,7 +426,7 @@ def webhook_proof_view(request):
             contract_address    = str(contract_address),
             prescription_id     = str(prescription_id),
             spending_key        = str(spending_key),
-            revoked             = proof['verified'] == "true",
+            valid               = proof['verified'] == "true",
             not_spent           = not_spent,
             date_issued         = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['date_issued']['raw']
         )  

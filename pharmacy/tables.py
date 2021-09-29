@@ -10,6 +10,6 @@ class PrescriptionTable(tables.Table):
     
     class Meta:
         model    = Prescription
-        fields  = ("patient_fullname", "pharmaceutical", "number", "revoked", "not_spent", 'date_presented', )
+        fields  = ("patient_fullname", "pharmaceutical", "number", "valid", "not_spent", 'date_presented', )
         template_name = "django_tables2/bootstrap4.html"
-        sequence = ("patient_fullname", "pharmaceutical", "number", 'date_presented', "revoked", "not_spent", 'more_details', 'redeem', 'delete',)
+        sequence = ("patient_fullname", "pharmaceutical", "number", 'date_presented', "valid", "not_spent", 'more_details', 'redeem', 'delete',)

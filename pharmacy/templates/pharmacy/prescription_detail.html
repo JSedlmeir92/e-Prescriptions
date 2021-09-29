@@ -55,8 +55,8 @@
             <td>{{ object.doctor_address }}</td>
         </tr>
         <tr>
-            <th>Revoked:</th>
-            <td>{{ object.revoked }}</td>
+            <th>Valid:</th>
+            <td>{{ object.valid }}</td>
         </tr>
         <tr>
             <th>not_spent:</th>
@@ -71,10 +71,10 @@
             <td>{{ object.date_presented }}</td>
         </tr>
     </table><br>
-    {% if object.revoked == False and object.not_spent == False%}
+    {% if object.valid == True and object.not_spent == True%}
     <button class="button" onclick="window.location.href='{% url 'pharmacy-connection_result' id=object.id %}';">Redeem the ePrescription</button>
     {% endif %}
-    {% if object.revoked != False or object.not_spent != False%}
+    {% if object.valid != True or object.not_spent != True%}
     <button class="button"><strike>Reedeem the ePrescription</strike></button>
     {% endif %}
     <form action="" method="post">{% csrf_token %}

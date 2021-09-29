@@ -16,7 +16,7 @@ class Prescription(models.Model):
     contract_address    = models.CharField(default='test_address', max_length=120)
     prescription_id     = models.CharField(default='test_id', max_length=120)
     spending_key        = models.CharField(default='test_spending_key', max_length=120)
-    revoked             = models.BooleanField(default=False)
+    valid               = models.BooleanField(default=False)
     not_spent           = models.BooleanField(default=False)
     date_presented      = models.DateTimeField(auto_now=False, auto_now_add=True)
     date_spent          = models.DateTimeField(auto_now=True, auto_now_add=False)

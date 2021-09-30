@@ -123,7 +123,7 @@ def login_connectionless_view(request):
     context = {
         'title': 'Login',
     } 
-    qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://192.168.178.49:8000/pharmacy/login_url"
+    qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://" + ip_adress_vm + ":8000/pharmacy/login_url"
     context['qr_code'] = qr_code
     return render(request, 'pharmacy/login_connectionless.html', context)
 

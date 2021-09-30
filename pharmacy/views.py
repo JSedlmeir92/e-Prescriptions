@@ -131,7 +131,7 @@ def login_result_view(request, id = 0):
     if id != 0: #Gets the attributes from the database when id is provided
         print(id)
         obj = get_object_or_404(Prescription, id=id)
-        verified = obj.revoked
+        verified = obj.valid
         print(verified)
         contract_address = obj.contract_address
         prescription_id = obj.prescription_id
@@ -242,8 +242,7 @@ def login_url_view(request):
                     "number",
                     "prescription_id",
                     "spending_key",
-                    "contract_address",
-                    "date_issued"
+                    "contract_address"
                 ],
                 "restrictions": [
                     {
@@ -369,8 +368,7 @@ def webhook_connection_view(request):
                         "number",
                         "prescription_id",
                         "spending_key",
-                        "contract_address",
-                        "date_issued"
+                        "contract_address"
                     ],
                     "restrictions": [
                         {
@@ -428,7 +426,7 @@ def webhook_proof_view(request):
             spending_key        = str(spending_key),
             valid               = proof['verified'] == "true",
             not_spent           = not_spent,
-            date_issued         = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['date_issued']['raw']
+            #date_issued         = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['date_issued']['raw']
         )  
         credential.save()
     return HttpResponse()

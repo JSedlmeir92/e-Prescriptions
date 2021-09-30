@@ -70,6 +70,8 @@ services:
         --port 6543
         --log-level debug
         --storage-path /home/indy
+    volumes:
+      - /Users/chef/MA/e-Prescriptions/docker_timezone:/etc/localtime:ro
 
   doctor-agent:
     container_name: doctor-agent
@@ -128,6 +130,7 @@ services:
         --outbound-transport http 
         --genesis-file /var/lib/indy/my-net/pool_transactions_genesis 
         --log-level info
+        --debug-connections
         --seed 000000000000000000000000000Agent
         --wallet-type indy 
         --wallet-key StewardWallet3 
@@ -138,6 +141,8 @@ services:
         -l Pharmacy
     volumes:
       - /Users/chef/MA/e-Prescriptions/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      - /Users/chef/MA/e-Prescriptions/docker_timezone:/etc/localtime:ro
+
 
   quorum-node1:
     << : *quorum-def
@@ -148,6 +153,7 @@ services:
     volumes:
       - vol1:/qdata
       - ./quorum-network:/3nodes:ro
+      - /Users/chef/MA/e-Prescriptions/docker_timezone:/etc/localtime:ro
     environment:
       - PRIVATE_CONFIG=ignore
       - NODE_ID=1
@@ -163,6 +169,7 @@ services:
     volumes:
       - vol2:/qdata
       - ./quorum-network:/3nodes:ro
+      - /Users/chef/MA/e-Prescriptions/docker_timezone:/etc/localtime:ro
     environment:
       - PRIVATE_CONFIG=ignore
       - NODE_ID=2
@@ -178,6 +185,7 @@ services:
     volumes:
       - vol3:/qdata
       - ./quorum-network:/3nodes:ro
+      - /Users/chef/MA/e-Prescriptions/docker_timezone:/etc/localtime:ro
     environment:
       - PRIVATE_CONFIG=ignore
       - NODE_ID=3

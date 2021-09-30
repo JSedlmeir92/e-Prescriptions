@@ -6,14 +6,13 @@ import hashlib
 import json
 import requests
 import time
-import urllib.request
 import os
 from pathlib import Path
 
 import base64
 
-from datetime import datetime
-import pprint
+from datetime import datetime, date
+from dateutil.relativedelta import *
 import logging
 logger = logging.getLogger(__name__)
 
@@ -28,8 +27,8 @@ ATTRIBUTES = [
                 "patient_birthday",
                 "pharmaceutical",
                 "number",
-                "issued",
-                "expiration",
+                "date_issued",
+                "expiration_date",
                 "prescription_id",
                 "contract_address",
                 "spending_key"
@@ -44,7 +43,7 @@ COMMENTS = [
     "The pharmaceutical that is prescribed",
     "The number of units of the pharmaceutical",
     "The issuance date of the prescription",
-    "The time of validity from issuance date",
+    "The expiration date of the recipe",
     "The unique id of the prescription to be referred to on the blockchain token",
     "The address of the smart contract in which the doctor creates the prescription token",
     "The private key that allows to spend the token (once only)"
@@ -67,7 +66,7 @@ def connection_view(request):
         connections_invitation = requests.get(url + '/connections?initiator=self&state=invitation').json()['results']
         if len(connections_invitation) > 0:
             connection_id = requests.get(url + '/connections?initiator=self&state=invitation').json()['results'][0]["connection_id"]
-            requests.post(url + '/connections/' + connection_id + '/remove')
+            requests.delete(url + '/connections/' + connection_id)
         # Generating the new INVITATION
         alias = request.POST.get('alias')
         response = requests.post(url + '/connections/create-invitation?alias=' + alias + '&auto_accept=true').json()
@@ -163,7 +162,7 @@ def rev_reg_view(request):
             cred_def_id = created_credential_definitions_revocable[0]
             revocation_registry_id = requests.get(url + '/revocation/registries/created?cred_def_id=' + cred_def_id + '&state=active').json()['rev_reg_ids']
             if len(revocation_registry_id) > 0:
-                context['rev_reg'] = revocation_registry_id[0]
+                context['rev_reg'] = revocation_registry_id[1]
             else:
                 try:
                 # Publishes a new REVOCATION REGISTRY
@@ -174,60 +173,7 @@ def rev_reg_view(request):
                             "credential_definition_id": cred_def_id
                         }
                         requests.post(url + '/revocation/create-registry', json=registry)
-                        # commit file to Github
-                        # todo Pfad abändern?
-                        #print(os.getcwd())
-                        #print(os.path.dirname(os.path.realpath(__file__)))
-                        #print(os.path.join(Path(__file__).resolve().parent.parent, 'start'))
-                        #os.chdir(os.path.join(Path(__file__).resolve().parent.parent))
-                        if os.path.exists(os.path.join(Path(__file__).resolve().parent.parent, 'TailsFiles')):
-                            #print('yes')
-                            os.chdir(os.path.join(Path(__file__).resolve().parent.parent, 'TailsFiles'))
-                            os.system('git pull "https://github.com/prescriptionMaster/TailsFiles.git"')
-                            #print(os.getcwd())
-                        else:
-                            #print('no')
-                            os.chdir(Path(__file__).resolve().parent.parent)
-                            os.system('git clone https://github.com/prescriptionMaster/TailsFiles')
-                            os.chdir('TailsFiles')
-                            #print(os.getcwd())
-                        rev_reg = requests.get(url + '/revocation/registries/created?state=generated').json()['rev_reg_ids'][0]
-                        link = requests.get(url + '/revocation/registry/' + rev_reg + '/tails-file').url[14:500]
-                        filename = str(time.time())[:10]
-                        urllib.request.urlretrieve('http://127.0.0.1' + link, filename)
-
-                        #os.system('mv ' + filename + ' ~/Demo/TailsFiles/')
-                        os.system('git add ' + filename)
-                        os.system('git commit -m "Upload via demo"')
-                        os.system('git push https://prescriptionMaster:ZYN586xGacRvabUIhvt9@github.com/prescriptionMaster/TailsFiles.git --all')
-                        os.chdir('../')
-                        #if os.path.exists(filename):
-                        #    os.remove(filename)
-                        #else:
-                        #    pass
-                        tails_public_uri = {
-                            "tails_public_uri": "https://github.com/prescriptionMaster/TailsFiles/raw/master/" + filename
-                        }
-                        print("Updating revocation registry tails file url")
-                        ans = requests.patch(url + '/revocation/registry/' + rev_reg, json=tails_public_uri)
-                        # https://www.w3schools.com/python/ref_requests_response.asp
-                        # print(ans)
-                        # print(ans.status_code)
-                        # print(ans.text)
-                        # print(ans.json())
-                        # print(url + '/revocation/registry/' + rev_reg + '/publish')
-                        print("Publish revocation registry")
-                        ans = requests.patch(url + '/revocation/registry/' + rev_reg + '/set-state?state=active')
-                        print(ans.status_code)
-                        print(ans.text)
-                        print(ans.json())
-                        # ans = requests.post(url + '/revocation/registry/' + rev_reg + '/publish')
-                        # print(ans)
-                        # print(ans.status_code)
-                        # print(ans.text)
-                        # print(ans.json())
                         return redirect('.')
-
                 except Exception as e:
                         print(e)
     return render(request, 'doctor/rev_reg.html', context)
@@ -265,17 +211,14 @@ def issue_cred_view(request):
                 context['rev_reg'] = True
             else:
                 if form.is_valid():
-                    # Saving the data in the database <-- which database?
-                    form.save()
-                    form = CredentialForm()
-                    # Sending the data to the employee <-- which employee?
+                    # Sending the data to the patient
                     schema = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']
                     schema_name = schema['name']
                     schema_id = schema['id']
                     schema_version = schema['version']
                     schema_issuer_did = requests.get(url + '/wallet/did/public').json()['result']['did']
                     credential_definition_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids'][0]
-                    rev_reg_id = requests.get(url + '/revocation/registries/created?cred_def_id=' + credential_definition_id + '&state=active').json()['rev_reg_ids'][0]
+                    rev_reg_id = requests.get(url + '/revocation/registries/created?cred_def_id=' + credential_definition_id + '&state=active').json()['rev_reg_ids'][1]
                     issuer_did = requests.get(url + '/wallet/did/public').json()['result']['did']
                     connection_id = request.POST.get('connection_id')
 
@@ -310,14 +253,19 @@ def issue_cred_view(request):
                             "value": request.POST.get('number')
                         },
                         {
-                            "name": "issued",
+                            "name": "date_issued",
                             "value": f"{datetime.now()}"
-                        },
-                        {
-                            "name": "expiration",
-                            "value": request.POST.get('expiration')
                         }
                     ]
+
+                    expiration = int(request.POST.get('expiration'))
+                    expiration = date.today() + relativedelta(months=+expiration)
+                    expiration = time.mktime(expiration.timetuple())
+                    attributes.append(
+                    {
+                        "name": "expiration_date",
+                        "value": f"{int(expiration)}"
+                    })
 
                     prescription_id = "0x" + hashlib.sha256((json.dumps(attributes)).encode('utf-8')).hexdigest()
                     # print("ID: " + prescription_id)
@@ -350,7 +298,7 @@ def issue_cred_view(request):
                             "name": "spending_key",
                             "value": spending_key
                         })
-
+                        print(attributes)
                         credential = {
                             "schema_name": schema_name,
                             "auto_remove": True,
@@ -367,17 +315,19 @@ def issue_cred_view(request):
                             "connection_id": connection_id,
                             "trace": False
                         }
+                        # Saving the data in the database
+                        form.save()
+                        form = CredentialForm()                        
                         # pprint.pprint(credential)
                         issue_cred = requests.post(url + '/issue-credential/send', json=credential)
-                        print(revocatio)
                         # Updating the object in the database with the thread-id
                         # print(issue_cred)
                         # print(issue_cred.status_code)
                         # print(issue_cred.text)
-                        thread_id = issue_cred.json()['credential_offer_dict']['@id'] ##was passiert hier?
+                        thread_id = issue_cred.json()['credential_offer_dict']['@id']
                         Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
                         context['form'] = form
-                        context['name'] = request.POST.get('doctor_fullname')
+                        context['name'] = request.POST.get('patient_fullname')
 
                 # else:
                     # print("Form invalid")
@@ -389,7 +339,6 @@ def revoke_cred_view(request):
     update_credential = Credential.objects.all()
     for object in update_credential:
         credential = requests.get(url + '/issue-credential/records?thread_id=' + str(object.thread_id)).json()['results']
-        print(credential)
         if len(credential) < 1:
             Credential.objects.filter(id=object.id).delete()
         else:
@@ -400,9 +349,6 @@ def revoke_cred_view(request):
         'object_list': queryset,
         'len': len(queryset)
     }
-    # print(queryset.values('Patient doctor_fullname'))
-    # print(context)
-    # print(context['object_list'][0].doctor_fullname)
     return render(request, 'doctor/revoke_cred.html', context)
 
 def cred_detail_view(request, id):
@@ -414,8 +360,8 @@ def cred_detail_view(request, id):
             rev_id = credential['revocation_id']
             obj.rev_id = rev_id
     if request.method == 'POST':
-        rev_reg_id = requests.get(url + '/revocation/registries/created?state=active').json()['rev_reg_ids'][0]
-        requests.post(url + '/issue-credential/revoke?cred_rev_id=' + obj.rev_id + '&rev_reg_id=' + rev_reg_id + '&publish=true')
+        rev_reg_id = requests.get(url + '/revocation/registries/created?state=active').json()['rev_reg_ids'][1]
+        requests.post(url + '/revocation/revoke?cred_rev_id=' + obj.rev_id + '&rev_reg_id=' + rev_reg_id + '&publish=true')
         obj.revoked = True
         obj.save()
         return redirect('.')

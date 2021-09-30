@@ -4,4 +4,8 @@
 
 {% block style %}{% endblock %}
 
-{% block content %}{% endblock %}
+{% block content %}
+    {% include 'pharmacy/navbar_side.html' %}
+    {% block extracontent %}{% endblock %}
+    
+{% endblock %}

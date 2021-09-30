@@ -10,8 +10,8 @@ class CredentialForm(forms.ModelForm):
     ]
 
     expiration_choices = [
-        ('1 Month', '1 Month'),
-        ('3 Months', '3 Months')
+        ('1', '1 Month'),
+        ('3', '3 Months')
     ]
 
     pharmaceuticals_choices = [
@@ -27,7 +27,7 @@ class CredentialForm(forms.ModelForm):
     patient_birthday  = forms.CharField(initial='2000-01-01', label='Patient Birthday', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     pharmaceutical    = forms.CharField(initial='Aspirin', label='Pharmaceutical', widget=forms.Select(choices=pharmaceuticals_choices, attrs={'style': 'width:700px'}))
     number            = forms.CharField(initial='1', label='Number', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    expiration        = forms.CharField(initial='1 month', label='Expiration', widget=forms.Select(choices=expiration_choices, attrs={'style': 'width:700px'}))
+    expiration        = forms.CharField(initial='1 Month', label='Expiration', widget=forms.Select(choices=expiration_choices, attrs={'style': 'width:700px'}))
     # prescription_id  = forms.CharField(label='Id', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     # contractAddress  = forms.CharField(label='ContractAddress', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     # spendingKey      = forms.CharField(label='spendingKey', widget=forms.TextInput(attrs={'style': 'width:700px'}))

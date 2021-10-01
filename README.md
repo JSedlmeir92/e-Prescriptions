@@ -29,6 +29,14 @@ pip3 install python-dateutil django-tables2
     - starts django
     - it deletes the sqlite-database and the docker-container, only if the docker-daemon was stopped --> docker-compose stop)
 
+### Used Ports:
+Web-Apps: Port 8000
+
+Doctor-Agent: Port 7000 / API 7080
+
+Pharmacy-Agent: Port 9000 / API 9080
+
+
 # Node installation: 
 
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash

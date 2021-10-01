@@ -137,8 +137,6 @@ def cred_def_view(request):
                     "schema_id": schema_id
                 }
                 requests.post(url + '/credential-definitions', json=credential_definition)
-                time.sleep(10) ##HACK: Waiting for the creation of the Revocation-Registies
-                print("waiting...")
                 return redirect('.')
     return render(request, 'doctor/cred_def.html', context)
 

@@ -137,6 +137,8 @@ def cred_def_view(request):
                     "schema_id": schema_id
                 }
                 requests.post(url + '/credential-definitions', json=credential_definition)
+                time.sleep(10) ##HACK: Waiting for the creation of the Revocation-Registies
+                print("waiting...")
                 return redirect('.')
     return render(request, 'doctor/cred_def.html', context)
 
@@ -162,7 +164,7 @@ def rev_reg_view(request):
             cred_def_id = created_credential_definitions_revocable[0]
             revocation_registry_id = requests.get(url + '/revocation/registries/created?cred_def_id=' + cred_def_id + '&state=active').json()['rev_reg_ids']
             if len(revocation_registry_id) > 0:
-                context['rev_reg'] = revocation_registry_id[1]
+                context['rev_reg'] = revocation_registry_id[0]
             else:
                 try:
                 # Publishes a new REVOCATION REGISTRY
@@ -218,7 +220,7 @@ def issue_cred_view(request):
                     schema_version = schema['version']
                     schema_issuer_did = requests.get(url + '/wallet/did/public').json()['result']['did']
                     credential_definition_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids'][0]
-                    rev_reg_id = requests.get(url + '/revocation/registries/created?cred_def_id=' + credential_definition_id + '&state=active').json()['rev_reg_ids'][1]
+                    rev_reg_id = requests.get(url + '/revocation/registries/created?cred_def_id=' + credential_definition_id + '&state=active').json()['rev_reg_ids'][0]
                     issuer_did = requests.get(url + '/wallet/did/public').json()['result']['did']
                     connection_id = request.POST.get('connection_id')
 
@@ -326,6 +328,7 @@ def issue_cred_view(request):
                         # print(issue_cred.text)
                         thread_id = issue_cred.json()['credential_offer_dict']['@id']
                         Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
+                        Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(rev_reg_id=rev_reg_id)
                         context['form'] = form
                         context['name'] = request.POST.get('patient_fullname')
 
@@ -360,7 +363,7 @@ def cred_detail_view(request, id):
             rev_id = credential['revocation_id']
             obj.rev_id = rev_id
     if request.method == 'POST':
-        rev_reg_id = requests.get(url + '/revocation/registries/created?state=active').json()['rev_reg_ids'][1]
+        rev_reg_id = obj.rev_reg_id
         revoke= {
             "cred_rev_id" : obj.rev_id,
             "rev_reg_id" : rev_reg_id,

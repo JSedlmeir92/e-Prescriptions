@@ -361,7 +361,12 @@ def cred_detail_view(request, id):
             obj.rev_id = rev_id
     if request.method == 'POST':
         rev_reg_id = requests.get(url + '/revocation/registries/created?state=active').json()['rev_reg_ids'][1]
-        requests.post(url + '/revocation/revoke?cred_rev_id=' + obj.rev_id + '&rev_reg_id=' + rev_reg_id + '&publish=true')
+        revoke= {
+            "cred_rev_id" : obj.rev_id,
+            "rev_reg_id" : rev_reg_id,
+            "publish" : "true"
+        }
+        requests.post(url + '/revocation/revoke', json=revoke)
         obj.revoked = True
         obj.save()
         return redirect('.')

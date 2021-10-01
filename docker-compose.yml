@@ -106,6 +106,7 @@ services:
         -l Doctor
     volumes:
       - /Users/chef/MA/e-Prescriptions/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      - /Users/chef/MA/e-Prescriptions/docker_timezone:/etc/localtime:ro
 
   pharmacy-agent:
     container_name: pharmacy-agent

@@ -2,7 +2,7 @@
 
 git clone --recurse-submodules https://github.com/JSedlmeir92/e-Prescriptions.git
 
-### PART 1: Prerequisites: ### 
+### STEP 1: Prerequisites: ### 
 sudo apt-get update
 sudo apt-get -y upgrade
 
@@ -15,29 +15,36 @@ newgrp docker
 sudo reboot
 
 
-### END PART 1 ###
-
 sudo apt-get install -y python3-pip
 python3 -m pip install -y django
 pip3 install python-dateutil django-tables2
 
-### PART 2: Start the demo: ### 
+### STEP 2: Configuration
 
-- Check if port 8000 (Web-Apps) and 9000 (pharmarcy's agent) can be accessed from the outside.
-- ./start.sh
-    - Builds and runs the docker-container as a deamon 
-    - starts django
-    - it deletes the sqlite-database and the docker-container, only if the docker-daemon was stopped --> docker-compose stop)
+- Make sure that the ports in the Used Ports section are open for your docker network. 
+  The doctor agent and pharmacy agent must be available from your mobile phone with the SSI wallet app.   
+- Create an .env file in the main directory. It should look as follows:
+  + ip_address=<<IP address where the application is running and that is available from your mobile phone>>
+  + dir_name=<<path to the directory of the project, e.g., /home/user/e-Prescriptions>>
+
+### STEP 3: Start the demo: ### 
+
+In the project directory, run ./start.sh.
+    - Builds and runs the docker-container as a daemon 
+    - Starts django
+    - Deletes the sqlite-database and the docker-container, only if the docker-daemon was stopped --> docker-compose stop)
 
 ### Used Ports:
-Web-Apps: Port 8000
+- Web-Apps: Port 8000
+- Doctor-Agent: Port 7000 / API 7080
+- Pharmacy-Agent: Port 9000 / API 9080
+- Quorum-Network: 
+  + 22001 - 22003 (for node gossip)
+  + 23001 - 23003 (Node RPC for interacting with the blockchain)
+  + 50401 - 50403 (for RAFT consensus)
 
-Doctor-Agent: Port 7000 / API 7080
 
-Pharmacy-Agent: Port 9000 / API 9080
-
-
-# Node installation: 
+# Node installation (will be unnecessary as soon as the django applications will be dockerized): 
 
 wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
 . ~/.nvm/nvm.sh
@@ -51,5 +58,5 @@ echo "export PATH=$PATH:/home/$USER/.nvm/versions/node/v8.16.0/bin" >> "/home/$U
 
 npm install -g truffle@5.1.39
 
-cd /home/$USER/ssi-prescriptions/quorum_client && npm install
+cd quorum_client && npm install
 

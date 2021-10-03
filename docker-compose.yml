@@ -184,6 +184,18 @@ services:
     networks:
       quorum-simple-net:
         ipv4_address: 172.16.239.13
+
+  web:
+    image: python:3
+    working_dir: /app
+    command: ./start.sh
+    environment:
+      - IP_ADDRESS=${ip_address}
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+
 networks:
   quorum-simple-net:
     name: quorum-simple-net

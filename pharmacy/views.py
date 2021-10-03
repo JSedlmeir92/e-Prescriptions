@@ -13,8 +13,8 @@ import json
 import base64
 
 
-url = 'http://0.0.0.0:7080'
-url2 = 'http://0.0.0.0:9080'
+url = 'http://' + os.environ['IP_ADDRESS'] + ':7080'
+url2 = 'http://' + os.environ['IP_ADDRESS'] + ':9080'
 
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})

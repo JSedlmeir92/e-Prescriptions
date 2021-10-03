@@ -17,7 +17,7 @@ import pprint
 import logging
 logger = logging.getLogger(__name__)
 
-url = 'http://0.0.0.0:7080'
+url = 'http://' + os.environ['IP_ADDRESS'] + ':7080'
 support_revocation = True
 
 ATTRIBUTES = [

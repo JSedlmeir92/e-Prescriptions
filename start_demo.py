@@ -7,13 +7,22 @@ print("If you are executing this demo inside a virtual machine, make sure the fo
 
 # Getting the VM's IP ADDRESS
 FileHandler = open("ip_address_vm", "a+")
-if os.stat("ip_address_vm").st_size == 0:
+
+if os.stat("ip_address_vm").st_size != 0:
+    FileHandler = open("ip_address_vm", "r")
+    ip_address = FileHandler.read()
+    print("file", os.stat("ip_address_vm").st_size, ip_address)
+elif os.environ['IP_ADDRESS']:
+    ip_address = os.environ['IP_ADDRESS']
+    FileHandler.write(ip_address)
+    print("env", ip_address)
+else:
     ip_address = input("\nPlease enter your VM's IP address: ")
     FileHandler.write(ip_address)
-else:
-    FileHandler = open("ip_address_vm", "r")
-    print("Your VM's current IP address is set to:", FileHandler.read())
-    print("Please change the IP address if necessary.\n")
+    print("type", ip_address)
+
+print("Your VM's current IP address is set to:", ip_address)
+print("Please change the IP address if necessary.\n")
 FileHandler.close()
 
 # Getting the Quorum node's IP ADDRESS

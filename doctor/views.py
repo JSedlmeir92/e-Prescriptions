@@ -315,6 +315,7 @@ def issue_cred_view(request):
                             "connection_id": connection_id,
                             "trace": False
                         }
+                        print(credential)
                         # Saving the data in the database
                         form.save()
                         form = CredentialForm()                        
@@ -361,7 +362,8 @@ def cred_detail_view(request, id):
             rev_id = credential['revocation_id']
             obj.rev_id = rev_id
     if request.method == 'POST':
-        rev_reg_id = obj.rev_reg_id
+        rev_reg_id = credential['revoc_reg_id']
+        print(rev_reg_id)
         revoke= {
             "cred_rev_id" : obj.rev_id,
             "rev_reg_id" : rev_reg_id,

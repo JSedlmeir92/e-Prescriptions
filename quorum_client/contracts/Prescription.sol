@@ -7,9 +7,9 @@ contract PrescriptionContract {
     address admin;
     
     struct Prescription {
-        address issuer; //a public key
+        address issuer; //a public key 
         string id; //the hash or serial number of an off-chain prescription VC, referenced also in the prescription VC
-        uint value; //0 = 0 times spend
+        uint value; //1 = 1 time spendable
     }
     
     constructor() public {
@@ -29,9 +29,17 @@ contract PrescriptionContract {
         prescriptions[_to][_id] = Prescription({issuer: msg.sender, id: _id, value: 1});
         //emit Create(owner, id);
     }
+
+    function check(string memory _id) public view returns (uint) {
+        require (prescriptions[msg.sender][_id].value == 1, "Receipt already spent");
+
+        //return prescriptions[msg.sender][_id].value;
+        //TODO: Returning the value could enable new Use Cases
+    }
     
     function spend(string memory _id) public {
         require (prescriptions[msg.sender][_id].value == 1, "Receipt already spent");
+        
         prescriptions[msg.sender][_id].value--;
         //emit Spend(id);
     }

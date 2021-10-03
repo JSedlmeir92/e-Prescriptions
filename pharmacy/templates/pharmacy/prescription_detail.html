@@ -1,0 +1,84 @@
+{% extends 'pharmacy/base_pharmacy.html' %}
+
+{% block head %}{% endblock %}
+
+{% block style %}
+    <style>
+        .button2 {
+            border: none;
+            background-color: #008CBA;
+            color: white;
+            max-width: 100%;
+            width: 700px;
+            min-height: 50px;
+            font-size: 30px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+        }
+
+        .button2:hover {
+            background-color: darkred;
+            color: white;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Prescription {{ object.id }}</h1><br>
+    <table>
+        <tr>
+            <th>Patient Full Name:</th>
+            <td>{{ object.patient_fullname }}</td>
+        </tr>
+        <tr>
+            <th>Pharmaceutical:</th>
+            <td>{{ object.pharmaceutical }}</td>
+        </tr>
+        <tr>
+            <th>Number:</th>
+            <td>{{ object.number }}</td>
+        </tr>
+        <tr>
+            <th>Doctor Full Name:</th>
+            <td>{{ object.doctor_fullname }}</td>
+        </tr>
+        <tr>
+            <th>Doctor Type:</th>
+            <td>{{ object.doctor_type }}</td>
+        </tr>
+        <tr>
+            <th>Doctor Address:</th>
+            <td>{{ object.doctor_address }}</td>
+        </tr>
+        <tr>
+            <th>Valid:</th>
+            <td>{{ object.valid }}</td>
+        </tr>
+        <tr>
+            <th>not_spent:</th>
+            <td>{{ object.not_spent }}</td>
+        </tr>
+        <tr>
+            <th>Issued on:</th>
+            <td>{{ object.date_issued }}</td>
+        </tr>
+        <tr>
+            <th>Presented at:</th>
+            <td>{{ object.date_presented }}</td>
+        </tr>
+    </table><br>
+    {% if object.valid == True and object.not_spent == True%}
+    <button class="button" onclick="window.location.href='{% url 'pharmacy-connection_result' id=object.id %}';">Redeem the ePrescription</button>
+    {% endif %}
+    {% if object.valid != True or object.not_spent != True%}
+    <button class="button"><strike>Reedeem the ePrescription</strike></button>
+    {% endif %}
+    <form action="" method="post">{% csrf_token %}
+        <p><input type="submit" name="delete" class="button2" value="Delete the Prescription"/></p> 
+    </form>
+    <button class="button" onclick="window.location.href='{% url 'pharmacy-prescription-table' %}';">Go Back</button><br><br>
+{% endblock %}

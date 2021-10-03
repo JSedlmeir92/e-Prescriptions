@@ -36,8 +36,16 @@ FileHandler.close()
 #     print("Please change the IP address if necessary.\n")
 # FileHandler.close()
 
+os.system("rm db.sqlite3")
+
+#Resetting and Starting Docker images
+os.system("docker-compose rm")
+os.system("docker-compose up -d")
+
+
+
 print("\nDeploying the ePrescription contract...") ##
-# os.system("cd quorum_client && npm install && truffle migrate --reset --network node0")
+os.system("cd quorum_client && npm install && truffle migrate --reset --network node0")
 
 ##Django
 os.system("python3 manage.py makemigrations") 
@@ -45,6 +53,9 @@ os.system("python3 manage.py migrate") ##
 
 print("\nStarting the Server...")
 os.system("python3 manage.py runserver 0.0.0.0:8000")
+
+#print("\nStarting Dockr-Server....")
+#os.system()
 
 #print("Starting Agents...")
 #os.system("gnome-terminal --geometry=52x54+960+0 --title=Doctor-Agent -- bash agent_doctor.sh") 

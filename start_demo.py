@@ -26,15 +26,15 @@ print("Please change the IP address if necessary.\n")
 FileHandler.close()
 
 # Getting the Quorum node's IP ADDRESS
-FileHandler = open("ip_address_quorum_node", "a+")
-if os.stat("ip_address_quorum_node").st_size == 0:
-    ip_address = input("\nPlease enter your quorum node's IP address: ")
-    FileHandler.write(ip_address)
-else:
-    FileHandler = open("ip_address_quorum_node", "r")
-    print("Your quorum node's current IP address is set to:", FileHandler.read())
-    print("Please change the IP address if necessary.\n")
-FileHandler.close()
+# FileHandler = open("ip_address_quorum_node", "a+")
+# if os.stat("ip_address_quorum_node").st_size == 0:
+#     ip_address = input("\nPlease enter your quorum node's IP address: ")
+#     FileHandler.write(ip_address)
+# else:
+#     FileHandler = open("ip_address_quorum_node", "r")
+#     print("Your quorum node's current IP address is set to:", FileHandler.read())
+#     print("Please change the IP address if necessary.\n")
+# FileHandler.close()
 
 print("\nDeploying the ePrescription contract...") ##
 # os.system("cd quorum_client && npm install && truffle migrate --reset --network node0")

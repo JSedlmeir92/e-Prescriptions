@@ -132,7 +132,6 @@ def login_result_view(request, id = 0):
         print(id)
         obj = get_object_or_404(Prescription, id=id)
         verified = obj.valid
-        print(verified)
         contract_address = obj.contract_address
         prescription_id = obj.prescription_id
         spending_key = obj.spending_key
@@ -146,8 +145,7 @@ def login_result_view(request, id = 0):
             if x > 23:
                 return redirect('pharmacy-connection')
         else:
-            proof = requests.get(url2 + '/present-proof/records').json()['results'][0]
-            print(proof['verified'])
+            proof = requests.get(url2 + '/present-proof/records?state=verified').json()['results'][0]
             verified = proof['verified'] == 'true'
             print("revoked" + str(verified))
             contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
@@ -156,15 +154,15 @@ def login_result_view(request, id = 0):
             print("prescription_id: " + prescription_id)
             spending_key = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
             print("spending_key: " + spending_key)
-            #gets Object.ID
-            # if Prescription.objects.filter(prescription_id=prescription_id).exists() == False:
-            #     print("Wait for webhook...")
-            #     time.sleep(10)
-            #id = Prescription.objects.filter(prescription_id=prescription_id).values('id')[0]['id']
-            print(id)
+            #gets Object.ID for deleting database entry
+            if Prescription.objects.filter(prescription_id=prescription_id).exists() == False:
+                 print("Wait for webhook...")
+                 time.sleep(10)
+            id = Prescription.objects.filter(prescription_id=prescription_id).values('id')[0]['id']
 
     os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
-    result = os.popen("tail -n 1 %s" % "quorum_client/result").read().replace("\n", "") == 'true' #Converts result to boolean
+    result = os.popen("tail -n 1 %s" % "quorum_client/result").read().replace("\n", "")
+    result = result == 'true' #Converts result to boolean
     
     if (result == True and verified == True):
         context = {
@@ -189,7 +187,7 @@ def login_result_view(request, id = 0):
     else:
         print("Invalid result: ")
         print(result)
-    #Prescription.objects.filter(id=id).delete()
+    Prescription.objects.filter(id=id).delete()
     return render(request, 'pharmacy/login-result.html', context)
 
 
@@ -407,6 +405,7 @@ def webhook_proof_view(request):
     proof = json.loads(request.body)
     #proof_attributes = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']
     if proof['state'] == 'verified': 
+        print("valid: " + proof['verified'],)
         contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
         prescription_id  = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
         spending_key     = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
@@ -426,7 +425,7 @@ def webhook_proof_view(request):
             spending_key        = str(spending_key),
             valid               = proof['verified'] == "true",
             not_spent           = not_spent,
-            #date_issued         = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['date_issued']['raw']
+            date_issued         = proof['created_at']
         )  
         credential.save()
     return HttpResponse()

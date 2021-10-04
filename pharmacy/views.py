@@ -59,7 +59,7 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
                     pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
                     requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
                     x -= 1
-                return redirect('pharmacy-connection')
+                return redirect('pharmacy-connectionless')
             # In case the session key is None, the session is stored to get a key
             if not request.session.session_key:
                 request.session.save()
@@ -130,6 +130,49 @@ def login_connectionless_view(request):
     context['qr_code'] = qr_code
     return render(request, 'pharmacy/login_connectionless.html', context)
 
+def login_confirmation_view(request, id = 0):
+    if id != 0: #Gets the attributes from the database when id is provided
+        print(id)
+        obj = get_object_or_404(Prescription, id=id)
+    else: #Old way
+        x = 0
+        while len(requests.get(url2 + '/present-proof/records?state=verified').json()['results']) == 0:
+            time.sleep(5)
+            print("waiting...")
+            # redirect to the login page after 2 minutes of not receiving a proof presentation
+            x += 1
+            if x > 23:
+                return redirect('pharmacy-connection_confirmation')
+        else:
+            proof = requests.get(url2 + '/present-proof/records?state=verified').json()['results'][0]
+            verified = proof['verified'] == 'true'
+            print("revoked" + str(verified))
+            contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
+            print("contract_address: " + contract_address)
+            prescription_id = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
+            print("prescription_id: " + prescription_id)
+            spending_key = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
+            print("spending_key: " + spending_key)
+            #gets Object.ID from the database
+            if Prescription.objects.filter(prescription_id=prescription_id).exists() == False:
+                 print("Waiting for webhook...")
+                 time.sleep(10)
+            id = Prescription.objects.filter(prescription_id=prescription_id).values('id')[0]['id']
+            obj = get_object_or_404(Prescription, id=id)
+    pharmaceutical = obj.pharmaceutical
+    number = obj.number
+    patient_fullname = obj.patient_fullname
+
+    context = {
+        'title': 'ePrescription check',
+        'id': obj.id,
+        'pharmaceutical': pharmaceutical,
+        'number': number,
+        'patient_fullname' : patient_fullname,
+        }
+    return render(request, 'pharmacy/login-confirmation.html', context)
+
+
 def login_result_view(request, id = 0):
     if id != 0: #Gets the attributes from the database when id is provided
         print(id)
@@ -157,7 +200,6 @@ def login_result_view(request, id = 0):
             print("prescription_id: " + prescription_id)
             spending_key = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
             print("spending_key: " + spending_key)
-            #gets Object.ID for deleting database entry
             if Prescription.objects.filter(prescription_id=prescription_id).exists() == False:
                  print("Waiting for webhook...")
                  time.sleep(10)
@@ -197,7 +239,7 @@ def login_result_view(request, id = 0):
     return render(request, 'pharmacy/login-result.html', context)
 
 
-def logged_in_view(request):
+def logged_in_view(request): ##No longer in use
     if request.method == 'POST':
         proof_records = requests.get(url2 + '/present-proof/records').json()['results']
         x = len(proof_records)
@@ -205,7 +247,7 @@ def logged_in_view(request):
             pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
             requests.delete(url2 + '/present-proof/records/' + pres_ex_id)
             x -= 1
-        return redirect('pharmacy-connection')
+        return redirect('pharmacy-prescription-table')
     proof = requests.get(url2 + '/present-proof/records?state=verified').json()['results']
     if len(proof) > 0:
         # print(proof[0])
@@ -219,7 +261,7 @@ def logged_in_view(request):
         }
         return render(request, 'pharmacy/logged_in.html', context)
     else:
-        return redirect('pharmacy-connection')
+        return redirect('pharmacy-prescription-table')
 
 def login_url_view(request):
     context = {

@@ -18,7 +18,7 @@ def custom_row_attrs(**kwargs):
 
 class PrescriptionTable(tables.Table):
     more_information = tables.LinkColumn('pharmacy-prescription_detail', args=[A('pk')], text='More information', attrs={'a': {'class': 'btn btn-primary'}})
-    redeem = tables.LinkColumn('pharmacy-connection_result', args=[A('pk')], text='Redeem', attrs={'a': {'class': 'btn btn-success'}})
+    redeem = tables.LinkColumn('pharmacy-connection_confirmation', args=[A('pk')], text='Redeem', attrs={'a': {'class': 'btn btn-success'}})
     delete = tables.LinkColumn('pharmacy-prescription_delete_item', args=[A('pk')], text='Delete', attrs={'a': {'class': 'btn btn-danger'}})
     
     class Meta:

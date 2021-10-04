@@ -1,8 +1,17 @@
-{# tutorial/templates/tutorial/people.html #}
 {% extends 'pharmacy/base_pharmacy.html' %}
 {% load render_table from django_tables2 %}
 {% block style %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <style>
+        .redeemed{
+            opacity: 0.5;
+        }
+        .not_redeemable{
+            opacity: 0.5;
+        }
+
+    </style>
+
 {% endblock %}
 
 {% block content %}

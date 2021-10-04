@@ -98,7 +98,7 @@ cd quorum_client && npm install
     - links to login-result with the corrosponding ID
   #### login-result/<int:id>
   path('login-result/<int:id>', views.login_result_view, name='pharmacy-connection_result')
-  
+  - This function handles the redemption (validy-check + double-spending prevention) of the ePrescription
   - If no ID is provided: Redeem the ePrescription the old way 
     - Waits until a proof is presented and gets the data directly from the presented proof
     --> **not used in the current version**, because the view is always called with a parameter
@@ -142,7 +142,9 @@ cd quorum_client && npm install
   - If a presented proof already exists in the database, the parameters valid, not_spent and date_presented are updated
   - Saved parameters:
       - valid = proof['verified'] == "true", (not revoked AND expiration_date > today
-      - not spent = the token has a value > 0
+      - not spent
+        - Calls quorum_client/spendPrescription.sh 
+        - True == token's value > 0 
       - "patient_fullname",
       - "patient_birthday",
       - "doctor_fullname",

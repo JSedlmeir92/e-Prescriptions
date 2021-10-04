@@ -234,6 +234,8 @@ def login_url_view(request):
             "requested_attributes": {
                 "e-prescription": {
                 "names": [
+                    "patient_fullname",
+                    "patient_birthday",
                     "doctor_fullname",
                     "doctor_address",
                     "pharmaceutical",
@@ -360,6 +362,8 @@ def webhook_connection_view(request):
             "requested_attributes": {
                 "e-prescription": {
                     "names": [
+                        "patient_fullname",
+                        "patient_birthday",
                         "doctor_fullname",
                         "doctor_address",
                         "pharmaceutical",
@@ -416,6 +420,8 @@ def webhook_proof_view(request):
             id = Prescription.objects.filter(prescription_id=prescription_id).values('id')[0]['id']
             Prescription.objects.filter(id=id).delete()
         credential = Prescription(
+            patient_fullname    = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_fullname']['raw'],
+            patient_birthday    = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_birthday']['raw'],
             doctor_fullname     = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_fullname']['raw'],
             doctor_address      = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_address']['raw'],
             pharmaceutical      = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['pharmaceutical']['raw'],

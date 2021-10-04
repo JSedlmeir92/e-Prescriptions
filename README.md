@@ -72,8 +72,8 @@ cd quorum_client && npm install
   
   path('login/<int:way>', views.login_view, name='pharmacy-connection'),
   - checks if a SCHEMA and a CREDENTIAL DEFINITION are available.
-  - The old Way; Displays the QR-Code for the proof-invitation AND redirects **directly** to login-connectionless/
-    - uses http-equiv="refresh" content in the html-header
+  - The old Way; Displays the QR-Code for the proof-invitation AND redirects **directly** without an ID to **login-confirmation**/
+    - uses *http-equiv="refresh"* content in the html-header
   -  Parameter: 
       - way 1 = connectionless (default, when no parameter is provided)
       - way 2 = connectionbased

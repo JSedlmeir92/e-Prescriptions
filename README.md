@@ -106,8 +106,8 @@ cd quorum_client && npm install
     - Gets the data from the database
   - Calls quorum_client/spendPrescription.sh 
     - The value of the token is checked again (>1) and reduced by 1
-  - **Problem:**
-    - There is no check to see if the credentials were revoked after it was presented!
+  - **Problem: The parameter valid is not updated**
+    - There is no check to see if the credentials were revoked **after it was presented!**
   - If a prescription is sucessfully redeemed, the following attributes are updated in the database:
     - not_spent = False
     - redeemed = True (redeemed by the pharmarcy)

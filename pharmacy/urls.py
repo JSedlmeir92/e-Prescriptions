@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from pharmacy.views import PrescriptionListView
+## Check Read.Me for a more detailed overview
 
 urlpatterns = [
     path('', views.home_view, name='pharmacy-home'),
@@ -9,7 +9,7 @@ urlpatterns = [
     # And checks if a SCHEMA and a CREDENTIAL DEFINITION are available.
     path('login/', views.login_view, name='pharmacy-connection'),
     path('login/<int:way>', views.login_view, name='pharmacy-connection'),
-    ## The new way: Displays a QR-Code for the connectionless Proof 
+    ## The new way: Displays a QR-Code for the connectionless proof 
     # (QR-Code points to 'pharmacy-connectionless')
     path('login-connectionless/', views.login_connectionless_view, name='pharmacy-connectionless'),
     ## Redirects to the pharmacy-agent with the required parameters for the connectionless proof 

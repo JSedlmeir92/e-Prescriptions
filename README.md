@@ -105,9 +105,10 @@ cd quorum_client && npm install
   - If an ID is provided: Redeem the ePrescription
     - Gets the data from the database
   - Calls quorum_client/spendPrescription.sh 
-    - The value of the token is checked again (Value > 1) and reduced by 1
+    - The value of the token is checked again (value > 1) and reduced by 1
   - **Problem: The parameter valid is not updated**
-    - There is no check to see if the credentials were revoked **after it was presented!**
+    - There is no check to see if the credentials were revoked **after it was presented and saved into the database by the webhool!**
+    - This only applies if an ID is given and the values can therefore be generated in the past
   - If a prescription is sucessfully redeemed, the following attributes are updated in the database:
     - not_spent = False
     - redeemed = True (redeemed by the pharmarcy)

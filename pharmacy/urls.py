@@ -4,26 +4,32 @@ from . import views
 
 urlpatterns = [
     path('', views.home_view, name='pharmacy-home'),
-    ## The old Way; Displays the QR-Code for the proof-invitation AND redirects directly to login-connectionless
+
+    ## The old Way; Displays the QR-Code for the proof-invitation AND redirects directly to login-connectionless/
     ##way 1 = connectionless; way 2 = connectionbased
     # And checks if a SCHEMA and a CREDENTIAL DEFINITION are available.
     path('login/', views.login_view, name='pharmacy-connection'),
     path('login/<int:way>', views.login_view, name='pharmacy-connection'),
+
     ## The new way: Displays a QR-Code for the connectionless proof 
     # (QR-Code points to 'pharmacy-connectionless')
     path('login-connectionless/', views.login_connectionless_view, name='pharmacy-connectionless'),
+
     ## Redirects to the pharmacy-agent with the required parameters for the connectionless proof 
     path('login_url', views.login_url_view, name='pharmacy-connectionless_url'),
+
     ## Confirmation page _before_ e-prescription-spending
     ## If no ID is provided: waits until a proof is presented
     path('login-confirmation/', views.login_confirmation_view, name='pharmacy-connection_confirmation'),
     path('login-confirmation/<int:id>', views.login_confirmation_view, name='pharmacy-connection_confirmation'),
-    ## If no ID is provided: Redeem the ePrescription the old way 
-    # (Waits until a proof is presented and gets the data directly from the presented proof)
-    path('login-result/', views.login_result_view, name='pharmacy-connection_result'),
-    ## If an ID is provided: Redeem the ePrescription
+    
+    # Handles handles the redemption of the ePrescription
+    ##If no ID is provided: waits until a proof is presented
+    ## If an ID is provided: Redeem the ePrescription 
     # Gets the data from the database
+    path('login-result/', views.login_result_view, name='pharmacy-connection_result'),
     path('login-result/<int:id>', views.login_result_view, name='pharmacy-connection_result'),
+
     ## Presentaation of the spent ePrescription --NOT USED
     path('logged-in/', views.logged_in_view, name='pharmacy-logged_in'),
     

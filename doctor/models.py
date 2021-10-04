@@ -24,7 +24,6 @@ class Credential(models.Model):
     revoked          = models.BooleanField(default=False)
     thread_id        = models.CharField(max_length=50, blank=True, null=True)
     date_added       = models.DateTimeField(auto_now=False, auto_now_add=True)
-    rev_reg_id       = models.CharField(default='test_spending_key', max_length=120)
 
     def get_absolute_url(self):
         return reverse('doctor-cred_detail', kwargs={'id': self.id})

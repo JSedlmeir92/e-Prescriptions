@@ -101,10 +101,14 @@ cd quorum_client && npm install
   
   - If no ID is provided: Redeem the ePrescription the old way 
     - Waits until a proof is presented and gets the data directly from the presented proof
-    --> **not used in the current version**, because the view is always called with parameter
+    --> **not used in the current version**, because the view is always called with a parameter
   - If an ID is provided: Redeem the ePrescription
     - Gets the data from the database
-  - When a prescription is redeemed, the following attributes are updated in the database:
+  - Calls quorum_client/spendPrescription.sh 
+    - The value of the token is checked again (>1) and reduced by 1
+  - **Problem:**
+    - There is no check to see if the credentials were revoked after it was presented!
+  - If a prescription is sucessfully redeemed, the following attributes are updated in the database:
     - not_spent = False
     - redeemed = True (redeemed by the pharmarcy)
     - date_redeemed = now()

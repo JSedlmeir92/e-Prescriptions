@@ -2,9 +2,9 @@
 
 {% block head %}
     {% if verified == 'true' %}
-        <meta http-equiv="refresh" content="2;URL={% url 'pharmacy-logged_in' %}">
+        <meta http-equiv="refresh" content="5;URL={% url 'pharmacy-prescription-table' %}">
     {% else %}
-        <meta http-equiv="refresh" content="3;URL={% url 'pharmacy-connection' %}">
+        <meta http-equiv="refresh" content="5;URL={% url 'pharmacy-prescription-table' %}">
     {% endif %}
 {% endblock %}
 

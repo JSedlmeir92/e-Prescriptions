@@ -33,7 +33,7 @@ const account = config.account
 
 const artifact = require("./build/contracts/PrescriptionContract.json");
 
-const instance = new web3.eth.Contract(artifact.abi, artifact.networks['10'].address);
+const instance = new web3.eth.Contract(artifact.abi, args.address);
 
 async function spendPrescription(secret, id) {
     let patientAccount = await web3.eth.accounts.privateKeyToAccount(secret);

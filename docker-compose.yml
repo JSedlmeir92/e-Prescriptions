@@ -61,7 +61,7 @@ services:
     container_name: tails-server
     build:
       context: ./indy-tails-server
-      dockerfile: ./docker/Dockerfile.tails-server 
+      dockerfile: ./docker/Dockerfile.tails-server
     ports:
       - 6543:6543
     command: >
@@ -85,24 +85,24 @@ services:
     command: >
       start
         --auto-provision
-        --tails-server-base-url http://${ip_address}:6543 
-        --auto-respond-credential-proposal 
-        --auto-respond-credential-offer 
+        --tails-server-base-url http://${ip_address}:6543
+        --auto-respond-credential-proposal
+        --auto-respond-credential-offer
         --auto-respond-credential-request
-        --auto-verify-presentation 
-        --inbound-transport http 0.0.0.0 7000 
-        --inbound-transport ws 0.0.0.0 7001 
-        --outbound-transport ws 
-        --outbound-transport http 
-        --genesis-file /var/lib/indy/my-net/pool_transactions_genesis 
+        --auto-verify-presentation
+        --inbound-transport http 0.0.0.0 7000
+        --inbound-transport ws 0.0.0.0 7001
+        --outbound-transport ws
+        --outbound-transport http
+        --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
         --log-level info
         --seed 000000000000000000000000Steward3
-        --wallet-type indy 
-        --wallet-key StewardWallet3 
+        --wallet-type indy
+        --wallet-key StewardWallet3
         --wallet-name StewardWallet3
-        --admin-insecure-mode 
-        --admin 0.0.0.0 7080 
-        -e http://${ip_address}:7000/ 
+        --admin-insecure-mode
+        --admin 0.0.0.0 7080
+        -e http://${ip_address}:7000/
         -l Doctor
     volumes:
       - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
@@ -121,24 +121,24 @@ services:
       start
         --auto-provision
         --webhook http://${ip_address}:8000/pharmacy
-        --auto-respond-credential-proposal 
-        --auto-respond-credential-offer 
+        --auto-respond-credential-proposal
+        --auto-respond-credential-offer
         --auto-respond-credential-request
-        --auto-verify-presentation 
-        --inbound-transport http 0.0.0.0 9000 
-        --inbound-transport ws 0.0.0.0 9001 
-        --outbound-transport ws 
-        --outbound-transport http 
-        --genesis-file /var/lib/indy/my-net/pool_transactions_genesis 
+        --auto-verify-presentation
+        --inbound-transport http 0.0.0.0 9000
+        --inbound-transport ws 0.0.0.0 9001
+        --outbound-transport ws
+        --outbound-transport http
+        --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
         --log-level info
         --debug-connections
         --seed 000000000000000000000000000Agent
-        --wallet-type indy 
-        --wallet-key StewardWallet3 
+        --wallet-type indy
+        --wallet-key StewardWallet3
         --wallet-name StewardWallet3
-        --admin-insecure-mode 
-        --admin 0.0.0.0 9080 
-        -e http://${ip_address}:9000/ 
+        --admin-insecure-mode
+        --admin 0.0.0.0 9080
+        -e http://${ip_address}:9000/
         -l Pharmacy
     volumes:
       - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
@@ -216,4 +216,3 @@ volumes:
   "vol1":
   "vol2":
   "vol3":
-

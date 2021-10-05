@@ -9,11 +9,11 @@ ip_address = FileHandler.read()
 
 ip_address = os.getenv('IP_ADDRESS')
 
-url = 'http://' + ip_address + ':7080'
-url2 = 'http://' + ip_address + ':9080'
+url = 'http://' + '10.164.249.66' + ':7080'
+url2 = 'http://' + '10.164.249.66' + ':9080'
 
 def index(request):
-    return render(request, templates/start/start-home.html’)
+    return render(request, 'templates/start/start-home.html')
 
 def remove_connections_agent_1():
     Connection.objects.all().delete()

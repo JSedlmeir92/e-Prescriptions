@@ -21,7 +21,7 @@ ip_address = FileHandler.read()
 
 ip_address = os.getenv('IP_ADDRESS')
 
-url = 'http://' + ip_address + ':7080'
+url = 'http://' + '10.164.249.66' + ':7080'
 support_revocation = True
 
 ATTRIBUTES = [
@@ -322,7 +322,7 @@ def issue_cred_view(request):
                         }
                         # Saving the data in the database
                         form.save()
-                        form = CredentialForm()                        
+                        form = CredentialForm()
                         issue_cred = requests.post(url + '/issue-credential/send', json=credential)
                         # Updating the object in the database with the thread-id
                         # print(issue_cred)

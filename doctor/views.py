@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
+
+from cns.views import create_schema
 from .models import Credential, Connection
 from .forms import CredentialForm, ConnectionForm
 
@@ -19,9 +21,9 @@ logger = logging.getLogger(__name__)
 FileHandler = open("ip_address_vm", "a+")
 ip_address = FileHandler.read()
 
-ip_address = os.getenv('IP_ADDRESS')
+ip_address = os.getenv('ip_address')
 
-url = 'http://' + ip_address + ':7080'
+url = f'http://{ip_address}:7080'
 support_revocation = True
 
 ATTRIBUTES = [
@@ -109,14 +111,17 @@ def schema_view(request):
         pass ##null operation. Nothing happens when the satatement executes.
     # Publish a new SCHEMA
     if request.method == 'POST':
-        schema = {
+        create_schema()
+        return redirect('.')
+    return render(request, 'doctor/schema.html', context)
+
+def create_schema():
+    schema = {
             "attributes": ATTRIBUTES,
             "schema_name": "ePrescriptionSchema_" + str(time.time())[:10],
             "schema_version": "1.0"
         }
-        requests.post(url + '/schemas', json=schema)
-        return redirect('.')
-    return render(request, 'doctor/schema.html', context)
+    requests.post(url + '/schemas', json=schema)
 
 def cred_def_view(request):
     context = {
@@ -187,7 +192,7 @@ def issue_cred_view(request):
     # Updates the STATE of all CONNECTIONS that do not have the state 'active' or 'response'
     update_state = Connection.objects.all()
     for object in update_state:
-        connection = requests.get(url + '/connections/' + object.connection_id).status_code
+        connection = requests.get(f"{url}/connections/{object.connection_id}").status_code
         if connection == 200:
             state = requests.get(url + '/connections/' + object.connection_id).json()['state']
             Connection.objects.filter(id=object.id).update(state=state)

@@ -19,43 +19,35 @@ logger = logging.getLogger(__name__)
 FileHandler = open("ip_address_vm", "a+")
 ip_address = FileHandler.read()
 
-ip_address = os.getenv('IP_ADDRESS')
+ip_address = os.getenv('ip_address')
+print(f"ip address: {ip_address}")
+# os.system("pwd")
+# os.system("export $(grep -v '^#' .env | xargs)")
+print(os.environ)
 
-url = 'http://' + ip_address + ':6080'
+url = f'http://{ip_address}:6080'
+print(f"url: {url}")
+
 support_revocation = True
 
 ATTRIBUTES = [
-                "doctor_fullname",
-                "doctor_type",
-                "doctor_address",
-                "patient_fullname",
-                "patient_birthday",
-                "pharmaceutical",
-                "number",
+                "firstname",
+                "lastname",
+                "birthday",
                 "date_issued",
-                "expiration_date",
-                "prescription_id",
-                "contract_address",
-                "spending_key"
+                "expiration_date"
             ]
 
 COMMENTS = [
-    "The full name of the doctor",
-    "The exact specialty of the doctor",
-    "The address of the doctor",
-    "The full name of the patient",
-    "The birth date of the patient in the format yyyy-mm-dd",
-    "The pharmaceutical that is prescribed",
-    "The number of units of the pharmaceutical",
-    "The issuance date of the prescription",
-    "The expiration date of the recipe",
-    "The unique id of the prescription to be referred to on the blockchain token",
-    "The address of the smart contract in which the doctor creates the prescription token",
-    "The private key that allows to spend the token (once only)"
+    "The first name of the insured person",
+    "The last name of the insured person",
+    "The birthday of the insured persion in the format dd.mm.yyyy",
+    "The issuance date of the insurance credential",
+    "The expiration date of the insurance credential",
 ]
 
 def home_view(request):
-    return render(request, 'doctor/base_doctor.html', {'title': 'Doctor'})
+    return render(request, 'cns/base_cns.html', {'title': 'CNS'})
 
 def connection_view(request):
     form = ConnectionForm(request.POST or None)
@@ -63,7 +55,7 @@ def connection_view(request):
         form.save()
         form = ConnectionForm()
     context = {
-        'title': 'Establish Connection (Doctor)',
+        'title': 'Establish Connection (CNS)',
         'form': form
     }
     if request.method == 'POST':
@@ -90,7 +82,7 @@ def connection_view(request):
         # print(invitation_link)
         qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600"
         context['qr_code'] = qr_code
-    return render(request, 'doctor/connection.html', context)
+    return render(request, 'cns/connection.html', context)
 
 def schema_view(request):
     created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
@@ -106,17 +98,20 @@ def schema_view(request):
             context['attributes'].append({"attribute": ATTRIBUTES[index].ljust(30), "comment": COMMENTS[index] + "."})
         print(context)
     else:
-        pass ##null operation. Nothing happens when the satatement executes.
+        pass
     # Publish a new SCHEMA
     if request.method == 'POST':
-        schema = {
+        create_schema()
+        return redirect('.')
+    return render(request, 'cns/schema.html', context)
+
+def create_schema():
+    schema = {
             "attributes": ATTRIBUTES,
-            "schema_name": "ePrescriptionSchema_" + str(time.time())[:10],
+            "schema_name": "CNS-Schema" + str(time.time())[:10],
             "schema_version": "1.0"
         }
-        requests.post(url + '/schemas', json=schema)
-        return redirect('.')
-    return render(request, 'doctor/schema.html', context)
+    requests.post(url + '/schemas', json=schema)
 
 def cred_def_view(request):
     context = {
@@ -137,13 +132,13 @@ def cred_def_view(request):
             if request.method == 'POST':
                 schema_id = created_schema[0]
                 credential_definition = {
-                    "tag": "ePrescription",
+                    "tag": "CNS",
                     "support_revocation": support_revocation,
                     "schema_id": schema_id
                 }
                 requests.post(url + '/credential-definitions', json=credential_definition)
                 return redirect('.')
-    return render(request, 'doctor/cred_def.html', context)
+    return render(request, 'cns/cred_def.html', context)
 
 def rev_reg_view(request):
     context = {
@@ -181,7 +176,7 @@ def rev_reg_view(request):
                         return redirect('.')
                 except Exception as e:
                         print(e)
-    return render(request, 'doctor/rev_reg.html', context)
+    return render(request, 'cns/rev_reg.html', context)
 
 def issue_cred_view(request):
     # Updates the STATE of all CONNECTIONS that do not have the state 'active' or 'response'
@@ -336,7 +331,7 @@ def issue_cred_view(request):
                 # else:
                     # print("Form invalid")
                     # print(form.errors)
-    return render(request, 'doctor/issue_cred.html', context)
+    return render(request, 'cns/issue_cred.html', context)
 
 def revoke_cred_view(request):
     # Updates all issued Credentials
@@ -353,7 +348,7 @@ def revoke_cred_view(request):
         'object_list': queryset,
         'len': len(queryset)
     }
-    return render(request, 'doctor/revoke_cred.html', context)
+    return render(request, 'cns/revoke_cred.html', context)
 
 def cred_detail_view(request, id):
     obj = get_object_or_404(Credential, id=id)
@@ -377,4 +372,4 @@ def cred_detail_view(request, id):
         'title': 'Credential Detail',
         'object': obj
     }
-    return render(request, 'doctor/cred_detail.html', context)
+    return render(request, 'cns/cred_detail.html', context)

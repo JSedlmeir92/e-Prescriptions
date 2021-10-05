@@ -9,8 +9,8 @@ ip_address = FileHandler.read()
 
 ip_address = os.getenv('IP_ADDRESS')
 
-url = 'http://' + ip_address + ':7080'
-url2 = 'http://' + ip_address + ':9080'
+url = f'http://{ip_address}:7080'
+url2 = f'http://{ip_address}:9080'
 
 def remove_connections_agent_1():
     Connection.objects.all().delete()

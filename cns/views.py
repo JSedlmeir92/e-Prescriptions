@@ -35,7 +35,7 @@ ATTRIBUTES = [
                 "lastname",
                 "birthday",
                 "date_issued",
-                "expiration_date"
+                "expiration_date",
             ]
 
 COMMENTS = [
@@ -225,32 +225,20 @@ def issue_cred_view(request):
                     attributes = [
                         {
                             # "mime-type": "image/jpeg",
-                            "name": "doctor_fullname",
-                            "value": request.POST.get('doctor_fullname')
+                            "name": "firstname",
+                            "value": request.POST.get('firstname')
                         },
                         {
-                            "name": "doctor_type",
-                            "value": request.POST.get('doctor_type')
+                            "name": "lastname",
+                            "value": request.POST.get('lastname')
                         },
                         {
-                            "name": "doctor_address",
-                            "value": request.POST.get('doctor_address')
+                            "name": "birthday",
+                            "value": request.POST.get('birthday')
                         },
                         {
-                            "name": "patient_fullname",
-                            "value": request.POST.get('patient_fullname')
-                        },
-                        {
-                            "name": "patient_birthday",
-                            "value": request.POST.get('patient_birthday')
-                        },
-                        {
-                            "name": "pharmaceutical",
-                            "value": request.POST.get('pharmaceutical')
-                        },
-                        {
-                            "name": "number",
-                            "value": request.POST.get('number')
+                            "name": "expiration_date",
+                            "value": request.POST.get('expiration_date')
                         },
                         {
                             "name": "date_issued",
@@ -258,75 +246,45 @@ def issue_cred_view(request):
                         }
                     ]
 
-                    expiration = int(request.POST.get('expiration'))
-                    expiration = date.today() + relativedelta(months=+expiration)
-                    expiration = time.mktime(expiration.timetuple())
-                    attributes.append(
-                    {
-                        "name": "expiration_date",
-                        "value": f"{int(expiration)}"
-                    })
-
-                    prescription_id = "0x" + hashlib.sha256((json.dumps(attributes)).encode('utf-8')).hexdigest()
+                    cns_id = "0x" + hashlib.sha256((json.dumps(attributes)).encode('utf-8')).hexdigest()
                     # print("ID: " + prescription_id)
-                    attributes.append(
-                    {
-                        "name": "prescription_id",
-                        "value": prescription_id
-                    })
+                    # attributes.append(
+                    # {
+                    #     "name": "cns_id",
+                    #     "value": cns_id
+                    # })
 
-                    with open("quorum_client/build/contracts/PrescriptionContract.json", "r") as file:
-                        contract = json.load(file)
 
-                    contract_address = contract["networks"]['10']['address']
-                    # print("contract_address: " + contract_address)
-                    attributes.append(
-                    {
-                        "name": "contract_address",
-                        "value": contract_address
-                    })
-
-                    os.system(f"quorum_client/createPrescription.sh {prescription_id}")
-                    FileHandler = open("quorum_client/spendingKey", "r")
-                    spending_key = FileHandler.read().replace("\n", "")
-                    # print("Spending key: " + spending_key)
-                    if spending_key[0:2] != "0x":
-                        print("Is not a hex")
-                    else:
-                        attributes.append(
-                        {
-                            "name": "spending_key",
-                            "value": spending_key
-                        })
-                        print(attributes)
-                        credential = {
-                            "schema_name": schema_name,
-                            "auto_remove": True,
-                            "revoc_reg_id": rev_reg_id,
-                            "schema_issuer_did": schema_issuer_did,
-                            "schema_version": schema_version,
-                            "schema_id": schema_id,
-                            "credential_proposal": {
-                                "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/credential-preview",
-                                "attributes": attributes,
-                            },
-                            "credential_def_id": credential_definition_id,
-                            "issuer_did": issuer_did,
-                            "connection_id": connection_id,
-                            "trace": False
-                        }
-                        # Saving the data in the database
-                        form.save()
-                        form = CredentialForm()                        
-                        issue_cred = requests.post(url + '/issue-credential/send', json=credential)
+                    print(attributes)
+                    credential = {
+                        "schema_name": schema_name,
+                        "auto_remove": True,
+                        "revoc_reg_id": rev_reg_id,
+                        "schema_issuer_did": schema_issuer_did,
+                        "schema_version": schema_version,
+                        "schema_id": schema_id,
+                        "credential_proposal": {
+                            "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/credential-preview",
+                            "attributes": attributes,
+                        },
+                        "credential_def_id": credential_definition_id,
+                        "issuer_did": issuer_did,
+                        "connection_id": connection_id,
+                        "trace": False
+                    }
+                    print(json.dumps(credential))
+                    # Saving the data in the database
+                    form.save()
+                    form = CredentialForm()
+                    issue_cred = requests.post(url + '/issue-credential/send', json=credential)
                         # Updating the object in the database with the thread-id
                         # print(issue_cred)
                         # print(issue_cred.status_code)
                         # print(issue_cred.text)
-                        thread_id = issue_cred.json()['credential_offer_dict']['@id']
-                        Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
-                        context['form'] = form
-                        context['name'] = request.POST.get('patient_fullname')
+                    #thread_id = issue_cred.json()['credential_offer_dict']['@id']
+                    #Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
+                    #['form'] = form
+                    #context['name'] = request.POST.get('patient_fullname')
 
                 # else:
                     # print("Form invalid")
@@ -372,4 +330,5 @@ def cred_detail_view(request, id):
         'title': 'Credential Detail',
         'object': obj
     }
+
     return render(request, 'cns/cred_detail.html', context)

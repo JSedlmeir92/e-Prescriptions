@@ -85,7 +85,7 @@ services:
     command: >
       start
         --auto-provision
-        --tails-server-base-url http://${IP_ADDRESS}:6543 
+        --tails-server-base-url http://${ip_address}:6543 
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request
@@ -102,7 +102,7 @@ services:
         --wallet-name StewardWallet3
         --admin-insecure-mode 
         --admin 0.0.0.0 7080 
-        -e http://${IP_ADDRESS}:7000/ 
+        -e http://${ip_address}:7000/ 
         -l Doctor
     volumes:
       - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
@@ -120,8 +120,8 @@ services:
     command: >
       start
         --auto-provision
-        --tails-server-base-url http://${IP_ADDRESS}:6543
-        --webhook http://${IP_ADDRESS}:8000/cns
+        --tails-server-base-url http://${ip_address}:6543
+        --webhook http://${ip_address}:8000/cns
         --auto-respond-credential-proposal
         --auto-respond-credential-offer
         --auto-respond-credential-request
@@ -138,7 +138,7 @@ services:
         --wallet-name StewardWallet3
         --admin-insecure-mode
         --admin 0.0.0.0 6080
-        -e http://${IP_ADDRESS}:6000/
+        -e http://${ip_address}:6000/
         -l Cns
     volumes:
       - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
@@ -156,7 +156,7 @@ services:
     command: >
       start
         --auto-provision
-        --webhook http://${IP_ADDRESS}:8000/pharmacy
+        --webhook http://${ip_address}:8000/pharmacy
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request
@@ -174,7 +174,7 @@ services:
         --wallet-name StewardWallet3
         --admin-insecure-mode 
         --admin 0.0.0.0 9080 
-        -e http://${IP_ADDRESS}:9000/ 
+        -e http://${ip_address}:9000/ 
         -l Pharmacy
     volumes:
       - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
@@ -235,7 +235,7 @@ services:
       dockerfile: Dockerfile_web
     working_dir: /app
     environment:
-      - IP_ADDRESS=${IP_ADDRESS}
+      - ip_address=${ip_address}
     command: python3 start_demo.py
     ports:
       - 80:8000

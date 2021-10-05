@@ -21,41 +21,28 @@ ip_address = FileHandler.read()
 
 ip_address = os.getenv('IP_ADDRESS')
 
+# TODO: Change depending on new docker image
 url = 'http://' + ip_address + ':7080'
 support_revocation = True
 
 ATTRIBUTES = [
-                "doctor_fullname",
-                "doctor_type",
-                "doctor_address",
-                "patient_fullname",
-                "patient_birthday",
-                "pharmaceutical",
-                "number",
+                "firstname",
+                "lastname",
+                "birthday",
                 "date_issued",
-                "expiration_date",
-                "prescription_id",
-                "contract_address",
-                "spending_key"
+                "expiration_date"
             ]
 
 COMMENTS = [
-    "The full name of the doctor",
-    "The exact specialty of the doctor",
-    "The address of the doctor",
-    "The full name of the patient",
-    "The birth date of the patient in the format yyyy-mm-dd",
-    "The pharmaceutical that is prescribed",
-    "The number of units of the pharmaceutical",
-    "The issuance date of the prescription",
-    "The expiration date of the recipe",
-    "The unique id of the prescription to be referred to on the blockchain token",
-    "The address of the smart contract in which the doctor creates the prescription token",
-    "The private key that allows to spend the token (once only)"
+    "The first name of the insured person",
+    "The last name of the insured person",
+    "The birthday of the insured persion in the format dd.mm.yyyy",
+    "The issuance date of the insurance credential",
+    "The expiration date of the insurance credential",
 ]
 
 def home_view(request):
-    return render(request, 'cns/base_doctor.html', {'title': 'Doctor'})
+    return render(request, 'cns/base_cns.html', {'title': 'CNS'})
 
 def connection_view(request):
     form = ConnectionForm(request.POST or None)
@@ -63,7 +50,7 @@ def connection_view(request):
         form.save()
         form = ConnectionForm()
     context = {
-        'title': 'Establish Connection (Doctor)',
+        'title': 'Establish Connection (CNS)',
         'form': form
     }
     if request.method == 'POST':
@@ -106,17 +93,20 @@ def schema_view(request):
             context['attributes'].append({"attribute": ATTRIBUTES[index].ljust(30), "comment": COMMENTS[index] + "."})
         print(context)
     else:
-        pass ##null operation. Nothing happens when the satatement executes.
+        pass
     # Publish a new SCHEMA
     if request.method == 'POST':
-        schema = {
-            "attributes": ATTRIBUTES,
-            "schema_name": "ePrescriptionSchema_" + str(time.time())[:10],
-            "schema_version": "1.0"
-        }
-        requests.post(url + '/schemas', json=schema)
+        create_schema()
         return redirect('.')
     return render(request, 'cns/schema.html', context)
+
+def create_schema():
+    schema = {
+            "attributes": ATTRIBUTES,
+            "schema_name": "CNS-Schema" + str(time.time())[:10],
+            "schema_version": "1.0"
+        }
+    requests.post(url + '/schemas', json=schema)
 
 def cred_def_view(request):
     context = {
@@ -137,7 +127,7 @@ def cred_def_view(request):
             if request.method == 'POST':
                 schema_id = created_schema[0]
                 credential_definition = {
-                    "tag": "ePrescription",
+                    "tag": "CNS",
                     "support_revocation": support_revocation,
                     "schema_id": schema_id
                 }

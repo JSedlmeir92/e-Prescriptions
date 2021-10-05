@@ -3,18 +3,18 @@ from . import views
 
 urlpatterns = [
     path('', views.home_view, name='cns-home'),
-    # Doctor - Schema
+    # CNS - Schema
     path('schema/', views.schema_view, name='cns-schema'),
-    # Doctor - Credential Definition
+    # CNS - Credential Definition
     path('cred_def/', views.cred_def_view, name='cns-cred_def'),
-    # Doctor - Revocation Registry
+    # CNS - Revocation Registry
     path('rev_reg/', views.rev_reg_view, name='cns-rev_reg'),
-    # Doctor - Connection
+    # CNS - Connection
     path('connection/', views.connection_view, name='cns-connection'),
-    # Doctor - Issue Prescription
+    # CNS - Issue Credential
     path('issue_cred/', views.issue_cred_view, name='cns-issue_cred'),
-    # Doctor - Revoke Prescription
+    # CNS - Issue Credential
     path('revoke_cred/', views.revoke_cred_view, name='cns-revoke_cred'),
-    # Doctor - Detailed Overview over a prescription
+    # CNS - Detailed Overview over a credential
     path('cred_detail/<int:id>/', views.cred_detail_view, name='cns-cred_detail')
 ]

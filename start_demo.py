@@ -2,6 +2,9 @@ import asyncio
 import os
 import sys
 import time
+import cns.views
+import doctor.views
+import pharmacy.views
 from dotenv import load_dotenv
 
 print("If you are executing this demo inside a virtual machine, make sure the following ports are open:\n7000 and 7080\n8000\n9000 and 9080\n")
@@ -79,3 +82,13 @@ print("Starting complete")
 #
 #loop = asyncio.get_event_loop()
 #loop.run_until_complete(main())
+
+# Creating schemas
+#cns.views.create_schema()
+#doctor.views.create_schema()
+#pharmacy.views.create_schema()
+
+#TODO: Create cred defs
+#cns.views.create_cred_def()
+#doctor.views.create_cred_def()
+#pharmacy.views.create_cred_def()

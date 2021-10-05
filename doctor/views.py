@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
+
+from cns.views import create_schema
 from .models import Credential, Connection
 from .forms import CredentialForm, ConnectionForm
 
@@ -109,14 +111,17 @@ def schema_view(request):
         pass ##null operation. Nothing happens when the satatement executes.
     # Publish a new SCHEMA
     if request.method == 'POST':
-        schema = {
+        create_schema()
+        return redirect('.')
+    return render(request, 'doctor/schema.html', context)
+
+def create_schema():
+    schema = {
             "attributes": ATTRIBUTES,
             "schema_name": "ePrescriptionSchema_" + str(time.time())[:10],
             "schema_version": "1.0"
         }
-        requests.post(url + '/schemas', json=schema)
-        return redirect('.')
-    return render(request, 'doctor/schema.html', context)
+    requests.post(url + '/schemas', json=schema)
 
 def cred_def_view(request):
     context = {

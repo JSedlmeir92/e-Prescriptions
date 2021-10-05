@@ -19,11 +19,7 @@ if os.stat("ip_address_vm").st_size != 0:
     FileHandler = open("ip_address_vm", "r")
     ip_address = FileHandler.read()
     print("file", os.stat("ip_address_vm").st_size, ip_address)
-<<<<<<< HEAD
 elif os.environ['IP_ADDRESS']:
-=======
-elif os.environ['ip_address']:
->>>>>>> 3338621e6b06b5b455d9ae8901959dca4f2dbf47
     ip_address = os.getenv('ip_address')
     FileHandler.write(ip_address)
     print("env", ip_address)
@@ -51,23 +47,14 @@ os.environ['IP_ADDRESS'] = ip_address
 os.system("rm db.sqlite3")
 
 #Resetting and Starting Docker images
-<<<<<<< HEAD
-#os.system("docker-compose rm")
-#os.system("docker-compose up -d")
-=======
 # os.system("docker-compose rm")
 # os.system("docker-compose up -d")
->>>>>>> 3338621e6b06b5b455d9ae8901959dca4f2dbf47
 
 
 
 print("\nDeploying the ePrescription contract...") ##
-<<<<<<< HEAD
-#os.system("cd quorum_client && npm install && truffle migrate --reset --network rinkeby")
-=======
-os.system("cd quorum_client && npm install && truffle migrate --reset --network development")
+#os.system("cd quorum_client && npm install && truffle migrate --reset --network development")
 # os.system("cd quorum_client && npm install && truffle migrate --reset --network rinkeby")
->>>>>>> 3338621e6b06b5b455d9ae8901959dca4f2dbf47
 
 ##Django
 os.system("python3 manage.py makemigrations") 

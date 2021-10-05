@@ -19,8 +19,8 @@ if os.stat("ip_address_vm").st_size != 0:
     FileHandler = open("ip_address_vm", "r")
     ip_address = FileHandler.read()
     print("file", os.stat("ip_address_vm").st_size, ip_address)
-elif os.environ['IP_ADDRESS']:
-    ip_address = os.getenv('IP_ADDRESS')
+elif os.environ['ip_address']:
+    ip_address = os.getenv('ip_address')
     FileHandler.write(ip_address)
     print("env", ip_address)
 else:
@@ -46,8 +46,8 @@ FileHandler.close()
 os.system("rm db.sqlite3")
 
 #Resetting and Starting Docker images
-os.system("docker-compose rm")
-os.system("docker-compose up -d")
+# os.system("docker-compose rm")
+# os.system("docker-compose up -d")
 
 
 

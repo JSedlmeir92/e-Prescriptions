@@ -7,7 +7,7 @@ import requests
 FileHandler = open("ip_address_vm", "a+")
 ip_address = FileHandler.read()
 
-ip_address = os.getenv('IP_ADDRESS')
+ip_address = os.getenv('ip_address')
 
 url = f'http://{ip_address}:7080'
 url2 = f'http://{ip_address}:9080'

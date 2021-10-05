@@ -52,7 +52,7 @@ os.system("docker-compose up -d")
 
 
 print("\nDeploying the ePrescription contract...") ##
-os.system("cd quorum_client && npm install && truffle migrate --reset --network node0")
+os.system("cd quorum_client && npm install && truffle migrate --reset --network rinkeby")
 
 ##Django
 os.system("python3 manage.py makemigrations") 

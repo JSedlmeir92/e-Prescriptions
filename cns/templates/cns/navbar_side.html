@@ -36,18 +36,18 @@
     }
 
     .openbtn:hover {
-        background-color:#111;
+        background-color: #111;
     }
 </style>
 
 <div id="mySidepanel" class="sidenav">
     <a href="javascript:void(0)" onclick="closeNav()">☰</a>
-    <a href="{% url 'doctor-schema' %}">ePrescription Schema</a>
-    <a href="{% url 'doctor-cred_def' %}">ePrescription Credential Definition</a>
-    <a href="{% url 'doctor-rev_reg' %}">ePrescription Revocation Registry</a>
-    <a href="{% url 'doctor-connection' %}">Establish Connection</a>
-    <a href="{% url 'doctor-issue_cred' %}">Issue ePrescription</a>
-    <a href="{% url 'doctor-revoke_cred' %}">Revoke ePrescription</a>
+    <a href="{% url 'cns-schema' %}">ePrescription Schema</a>
+    <a href="{% url 'cns-cred_def' %}">ePrescription Credential Definition</a>
+    <a href="{% url 'cns-rev_reg' %}">ePrescription Revocation Registry</a>
+    <a href="{% url 'cns-connection' %}">Establish Connection</a>
+    <a href="{% url 'cns-issue_cred' %}">Issue ePrescription</a>
+    <a href="{% url 'cns-revoke_cred' %}">Revoke ePrescription</a>
 </div>
 
 <button class="openbtn" onclick="openNav()">☰</button>

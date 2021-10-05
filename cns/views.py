@@ -55,7 +55,7 @@ COMMENTS = [
 ]
 
 def home_view(request):
-    return render(request, 'doctor/base_doctor.html', {'title': 'Doctor'})
+    return render(request, 'cns/base_doctor.html', {'title': 'Doctor'})
 
 def connection_view(request):
     form = ConnectionForm(request.POST or None)
@@ -90,7 +90,7 @@ def connection_view(request):
         # print(invitation_link)
         qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600"
         context['qr_code'] = qr_code
-    return render(request, 'doctor/connection.html', context)
+    return render(request, 'cns/connection.html', context)
 
 def schema_view(request):
     created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
@@ -116,7 +116,7 @@ def schema_view(request):
         }
         requests.post(url + '/schemas', json=schema)
         return redirect('.')
-    return render(request, 'doctor/schema.html', context)
+    return render(request, 'cns/schema.html', context)
 
 def cred_def_view(request):
     context = {
@@ -143,7 +143,7 @@ def cred_def_view(request):
                 }
                 requests.post(url + '/credential-definitions', json=credential_definition)
                 return redirect('.')
-    return render(request, 'doctor/cred_def.html', context)
+    return render(request, 'cns/cred_def.html', context)
 
 def rev_reg_view(request):
     context = {
@@ -181,7 +181,7 @@ def rev_reg_view(request):
                         return redirect('.')
                 except Exception as e:
                         print(e)
-    return render(request, 'doctor/rev_reg.html', context)
+    return render(request, 'cns/rev_reg.html', context)
 
 def issue_cred_view(request):
     # Updates the STATE of all CONNECTIONS that do not have the state 'active' or 'response'
@@ -336,7 +336,7 @@ def issue_cred_view(request):
                 # else:
                     # print("Form invalid")
                     # print(form.errors)
-    return render(request, 'doctor/issue_cred.html', context)
+    return render(request, 'cns/issue_cred.html', context)
 
 def revoke_cred_view(request):
     # Updates all issued Credentials
@@ -353,7 +353,7 @@ def revoke_cred_view(request):
         'object_list': queryset,
         'len': len(queryset)
     }
-    return render(request, 'doctor/revoke_cred.html', context)
+    return render(request, 'cns/revoke_cred.html', context)
 
 def cred_detail_view(request, id):
     obj = get_object_or_404(Credential, id=id)
@@ -377,4 +377,4 @@ def cred_detail_view(request, id):
         'title': 'Credential Detail',
         'object': obj
     }
-    return render(request, 'doctor/cred_detail.html', context)
+    return render(request, 'cns/cred_detail.html', context)

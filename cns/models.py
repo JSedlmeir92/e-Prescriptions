@@ -7,6 +7,7 @@ from django.urls import reverse
 
 class Credential(models.Model):
     id               = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    
     doctor_fullname  = models.CharField(default='Brian McHealthy', max_length=120, null=True)
     doctor_type      = models.CharField(default='Physician', max_length=120)
     doctor_address   = models.CharField(default='Hospital St. 15', max_length=120)

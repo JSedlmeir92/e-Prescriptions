@@ -2,8 +2,12 @@ import asyncio
 import os
 import sys
 import time
+from dotenv import load_dotenv
 
 print("If you are executing this demo inside a virtual machine, make sure the following ports are open:\n7000 and 7080\n8000\n9000 and 9080\n")
+
+load_dotenv()
+
 
 # Getting the VM's IP ADDRESS
 FileHandler = open("ip_address_vm", "a+")
@@ -13,7 +17,7 @@ if os.stat("ip_address_vm").st_size != 0:
     ip_address = FileHandler.read()
     print("file", os.stat("ip_address_vm").st_size, ip_address)
 elif os.environ['IP_ADDRESS']:
-    ip_address = os.environ['IP_ADDRESS']
+    ip_address = os.getenv('IP_ADDRESS')
     FileHandler.write(ip_address)
     print("env", ip_address)
 else:

@@ -16,7 +16,12 @@ from dateutil.relativedelta import *
 import logging
 logger = logging.getLogger(__name__)
 
-url = 'http://' + os.environ['IP_ADDRESS'] + ':7080'
+FileHandler = open("ip_address_vm", "a+")
+ip_address = FileHandler.read()
+
+ip_address = os.getenv('IP_ADDRESS')
+
+url = 'http://' + ip_address + ':7080'
 support_revocation = True
 
 ATTRIBUTES = [

@@ -17,8 +17,13 @@ import base64
 from datetime import date, datetime
 from dateutil.relativedelta import *
 
-url = 'http://' + os.environ['IP_ADDRESS'] + ':7080'
-url2 = 'http://' + os.environ['IP_ADDRESS'] + ':9080'
+FileHandler = open("../ip_address_vm", "a+")
+ip_address = FileHandler.read()
+
+ip_address = os.getenv('IP_ADDRESS')
+
+url = 'http://' + ip_address + ':7080'
+url2 = 'http://' + ip_address + ':9080'
 
 FileHandler = open("ip_address_vm", "r")
 ip_adress_vm = FileHandler.read()

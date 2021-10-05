@@ -1,0 +1,29 @@
+{% extends 'cns/base_cns.html' %}
+
+{% block head %}{% endblock %}
+
+{% block style %}{% endblock %}
+
+{% block extracontent %}
+<h1>Available ePrescription Schemas:</h1><br>
+{% if created_schema %}
+<h5>The ePrescription schema <strong>{{ created_schema }}</strong> is available in your wallet.</h5><br>
+<h5>It has the following attributes:</h5>
+<br>
+{% for item in attributes %}
+<h5>{{ forloop.counter|stringformat:"02d" }} - <strong>{{ item.attribute }}</strong> - {{ item.comment }}</h5>
+{% endfor %}<br>
+<h5 style="color: mediumseagreen"> It is not necessary to publish a new schema</h5><br>
+<button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd">Publish New
+    ePrescription Schema</button><br>
+<button class="button" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Continue</button><br><br>
+{% else %}
+<h5 style="color: darkred">There are no suitable ePrescription schemas in your wallet
+    <!-- or on the ledger-->. Please publish a new one.</h5><br>
+<form method="post">{% csrf_token %}
+    <button class="button">Publish New ePrescription Schema</button><br>
+</form>
+<button class="button"
+    style="pointer-events: none; background-color: slategray; color: #c0c7cd">Continue</button><br><br>
+{% endif %}
+{% endblock %}

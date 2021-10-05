@@ -1,0 +1,32 @@
+{% extends 'cns/base_cns.html' %}
+
+{% block head %}{% endblock %}
+
+{% block style %}{% endblock %}
+
+{% block extracontent %}
+<h1>Revoke ePrescription</h1><br>
+{% if len == 1 %}
+<p>There is <span style="color: #ff0000">{{ len }}</span> ePrescriptions that can be revoked.</p>
+<p>Click on the credential to get more information.</p>
+{% elif len == 0 %}
+<p>There are <span style="color: #ff0000">{{ len }}</span> ePrescriptions that can be revoked.</p>
+{% else %}
+<p>There are <span style="color: #ff0000">{{ len }}</span> ePrescriptions that can be revoked.</p>
+<p>Click on the corresponding ePrescription to get more information.</p>
+{% endif %}
+<br>
+<table>
+    {% for instance in object_list %}
+    <tr>
+        <th>{{ forloop.counter }}</th>
+        <td>-</td>
+        <td><a href="{{ instance.get_absolute_url }}">{{ instance.patient_fullname }}</a>,</td>
+        <td>{{ instance.pharmaceutical }},</td>
+        <td>{{ instance.number }},</td>
+        <td>issued on: {{ instance.date_issued }}</td>
+    </tr>
+    {% endfor %}
+</table><br><br>
+<button class="button" onclick="window.location.href='{% url 'pharmacy-connectionless' %}';">Continue</button><br><br>
+{% endblock %}

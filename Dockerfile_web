@@ -1,0 +1,8 @@
+FROM python:3
+
+RUN apt-get -y update
+RUN apt-get -y install npm
+RUN npm i -g truffle
+
+COPY ./requirements.txt /app/requirements.txt
+RUN pip3 install -r /app/requirements.txt

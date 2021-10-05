@@ -7,13 +7,10 @@ import requests
 FileHandler = open("ip_address_vm", "a+")
 ip_address = FileHandler.read()
 
-ip_address = os.getenv('IP_ADDRESS')
+ip_address = os.getenv('ip_address')
 
-url = 'http://' + '10.164.249.66' + ':7080'
-url2 = 'http://' + '10.164.249.66' + ':9080'
-
-def index(request):
-    return render(request, 'templates/start/start-home.html')
+url = f'http://{ip_address}:7080'
+url2 = f'http://{ip_address}:9080'
 
 def remove_connections_agent_1():
     Connection.objects.all().delete()

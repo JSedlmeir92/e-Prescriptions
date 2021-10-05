@@ -108,6 +108,42 @@ services:
       - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
       - ./docker_timezone:/etc/localtime:ro
 
+  cns-agent:
+    container_name: cns-agent
+    build:
+      context: ./aries-cloudagent-python
+      dockerfile: ./docker/Dockerfile.run
+    ports:
+      - 6000:6000
+      - 6080:6080
+    entrypoint: aca-py
+    command: >
+      start
+        --auto-provision
+        --tails-server-base-url http://${ip_address}:6543
+        --webhook http://${ip_address}:8000/cns
+        --auto-respond-credential-proposal
+        --auto-respond-credential-offer
+        --auto-respond-credential-request
+        --auto-verify-presentation
+        --inbound-transport http 0.0.0.0 6000
+        --inbound-transport ws 0.0.0.0 6001
+        --outbound-transport ws
+        --outbound-transport http
+        --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
+        --log-level info
+        --seed 000000000000000000000000Steward3
+        --wallet-type indy
+        --wallet-key StewardWallet3
+        --wallet-name StewardWallet3
+        --admin-insecure-mode
+        --admin 0.0.0.0 6080
+        -e http://${ip_address}:6000/
+        -l Cns
+    volumes:
+      - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      - ./docker_timezone:/etc/localtime:ro
+
   pharmacy-agent:
     container_name: pharmacy-agent
     build:
@@ -194,15 +230,42 @@ services:
         ipv4_address: 172.16.239.13
 
   web:
-    image: python:3
+    build:
+      context: .
+      dockerfile: Dockerfile_web
     working_dir: /app
-    command: ./start.sh
     environment:
-      - IP_ADDRESS=${IP_ADDRESS}
-    volumes:
-      - .:/app
+      - ip_address=${ip_address}
+    command: python3 start_demo.py
     ports:
       - 80:8000
+    volumes:
+      - ./:/app
+    networks:
+      quorum-simple-net:
+        ipv4_address: 172.16.239.14
+    tty: true
+
+  ganache:
+    image: trufflesuite/ganache-cli:latest
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./ganache_data:/ganache_data
+    environment:
+      - ip_address=${ip_address}
+    entrypoint:
+      - node
+      - /app/ganache-core.docker.cli.js
+      - --deterministic
+      - --db=/ganache_data
+      - --mnemonic
+      - 'minimum symptom minute gloom tragic situate silver mechanic salad amused elite beef'
+      - --networkId
+      - '5777'
+      - --hostname
+      - '0.0.0.0'
+      - --debug
 
 networks:
   quorum-simple-net:

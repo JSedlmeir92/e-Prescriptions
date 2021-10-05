@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# ip_address="$(cat ip_address_vm)"
 ip_address="localhost"
 # echo "$ip_address"
 

@@ -21,7 +21,7 @@ ip_address = FileHandler.read()
 
 ip_address = os.getenv('IP_ADDRESS')
 
-url = 'http://' + ip_address + ':7080'
+url = 'http://' + ip_address + ':6080'
 support_revocation = True
 
 ATTRIBUTES = [

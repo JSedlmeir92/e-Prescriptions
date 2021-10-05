@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'start',
     'doctor',
     'pharmacy',
+    'cns'
 ]
 
 MIDDLEWARE = [

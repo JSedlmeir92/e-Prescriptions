@@ -105,8 +105,8 @@ services:
         -e http://${ip_address}:7000/ 
         -l Doctor
     volumes:
-      - ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
-      - ${dir_name}/docker_timezone:/etc/localtime:ro
+      - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      - ./docker_timezone:/etc/localtime:ro
 
   pharmacy-agent:
     container_name: pharmacy-agent
@@ -141,9 +141,8 @@ services:
         -e http://${ip_address}:9000/ 
         -l Pharmacy
     volumes:
-      - ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
-      - ${dir_name}/docker_timezone:/etc/localtime:ro
-
+      - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      - ./docker_timezone:/etc/localtime:ro
 
   quorum-node1:
     << : *quorum-def
@@ -193,6 +192,18 @@ services:
     networks:
       quorum-simple-net:
         ipv4_address: 172.16.239.13
+
+  web:
+    image: python:3
+    working_dir: /app
+    command: ./start.sh
+    environment:
+      - IP_ADDRESS=${ip_address}
+    volumes:
+      - .:/app
+    ports:
+      - 80:8000
+
 networks:
   quorum-simple-net:
     name: quorum-simple-net

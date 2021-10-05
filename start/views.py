@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from doctor.models import Connection, Credential
 
+import os
 import requests
 
-url = 'http://0.0.0.0:7080'
-url2 = 'http://0.0.0.0:9080'
+url = 'http://' + os.environ['IP_ADDRESS'] + ':7080'
+url2 = 'http://' + os.environ['IP_ADDRESS'] + ':9080'
 
 def remove_connections_agent_1():
     Connection.objects.all().delete()

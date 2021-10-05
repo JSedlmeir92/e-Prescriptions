@@ -50,7 +50,7 @@ async function createPrescription(id) {
 	//console.log(typeof(patientAccount.address));
 	//console.log(typeof(adminAccount));
 	let returnValue = await instance.methods.create(patientAccount.address, id).send({
-		from: adminAccount.toString(),
+		from: adminAccount[0].toString(),
 		gas: 300000
 	}).catch(err => {return Promise.reject(err)});
 	//console.log(returnValue);

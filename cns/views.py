@@ -20,13 +20,13 @@ FileHandler = open("ip_address_vm", "a+")
 ip_address = FileHandler.read()
 
 ip_address = os.getenv('ip_address')
-print(f"ip address: {ip_address}")
+# print(f"ip address: {ip_address}")
 # os.system("pwd")
 # os.system("export $(grep -v '^#' .env | xargs)")
-print(os.environ)
+# print(os.environ)
 
 url = f'http://{ip_address}:6080'
-print(f"url: {url}")
+# print(f"url: {url}")
 
 support_revocation = True
 

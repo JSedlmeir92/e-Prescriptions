@@ -198,7 +198,7 @@ services:
     working_dir: /app
     command: ./start.sh
     environment:
-      - IP_ADDRESS=${ip_address}
+      - IP_ADDRESS=${IP_ADDRESS}
     volumes:
       - .:/app
     ports:

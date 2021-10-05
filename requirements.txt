@@ -1,3 +1,5 @@
 django
 requests
 python-dotenv
+python-dateutil
+django_tables2

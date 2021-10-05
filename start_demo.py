@@ -52,7 +52,8 @@ os.system("rm db.sqlite3")
 
 
 print("\nDeploying the ePrescription contract...") ##
-os.system("cd quorum_client && npm install && truffle migrate --reset --network rinkeby")
+os.system("cd quorum_client && npm install && truffle migrate --reset --network development")
+# os.system("cd quorum_client && npm install && truffle migrate --reset --network rinkeby")
 
 ##Django
 os.system("python3 manage.py makemigrations") 

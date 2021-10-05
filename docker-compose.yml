@@ -236,7 +236,7 @@ services:
     working_dir: /app
     environment:
       - ip_address=${ip_address}
-    command: python3 start_demo.py
+#    command: python3 start_demo.py
     ports:
       - 80:8000
     volumes:
@@ -245,6 +245,28 @@ services:
       quorum-simple-net:
         ipv4_address: 172.16.239.14
     tty: true
+
+  ganache:
+    image: trufflesuite/ganache-cli:latest
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./ganache_data:/ganache_data
+    environment:
+      - ip_address=${ip_address}
+    entrypoint:
+      - node
+      - /app/ganache-core.docker.cli.js
+      - --deterministic
+      - --db=/ganache_data
+      - --mnemonic
+      - 'minimum symptom minute gloom tragic situate silver mechanic salad amused elite beef'
+      - --networkId
+      - '5777'
+      - --hostname
+      - '0.0.0.0'
+      - --debug
+
 networks:
   quorum-simple-net:
     name: quorum-simple-net

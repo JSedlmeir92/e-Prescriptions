@@ -4,6 +4,7 @@
   "dependencies": {
     "@truffle/hdwallet-provider": "^1.5.0",
     "convert-array-to-csv": "^1.0.8",
+    "dotenv": "^10.0.0",
     "stdio": "^0.2.7",
     "truffle-contract": "^3.0.0",
     "web3": "^1.2.4"

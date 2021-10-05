@@ -372,8 +372,5 @@ def cred_detail_view(request, id):
         'title': 'Credential Detail',
         'object': obj
     }
-<<<<<<< HEAD
-    return render(request, 'doctor/cred_detail.html', context)
-=======
+    
     return render(request, 'cns/cred_detail.html', context)
->>>>>>> 3338621e6b06b5b455d9ae8901959dca4f2dbf47

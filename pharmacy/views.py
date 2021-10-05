@@ -125,13 +125,9 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
 def login_connectionless_view(request):
     context = {
         'title': 'Login',
-<<<<<<< HEAD
-    }
-    qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://" + ip_adress_vm + ":8000/pharmacy/login_url"
-=======
+
     }
     qr_code = f"https://api.qrserver.com/v1/create-qr-code/?data=http://{ip_address}:8000/pharmacy/login_url"
->>>>>>> 3338621e6b06b5b455d9ae8901959dca4f2dbf47
     context['qr_code'] = qr_code
     return render(request, 'pharmacy/login_connectionless.html', context)
 
@@ -217,10 +213,7 @@ def login_result_view(request, id = 0):
     os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
     result = os.popen("tail -n 1 %s" % "quorum_client/result").read().replace("\n", "")
     result = result == 'true' #Converts result to boolean
-<<<<<<< HEAD
 
-=======
->>>>>>> 3338621e6b06b5b455d9ae8901959dca4f2dbf47
     if (result == True and verified == True):
         context = {
             'title': 'Spending Success',

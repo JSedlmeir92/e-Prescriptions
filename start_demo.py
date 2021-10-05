@@ -47,10 +47,8 @@ os.environ['IP_ADDRESS'] = ip_address
 os.system("rm db.sqlite3")
 
 #Resetting and Starting Docker images
-# os.system("docker-compose rm")
-# os.system("docker-compose up -d")
-
-
+#os.system("docker-compose rm")
+#os.system("docker-compose up -d")
 
 print("\nDeploying the ePrescription contract...") ##
 #os.system("cd quorum_client && npm install && truffle migrate --reset --network development")
@@ -58,7 +56,7 @@ print("\nDeploying the ePrescription contract...") ##
 
 ##Django
 os.system("python3 manage.py makemigrations") 
-os.system("python3 manage.py migrate") ##
+os.system("python3 manage.py migrate --run-syncdb") ##
 
 print("\nStarting the Server...")
 os.system("python3 manage.py runserver 0.0.0.0:8000")

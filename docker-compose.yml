@@ -236,7 +236,7 @@ services:
     working_dir: /app
     environment:
       - ip_address=${ip_address}
-#    command: python3 start_demo.py
+    command: python3 start_demo.py
     ports:
       - 80:8000
     volumes:

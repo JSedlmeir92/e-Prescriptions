@@ -20,3 +20,4 @@ quorum_client/build/contracts/
 quorum_client/check
 pharmacy/migrations/
 doctor/migrations/
+/ganache_data

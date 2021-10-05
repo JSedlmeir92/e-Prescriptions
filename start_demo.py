@@ -57,7 +57,7 @@ os.system("cd quorum_client && npm install && truffle migrate --reset --network 
 
 ##Django
 os.system("python3 manage.py makemigrations") 
-os.system("python3 manage.py migrate") ##
+os.system("python3 manage.py migrate --run-syncdb") ##
 
 print("\nStarting the Server...")
 os.system("python3 manage.py runserver 0.0.0.0:8000")

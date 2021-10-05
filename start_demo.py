@@ -2,9 +2,9 @@ import asyncio
 import os
 import sys
 import time
-import cns.views
-import doctor.views
-import pharmacy.views
+#import cns.views
+#import doctor.views
+#import pharmacy.views
 from dotenv import load_dotenv
 
 print("If you are executing this demo inside a virtual machine, make sure the following ports are open:\n7000 and 7080\n8000\n9000 and 9080\n")

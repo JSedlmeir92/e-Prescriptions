@@ -1,0 +1,32 @@
+{% extends 'pharmacy/base_pharmacy.html' %}
+
+{% block head %}
+{% endblock %}
+
+{% block style %}
+    <style>
+        p {
+            text-align: center;
+            margin: 20px 0 60px;
+            font-size: 1.25em;
+            &.success {
+                 color: #73AF55;
+                 text-align: center;
+                 margin: 20px 0 60px;
+                 font-size: 1.25em;
+            }
+            &.error {
+                 color: #D06079;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>Confirm ePrescription Redemption</h2>
+    <button class="button" onclick="window.location.href='{% url 'pharmacy-connection_result' id=id %}';">Yes, redeem the ePrescription for {{ number }} {{ pharmaceutical }}!</button>
+    <button class="button" onclick="window.location.href='{% url 'pharmacy-prescription_detail' id=id %}';">Show more details</button>
+    <button class="button" onclick="window.location.href='{% url 'pharmacy-prescription-table' %}';">Abort</button>
+
+
+{% endblock %}

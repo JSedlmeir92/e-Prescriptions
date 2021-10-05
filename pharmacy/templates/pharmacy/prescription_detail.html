@@ -72,7 +72,7 @@
         </tr>
     </table><br>
     {% if object.valid == True and object.not_spent == True%}
-    <button class="button" onclick="window.location.href='{% url 'pharmacy-connection_result' id=object.id %}';">Redeem the ePrescription</button>
+    <button class="button" onclick="window.location.href='{% url 'pharmacy-connection_confirmation' id=object.id %}';">Redeem the ePrescription</button>
     {% endif %}
     {% if object.valid != True or object.not_spent != True%}
     <button class="button"><strike>Reedeem the ePrescription</strike></button>

@@ -1,7 +1,42 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <!--<h1>Welcome!</h1>
+<!--<h1>Welcome!</h1>
     <p>Info text about the demo</p>--><br><br><br>
-    <button class="button" style="height: 15vw; width: 100vw; font-size: 9vw; font-weight: bold" onclick="window.location.href='{% url 'doctor-schema' %}';">Start Demo</button>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-4">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">CNS</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                        card's content.</p>
+                    <a target="_blank" href="{% url 'cns-connection' %}" class="btn btn-primary">Go</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Doctor</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                        card's content.</p>
+                    <a target="_blank" href="{% url 'doctor-connection' %}" class="btn btn-primary">Go</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Pharmacy</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                        card's content.</p>
+                    <a target="_blank" href="{% url 'pharmacy-connection' %}" class="btn btn-primary">Go</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 {% endblock %}

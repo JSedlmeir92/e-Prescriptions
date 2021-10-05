@@ -17,16 +17,11 @@ import base64
 from datetime import date, datetime
 from dateutil.relativedelta import *
 
-FileHandler = open("../ip_address_vm", "a+")
-ip_address = FileHandler.read()
+ip_address = os.getenv('ip_address')
 
-ip_address = os.getenv('IP_ADDRESS')
+url = f'http://{ip_address}:7080'
+url2 = f'http://{ip_address}:9080'
 
-url = 'http://' + ip_address + ':7080'
-url2 = 'http://' + ip_address + ':9080'
-
-FileHandler = open("ip_address_vm", "r")
-ip_adress_vm = FileHandler.read()
 ##Table-stuff
 class PrescriptionListView(ListView):
     model = Prescription
@@ -121,9 +116,9 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
             invitation_splitted[1] = temp
             invitation_link = "=".join(invitation_splitted)
             if way == 1:
-                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://" + ip_adress_vm + ":8000/pharmacy/login_url"
+                qr_code = f"https://api.qrserver.com/v1/create-qr-code/?data=http://{ip_address}:8000/pharmacy/login_url"
             else:
-                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600" ##"Connection-based" inivitation
+                qr_code = f"https://api.qrserver.com/v1/create-qr-code/?data={invitation_link}&amp;size=600x600" ##"Connection-based" inivitation
             context['qr_code'] = qr_code
     return render(request, 'pharmacy/login.html', context)
 
@@ -131,7 +126,7 @@ def login_connectionless_view(request):
     context = {
         'title': 'Login',
     } 
-    qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://" + ip_adress_vm + ":8000/pharmacy/login_url"
+    qr_code = f"https://api.qrserver.com/v1/create-qr-code/?data=http://{ip_address}:8000/pharmacy/login_url"
     context['qr_code'] = qr_code
     return render(request, 'pharmacy/login_connectionless.html', context)
 
@@ -209,17 +204,21 @@ def login_result_view(request, id = 0):
                  print("Waiting for webhook...")
                  time.sleep(10)
             id = Prescription.objects.filter(prescription_id=prescription_id).values('id')[0]['id']
+            print(proof)
+            # connection_id =
 
+    print("Spending the prescription")
+    print(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
     os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
     result = os.popen("tail -n 1 %s" % "quorum_client/result").read().replace("\n", "")
     result = result == 'true' #Converts result to boolean
-    
     if (result == True and verified == True):
         context = {
             'title': 'Spending Success',
             'verified': "true"
         }
         Prescription.objects.filter(id=id).update(redeemed = True, not_spent = False, date_redeemed = datetime.now())
+
     elif (result == False and verified == True):
         context = {
             'title': 'ePrescription already spent',
@@ -351,7 +350,7 @@ def login_url_view(request):
     }
     invitation_string = json.dumps(proof_request_conless)
     invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
-    invitation_url = "http://" + str(ip_adress_vm + ":9000") + "/?c_i=" + str(invitation_string)
+    invitation_url = f"http://{ip_address}:9000/?d_m={invitation_string}"
     context['invitation'] = invitation_url
     return HttpResponseRedirect(invitation_url)
 

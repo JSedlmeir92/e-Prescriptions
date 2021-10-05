@@ -328,7 +328,7 @@ def issue_cred_view(request):
                         }
                         # Saving the data in the database
                         form.save()
-                        form = CredentialForm()                        
+                        form = CredentialForm()
                         issue_cred = requests.post(url + '/issue-credential/send', json=credential)
                         # Updating the object in the database with the thread-id
                         # print(issue_cred)

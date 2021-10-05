@@ -275,7 +275,7 @@ def issue_cred_view(request):
                     print(json.dumps(credential))
                     # Saving the data in the database
                     form.save()
-                    form = CredentialForm()                        
+                    form = CredentialForm()
                     issue_cred = requests.post(url + '/issue-credential/send', json=credential)
                         # Updating the object in the database with the thread-id
                         # print(issue_cred)
@@ -330,4 +330,5 @@ def cred_detail_view(request, id):
         'title': 'Credential Detail',
         'object': obj
     }
+
     return render(request, 'cns/cred_detail.html', context)

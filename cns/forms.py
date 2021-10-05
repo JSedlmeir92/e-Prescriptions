@@ -20,14 +20,13 @@ class CredentialForm(forms.ModelForm):
     ]
 
     connection_id     = forms.ChoiceField(choices=[], widget=[])
-    doctor_fullname   = forms.CharField(initial='Mr Smith', label='Doctor Full Name', widget=forms.Select(choices=doctors_choices, attrs={'style': 'width:700px'}))
-    doctor_type       = forms.CharField(initial='Physician', widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:700px; background-color: #bfbfbf'}))
-    doctor_address    = forms.CharField(initial='Health St. 10', widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:700px; background-color: #bfbfbf'}))
-    patient_fullname  = forms.CharField(initial='Max Mustermann', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    patient_birthday  = forms.CharField(initial='2000-01-01', label='Patient Birthday', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    pharmaceutical    = forms.CharField(initial='Aspirin', label='Pharmaceutical', widget=forms.Select(choices=pharmaceuticals_choices, attrs={'style': 'width:700px'}))
-    number            = forms.CharField(initial='1', label='Number', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    expiration        = forms.CharField(initial='1 Month', label='Expiration', widget=forms.Select(choices=expiration_choices, attrs={'style': 'width:700px'}))
+    firstname         = forms.CharField(initial='Max', label='Insured person first name', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    lastname          = forms.CharField(initial='Mustermann', label='Insured person last name', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    # doctor_type       = forms.CharField(initial='Physician', widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:700px; background-color: #bfbfbf'}))
+    # doctor_address    = forms.CharField(initial='Health St. 10', widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:700px; background-color: #bfbfbf'}))
+    # patient_fullname  = forms.CharField(initial='Max Mustermann', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    birthday  = forms.CharField(initial='01.01.2000', label='Birthday', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    expiration_date        = forms.CharField(initial='01.01.2022', label='Expiration', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     # prescription_id  = forms.CharField(label='Id', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     # contractAddress  = forms.CharField(label='ContractAddress', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     # spendingKey      = forms.CharField(label='spendingKey', widget=forms.TextInput(attrs={'style': 'width:700px'}))
@@ -35,19 +34,14 @@ class CredentialForm(forms.ModelForm):
     class Meta:
         model = Credential
         fields = [
-            'connection_id',
-            'doctor_fullname',
-            'doctor_type',
-            'doctor_address',
-            'patient_fullname',
-            'patient_birthday',
-            'pharmaceutical',
-            'number',
-            'expiration'
+            'firstname',
+            'lastname',
+            'birthday',
+            'expiration_date'
             # 'prescription_id',
             # 'contractAddress',
             # 'spendingKey'
-        ]
+        ] 
 
     # Updating the dropdown list with all the available connections (which have either the state 'active' or 'response') every time the page loads
     def __init__(self, *args, **kwargs):

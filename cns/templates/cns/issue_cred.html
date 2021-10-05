@@ -62,23 +62,15 @@
             <form action="." method="post">{% csrf_token %}
                 <label for='{{ form.connection_id }}'>Choose a Connection:</label><br>
                 {{ form.connection_id }}<br><br>
-                <label for='{{ form.doctor_fullname }}'>Doctor's Full Name:</label><br>
-                {{ form.doctor_fullname }}<br><br>
-                <label for='{{ form.doctor_type }}'>Doctor's Type:</label><br>
-                {{ form.doctor_type }}<br><br>
-                <label for='{{ form.doctor_address }}'>Doctor's Address:</label><br>
-                {{ form.doctor_address }}<br><br>
-                <label for='{{ form.patient_fullname }}'>Patient's Full Name:</label><br>
-                {{ form.patient_fullname }}<br><br>
-                <label for='{{ form.patient_birthday }}'>Patient's Birthday:</label><br>
-                {{ form.patient_birthday }}<br><br>
-                <label for='{{ form.pharmaceutical }}'>Pharmaceutical :</label><br>
-                {{ form.pharmaceutical }}<br><br>
-                <label for='{{ form.number }}'>Number:</label><br>
-                {{ form.number }}<br><br>
-                <label for='{{ form.expiration }}'>Expiration:</label><br>
-                {{ form.expiration }}<br><br>
-                <button class="button" type="submit" value="save">Issue ePrescription (Credential + Token)</button><br>
+                <label for='{{ form.firstname }}'>Insured person first name:</label><br>
+                {{ form.firstname }}<br><br>
+                <label for='{{ form.lastname }}'>Insured person last name:</label><br>
+                {{ form.lastname }}<br><br>
+                <label for='{{ form.birthday }}'>Insured person's Birthday:</label><br>
+                {{ form.birthday }}<br><br>
+                <label for='{{ form.expiration_date }}'>Expiration:</label><br>
+                {{ form.expiration_date }}<br><br>
+                <button class="button" type="submit" value="save">Issue CNS Credential (Credential + Token)</button><br>
             </form>
         </td>
         <td style="vertical-align: top">
@@ -111,8 +103,6 @@
     </tr>
     <tr>
         <td>
-            <button class="button"
-                onclick="window.location.href='{% url 'pharmacy-connectionless' %}';">Continue</button><br><br>
         </td>
     </tr>
 </table>

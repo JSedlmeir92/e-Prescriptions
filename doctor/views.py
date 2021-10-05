@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 FileHandler = open("ip_address_vm", "a+")
 ip_address = FileHandler.read()
 
-ip_address = os.getenv('IP_ADDRESS')
+ip_address = os.getenv('ip_address')
 
-url = 'http://' + ip_address + ':7080'
+url = f'http://{ip_address}:7080'
 support_revocation = True
 
 ATTRIBUTES = [
@@ -187,7 +187,7 @@ def issue_cred_view(request):
     # Updates the STATE of all CONNECTIONS that do not have the state 'active' or 'response'
     update_state = Connection.objects.all()
     for object in update_state:
-        connection = requests.get(url + '/connections/' + object.connection_id).status_code
+        connection = requests.get(f"{url}/connections/{object.connection_id}").status_code
         if connection == 200:
             state = requests.get(url + '/connections/' + object.connection_id).json()['state']
             Connection.objects.filter(id=object.id).update(state=state)

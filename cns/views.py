@@ -19,9 +19,14 @@ logger = logging.getLogger(__name__)
 FileHandler = open("ip_address_vm", "a+")
 ip_address = FileHandler.read()
 
-ip_address = os.getenv('IP_ADDRESS')
+ip_address = os.getenv('ip_address')
+print(f"ip address: {ip_address}")
+# os.system("pwd")
+# os.system("export $(grep -v '^#' .env | xargs)")
+print(os.environ)
 
-url = 'http://' + ip_address + ':7080'
+url = f'http://{ip_address}:7080'
+print(f"url: {url}")
 support_revocation = True
 
 ATTRIBUTES = [

@@ -120,7 +120,7 @@ def schema_view(request):
 def create_schema():
     schema = {
             "attributes": ATTRIBUTES,
-            "schema_name": f"e-Prescription{random.randint(10000, 10000)}",
+            "schema_name": f"e-Prescription{random.randint(10000, 100000)}",
             "schema_version": "1.0"
         }
     requests.post(url + '/schemas', json=schema)
@@ -290,7 +290,7 @@ def issue_cred_view(request):
                     with open("quorum_client/build/contracts/PrescriptionContract.json", "r") as file:
                         contract = json.load(file)
 
-                    contract_address = contract["networks"]['10']['address']
+                    contract_address = contract["networks"]['4']['address']
                     # print("contract_address: " + contract_address)
                     attributes.append(
                     {

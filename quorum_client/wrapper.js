@@ -36,8 +36,8 @@ class ePrescription {
     /**
      * Always launch after instantiating
      */
-    async init () {
-        const instance = new web3.eth.Contract(artifact.abi, artifact.networks['10'].address);
+    async init() {
+        const instance = new web3.eth.Contract(artifact.abi, artifact.networks['4'].address);
         this.instance = instance;
         return Promise.resolve(true);
     }
@@ -45,11 +45,11 @@ class ePrescription {
     /**
      * Always launch after completion
      */
-    async close(){}
+    async close() { }
 
 
-    async createPrescription()  {
-	    let adminAccount = await web3.eth.getAccounts().catch(err => {
+    async createPrescription() {
+        let adminAccount = await web3.eth.getAccounts().catch(err => {
             console.log(err);
         });
         console.log("Admin account: " + adminAccount);
@@ -57,32 +57,32 @@ class ePrescription {
         let patientAccount = await web3.eth.accounts.create("Hallo");
         this.prescriptionPrivateKey = patientAccount.privateKey;
         console.log("Patient Account: " + patientAccount.address);
-	console.log("Patient Account private key: " + patientAccount.privateKey);
-	//console.log(this.instance);
-        console.log(typeof(patientAccount.address));
-        console.log(typeof(adminAccount));
-	let returnValue = await this.instance.methods.create(patientAccount.address, "Receipt1").send({
+        console.log("Patient Account private key: " + patientAccount.privateKey);
+        //console.log(this.instance);
+        console.log(typeof (patientAccount.address));
+        console.log(typeof (adminAccount));
+        let returnValue = await this.instance.methods.create(patientAccount.address, "Receipt1").send({
             from: adminAccount.toString(),
             gas: 300000
-        }).catch(err => {return Promise.reject(err)});
-	console.log(returnValue);
+        }).catch(err => { return Promise.reject(err) });
+        console.log(returnValue);
         return Promise.resolve(1);
     };
 
 
     async spendPrescription() {
         let patientAccount = await web3.eth.accounts.privateKeyToAccount(this.prescriptionPrivateKey);
-	web3.eth.accounts.wallet.add(this.prescriptionPrivateKey.toString());
+        web3.eth.accounts.wallet.add(this.prescriptionPrivateKey.toString());
         let returnValue = await this.instance.methods.spend("Receipt1").send({
             from: patientAccount.address.toString(),
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         console.log(returnValue);
         return Promise.resolve(1);
 
     }
 
-    async getBlockNumber()  {
+    async getBlockNumber() {
         let blockNumber = await web3.eth.getBlockNumber().catch(err => {
             console.log(err);
             return Promise.reject(-1);
@@ -99,7 +99,7 @@ class ePrescription {
         let returnValue = await this.instance2.methods.getTmp().send({
             from: account,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue)
     }
 
@@ -108,15 +108,15 @@ class ePrescription {
             from: account,
             privateFor: privateFor,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
-	        return Promise.resolve(returnValue)
+        }).catch(err => { return Promise.reject(err) });
+        return Promise.resolve(returnValue)
     }
 
     async setTmpPublic(value) {
         let returnValue = await this.instance2.methods.setTmp(value).send({
             from: account,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue.blockNumber)
     }
 
@@ -125,7 +125,7 @@ class ePrescription {
             from: account,
             privateFor: privateFor,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue.blockNumber)
     }
 
@@ -140,7 +140,7 @@ class ePrescription {
         let returnValue = await this.instance2.methods.queryMatrixMultiplication(value).call({
             from: account,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue);
     };
 
@@ -149,7 +149,7 @@ class ePrescription {
             from: account,
             privateFor: privateFor,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue);
     };
 
@@ -157,7 +157,7 @@ class ePrescription {
         let returnValue = await this.instance2.methods.invokeMatrixMultiplication(value).send({
             from: account,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue.blockNumber);
     };
 
@@ -166,7 +166,7 @@ class ePrescription {
             from: account,
             privateFor: privateFor,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue.blockNumber);
     };
 
@@ -174,7 +174,7 @@ class ePrescription {
         let returnValue = await this.instance2.methods.setMatrixMultiplication(value).send({
             from: account,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue.blockNumber);
     };
 
@@ -183,31 +183,31 @@ class ePrescription {
             from: account,
             privateFor: privateFor,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue.blockNumber);
     };
 
 
-     /**
-     * Doing Nothing
-     * @param account
-     * @param array of public keys for private transactions
-     */
+    /**
+    * Doing Nothing
+    * @param account
+    * @param array of public keys for private transactions
+    */
 
-     async queryDoNothingPublic() {
+    async queryDoNothingPublic() {
         let returnValue = await this.instance2.methods.queryDoNothing().call({
             from: account,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue);
     }
 
-    async queryDoNothingPrivate(){
+    async queryDoNothingPrivate() {
         let returnValue = await this.instance.methods.queryDoNothing().call({
             from: account,
             privateFor: privateFor,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue.blockNumber)
     }
 
@@ -217,16 +217,17 @@ class ePrescription {
             gas: 300000000
         }).catch(err => {
             console.log(err);
-            return Promise.reject(err)});
+            return Promise.reject(err)
+        });
         return Promise.resolve(returnValue.blockNumber);
     }
 
-    async invokeDoNothingPrivate(){
+    async invokeDoNothingPrivate() {
         let returnValue = await this.instance.methods.invokeDoNothing().send({
             from: account,
             privateFor: privateFor,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue.blockNumber)
     }
 
@@ -242,7 +243,7 @@ class ePrescription {
         let returnValue = await this.instance2.methods.writeData(key, value).send({
             from: account,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue.blockNumber);
     }
 
@@ -251,132 +252,132 @@ class ePrescription {
             from: account,
             privateFor: privateFor,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue.blockNumber);
     }
 
-     /**
-     * reading data
-     * @param key
-     * @param account
-     * @param array of public keys for private transactions
-     */
+    /**
+    * reading data
+    * @param key
+    * @param account
+    * @param array of public keys for private transactions
+    */
 
-     async readDataPublic(key) {
+    async readDataPublic(key) {
         let returnValue = await this.instance2.methods.readData(key).call({
             from: account,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue);
-     }
+    }
 
     async readDataPrivate(key) {
         let returnValue = await this.instance.methods.readData(key).call({
             from: account,
             privateFor: privateFor,
             gas: 300000000
-        }).catch(err => {return Promise.reject(err)});
+        }).catch(err => { return Promise.reject(err) });
         return Promise.resolve(returnValue);
     }
 
-     /**
-     * writingMuchData
-     * @params start, end
-     * @param account
-     * @param array of public keys for private transactions
-     */
+    /**
+    * writingMuchData
+    * @params start, end
+    * @param account
+    * @param array of public keys for private transactions
+    */
 
-     async writeMuchDataPublic(len, start, delta) {
-         let returnValue = await this.instance2.methods.writeMuchData(parseInt(len, 10), parseInt(start, 10), parseInt(delta, 10)).send({
-             from: account,
-             gas: 300000000
-         }).catch(err => {return Promise.reject(err)});
-         return Promise.resolve(returnValue.blockNumber)
-     }
-
-     async writeMuchDataPrivate(len, start, delta) {
-         let returnValue = await this.instance.methods.writeMuchData(parseInt(len, 10), parseInt(start, 10), parseInt(delta, 10)).send({
-             from: account,
-             privateFor: privateFor,
+    async writeMuchDataPublic(len, start, delta) {
+        let returnValue = await this.instance2.methods.writeMuchData(parseInt(len, 10), parseInt(start, 10), parseInt(delta, 10)).send({
+            from: account,
             gas: 300000000
-         }).catch(err => {return Promise.reject(err)});
-         return Promise.resolve(returnValue)
-     }
+        }).catch(err => { return Promise.reject(err) });
+        return Promise.resolve(returnValue.blockNumber)
+    }
 
-     async writeMuchDataPublic2(len, start, delta) {
-         let returnValue = await this.instance2.methods.writeMuchData2(parseInt(len, 10), parseInt(start, 10), parseInt(delta, 10)).send({
-             from: account,
-             gas: 300000000
-         }).catch(err => {return Promise.reject(err)});
-         return Promise.resolve(returnValue.blockNumber)
-     }
-
-     async writeMuchDataPrivate2(len, start, delta) {
-         let returnValue = await this.instance.methods.writeMuchData2(parseInt(len, 10), parseInt(start, 10), parseInt(delta, 10)).send({
-             from: account,
-             privateFor: privateFor,
+    async writeMuchDataPrivate(len, start, delta) {
+        let returnValue = await this.instance.methods.writeMuchData(parseInt(len, 10), parseInt(start, 10), parseInt(delta, 10)).send({
+            from: account,
+            privateFor: privateFor,
             gas: 300000000
-         }).catch(err => {return Promise.reject(err)});
-         return Promise.resolve(returnValue)
-     }
+        }).catch(err => { return Promise.reject(err) });
+        return Promise.resolve(returnValue)
+    }
 
-     /**
-     * readingMuchData
-     * @params start, end
-     * @param account
-     * @param array of public keys for private transactions
-     */
-
-     async readMuchDataPublic(len, start) {
-         let returnValue = await this.instance2.methods.readMuchData(len, start).call({
-             from: account,
+    async writeMuchDataPublic2(len, start, delta) {
+        let returnValue = await this.instance2.methods.writeMuchData2(parseInt(len, 10), parseInt(start, 10), parseInt(delta, 10)).send({
+            from: account,
             gas: 300000000
-         }).catch(err => {return Promise.reject(err)});
-         return Promise.resolve(returnValue)
-     }
+        }).catch(err => { return Promise.reject(err) });
+        return Promise.resolve(returnValue.blockNumber)
+    }
 
-     async readMuchDataPrivate(len, start) {
-         let returnValue = await this.instance.methods.readMuchData(len, start).call({
-             from: account,
-             privateFor: privateFor,
-             gas: 300000000
-         }).catch(err => {return Promise.reject(err)});
-         return Promise.resolve(returnValue)
-     }
+    async writeMuchDataPrivate2(len, start, delta) {
+        let returnValue = await this.instance.methods.writeMuchData2(parseInt(len, 10), parseInt(start, 10), parseInt(delta, 10)).send({
+            from: account,
+            privateFor: privateFor,
+            gas: 300000000
+        }).catch(err => { return Promise.reject(err) });
+        return Promise.resolve(returnValue)
+    }
 
-     async readMuchDataPublic2(len, start) {
-         let returnValue = await this.instance2.methods.readMuchData2(len, start).call({
-             from: account,
-             gas: 300000000
-         }).catch(err => {return Promise.reject(err)});
-         return Promise.resolve(returnValue)
-     }
+    /**
+    * readingMuchData
+    * @params start, end
+    * @param account
+    * @param array of public keys for private transactions
+    */
 
-     async readMuchDataPrivate2(len, start) {
-         let returnValue = await this.instance.methods.readMuchData2(len, start).call({
-             from: account,
-             privateFor: privateFor,
-             gas: 300000000
-         }).catch(err => {return Promise.reject(err)});
-         return Promise.resolve(returnValue)
-     }
+    async readMuchDataPublic(len, start) {
+        let returnValue = await this.instance2.methods.readMuchData(len, start).call({
+            from: account,
+            gas: 300000000
+        }).catch(err => { return Promise.reject(err) });
+        return Promise.resolve(returnValue)
+    }
 
-     async depositZether() {
-         let result = await this.alice.deposit(10).catch(err => {
-             console.log(err);
-             return Promise.reject(-1);
-         });
-         console.log(result)
-         return Promise.resolve(1)
-     }
+    async readMuchDataPrivate(len, start) {
+        let returnValue = await this.instance.methods.readMuchData(len, start).call({
+            from: account,
+            privateFor: privateFor,
+            gas: 300000000
+        }).catch(err => { return Promise.reject(err) });
+        return Promise.resolve(returnValue)
+    }
 
-     async sendZether() {
-         let result = await this.alice.transfer('Bob', 50).catch(err => {
-             console.log(err);
-             return Promise.reject(-1);
-         });
-         console.log(result);
-         return Promise.resolve(1);
+    async readMuchDataPublic2(len, start) {
+        let returnValue = await this.instance2.methods.readMuchData2(len, start).call({
+            from: account,
+            gas: 300000000
+        }).catch(err => { return Promise.reject(err) });
+        return Promise.resolve(returnValue)
+    }
+
+    async readMuchDataPrivate2(len, start) {
+        let returnValue = await this.instance.methods.readMuchData2(len, start).call({
+            from: account,
+            privateFor: privateFor,
+            gas: 300000000
+        }).catch(err => { return Promise.reject(err) });
+        return Promise.resolve(returnValue)
+    }
+
+    async depositZether() {
+        let result = await this.alice.deposit(10).catch(err => {
+            console.log(err);
+            return Promise.reject(-1);
+        });
+        console.log(result)
+        return Promise.resolve(1)
+    }
+
+    async sendZether() {
+        let result = await this.alice.transfer('Bob', 50).catch(err => {
+            console.log(err);
+            return Promise.reject(-1);
+        });
+        console.log(result);
+        return Promise.resolve(1);
     }
 
     async withdrawZether() {

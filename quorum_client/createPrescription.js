@@ -19,7 +19,7 @@
 
 const stdio = require("stdio");
 const args = stdio.getopt({
-    "id": {key: "id", args: 1, description: "id of the prescription", mandatory: true},
+	"id": { key: "id", args: 1, description: "id of the prescription", mandatory: true },
 });
 
 
@@ -33,7 +33,7 @@ const account = config.account
 
 const artifact = require("./build/contracts/PrescriptionContract.json");
 
-const instance = new web3.eth.Contract(artifact.abi, artifact.networks['10'].address);
+const instance = new web3.eth.Contract(artifact.abi, artifact.networks['4'].address);
 //console.log(artifact.networks['10'].address);
 
 async function createPrescription(id) {
@@ -52,9 +52,9 @@ async function createPrescription(id) {
 	let returnValue = await instance.methods.create(patientAccount.address, id).send({
 		from: adminAccount[0].toString(),
 		gas: 300000
-	}).catch(err => {return Promise.reject(err)});
+	}).catch(err => { return Promise.reject(err) });
 	//console.log(returnValue);
-        console.log(prescriptionPrivateKey);
+	console.log(prescriptionPrivateKey);
 	return;
 };
 

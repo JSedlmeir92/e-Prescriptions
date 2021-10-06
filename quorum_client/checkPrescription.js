@@ -18,9 +18,9 @@
 
 const stdio = require("stdio");
 const args = stdio.getopt({
-    "address": {key: "address", args: 1, description: "contract address", mandatory: true},
-    "secret": {key: "secret", args: 1, description: "secret key for checking the ePrescription", mandatory: true},
-    "id": {key: "id", args: 1, description: "id of the prescription", mandatory: true},
+    "address": { key: "address", args: 1, description: "contract address", mandatory: true },
+    "secret": { key: "secret", args: 1, description: "secret key for checking the ePrescription", mandatory: true },
+    "id": { key: "id", args: 1, description: "id of the prescription", mandatory: true },
 });
 
 const config = require("./config.json")
@@ -33,14 +33,14 @@ const account = config.account
 
 const artifact = require("./build/contracts/PrescriptionContract.json");
 
-const instance = new web3.eth.Contract(artifact.abi, artifact.networks['10'].address);
+const instance = new web3.eth.Contract(artifact.abi, artifact.networks['4'].address);
 
 async function checkPrescription(secret, id) {
     let patientAccount = await web3.eth.accounts.privateKeyToAccount(secret);
 
-//    let adminAccount = await web3.eth.getAccounts().catch(err => {
-//       console.log(err);
-//    });
+    //    let adminAccount = await web3.eth.getAccounts().catch(err => {
+    //       console.log(err);
+    //    });
     //console.log("Admin account: " + adminAccount);
 
     web3.eth.accounts.wallet.add(secret.toString());

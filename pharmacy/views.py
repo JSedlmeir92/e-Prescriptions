@@ -1,5 +1,6 @@
 from django.http.response import HttpResponseRedirect
-from pharmacy.models import Prescription
+from .models import Connection, Prescription, Credential
+from .forms import CredentialForm, ConnectionForm
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
@@ -19,8 +20,22 @@ from dateutil.relativedelta import *
 
 ip_address = os.getenv('ip_address')
 
-url = f'http://{ip_address}:7080'
+url = f'http://{ip_address}:9080'
 url2 = f'http://{ip_address}:9080'
+
+support_revocation = True
+
+ATTRIBUTES = [
+    "pharmaceutical",
+    "price",
+    "prescription_id"
+]
+
+COMMENTS = [
+    "The pharmaceutical that gets billed",
+    "The price of the pharmaceutical",
+    "The unique id of the prescription to be referred to on the blockchain token"
+]
 
 ##Table-stuff
 class PrescriptionListView(ListView):
@@ -32,6 +47,183 @@ class PrescriptionListView(ListView):
 
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
+
+def connection_view(request):
+    form = ConnectionForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        form = ConnectionForm()
+    context = {
+        'title': 'Establish Connection (Pharmacy)',
+        'form': form
+    }
+    if request.method == 'POST':
+        # Deleting old INVITATIONS
+        connections_invitation = requests.get(url + '/connections?initiator=self&state=invitation').json()['results']
+        if len(connections_invitation) > 0:
+            connection_id = requests.get(url + '/connections?initiator=self&state=invitation').json()['results'][0]["connection_id"]
+            requests.delete(url + '/connections/' + connection_id)
+        # Generating the new INVITATION
+        alias = request.POST.get('alias')
+        response = requests.post(url + '/connections/create-invitation?alias=' + alias + '&auto_accept=true').json()
+        invitation_link = response['invitation_url']
+        connection_id = response['connection_id']
+        Connection.objects.filter(id=Connection.objects.latest('date_added').id).update(invitation_link=invitation_link)
+        Connection.objects.filter(id=Connection.objects.latest('date_added').id).update(connection_id=connection_id)
+        # Generating the QR code
+        invitation_splitted = invitation_link.split("=", 1)
+        temp = json.loads(base64.b64decode(invitation_splitted[1]))
+        # Icon for the wallet app
+        temp.update({"imageUrl": "https://cdn.pixabay.com/photo/2016/03/31/20/12/doctor-1295581_960_720.png"})
+        temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
+        invitation_splitted[1] = temp
+        invitation_link = "=".join(invitation_splitted)
+        # print(invitation_link)
+        qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600"
+        context['qr_code'] = qr_code
+    return render(request, 'pharmacy/connection.html', context)
+
+def schema_view(request):
+    created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
+    context = {
+        'title': 'Schema'
+    }
+    if len(created_schema) > 0:
+        context['created_schema'] = created_schema[0]
+        # context['attributes'] = requests.get(url + '/schemas/' + context['created_schema']).json()['schema']['attrNames']
+        # context['attributes'][1], context['attributes'][2], context['attributes'][3], context['attributes'][7], context['attributes'][8], context['attributes'][9], context['attributes'][6], context['attributes'][5], context['attributes'][4], context['attributes'][10], context['attributes'][0] = context['attributes'][0], context['attributes'][1], context['attributes'][2], context['attributes'][3], context['attributes'][4], context['attributes'][5], context['attributes'][6], context['attributes'][7], context['attributes'][8], context['attributes'][9], context['attributes'][10]
+        context['attributes'] = []
+        for index, _ in enumerate(ATTRIBUTES): #displays the ATTRIBUTES with the describing comments
+            context['attributes'].append({"attribute": ATTRIBUTES[index].ljust(30), "comment": COMMENTS[index] + "."})
+        print(context)
+    else:
+        pass ##null operation. Nothing happens when the satatement executes.
+    # Publish a new SCHEMA
+    if request.method == 'POST':
+        create_schema()
+        return redirect('.')
+    return render(request, 'pharmacy/schema.html', context)
+
+def create_schema():
+    schema = {
+            "attributes": ATTRIBUTES,
+            "schema_name": "PharmacyBillSchema_" + str(time.time())[:10],
+            "schema_version": "1.0"
+        }
+    requests.post(url + '/schemas', json=schema)
+
+def cred_def_view(request):
+    context = {
+        'title': 'Credential Definition'
+    }
+    # Checks if there are suitable SCHEMAS in the wallet
+    created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
+    if len(created_schema) < 1:
+        context['available_schema'] = 'There is no suitable schema available. Please go back and publish a new one first.'
+    else:
+        schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
+        # Checks if there are suitable REVOCABLE CREDENTIAL DEFINITIONS in the wallet
+        created_credential_definitions_revocable = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids']
+        if len(created_credential_definitions_revocable) > 0:
+            context['created_cred_def_rev'] = created_credential_definitions_revocable[0]
+        else:
+            # Publish a new CREDENTIAL DEFINITION
+            if request.method == 'POST':
+                schema_id = created_schema[0]
+                credential_definition = {
+                    "tag": "pharmacyBill",
+                    "support_revocation": support_revocation,
+                    "schema_id": schema_id
+                }
+                requests.post(url + '/credential-definitions', json=credential_definition)
+                return redirect('.')
+    return render(request, 'pharmacy/cred_def.html', context)
+
+def issue_cred_view(request):
+    # Updates the STATE of all CONNECTIONS that do not have the state 'active' or 'response'
+    update_state = Connection.objects.all()
+    for object in update_state:
+        connection = requests.get(f"{url}/connections/{object.connection_id}").status_code
+        if connection == 200:
+            state = requests.get(url + '/connections/' + object.connection_id).json()['state']
+            Connection.objects.filter(id=object.id).update(state=state)
+        else:
+            Connection.objects.filter(id=object.id).delete()
+    form = CredentialForm(request.POST or None)
+    context = {
+        'title': 'Issue Credential',
+        'form': form
+    }
+    # Checks if there is a suitable SCHEMA
+    created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
+    if len(created_schema) < 1:
+        context['available_schema'] = True
+    else:
+        # Checks if there is a suitable CREDENTIAL DEFINITION
+        schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
+        created_credential_definitions_revocable = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids']
+        if len(created_credential_definitions_revocable) < 1:
+            context['available_cred_def'] = True
+        else:
+            # Checks if there is a suitable REVOCATION REGISTRY
+            cred_def_id = created_credential_definitions_revocable[0]
+            revocation_registry_id = requests.get(url + '/revocation/registries/created?cred_def_id=' + cred_def_id + '&state=active').json()['rev_reg_ids']
+            if len(revocation_registry_id) < 1:
+                context['rev_reg'] = True
+            else:
+                if form.is_valid():
+                    # Sending the data to the patient
+                    schema = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']
+                    schema_name = schema['name']
+                    schema_id = schema['id']
+                    schema_version = schema['version']
+                    schema_issuer_did = requests.get(url + '/wallet/did/public').json()['result']['did']
+                    credential_definition_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids'][0]
+                    rev_reg_id = requests.get(url + '/revocation/registries/created?cred_def_id=' + credential_definition_id + '&state=active').json()['rev_reg_ids'][0]
+                    issuer_did = requests.get(url + '/wallet/did/public').json()['result']['did']
+                    connection_id = request.POST.get('connection_id')
+
+                    attributes = [
+                        {
+                            # "mime-type": "image/jpeg",
+                            "name": "pharmaceutical",
+                            "value": request.POST.get('pharmaceutical')
+                        },
+                        {
+                            "name": "price",
+                            "value": request.POST.get('price')
+                        },
+                        {
+                            "name": "prescription_id",
+                            "value": request.POST.get('prescription_id')
+                        }
+                    ]
+                    print(attributes)
+                    credential = {
+                        "schema_name": schema_name,
+                        "auto_remove": True,
+                        "revoc_reg_id": rev_reg_id,
+                        "schema_issuer_did": schema_issuer_did,
+                        "schema_version": schema_version,
+                        "schema_id": schema_id,
+                        "credential_proposal": {
+                            "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/credential-preview",
+                            "attributes": attributes,
+                        },
+                        "credential_def_id": credential_definition_id,
+                        "issuer_did": issuer_did,
+                        "connection_id": connection_id,
+                        "trace": False
+                    }
+                    print(json.dumps(credential))
+                    # Saving the data in the database
+                    form.save()
+                    form = CredentialForm()
+                    issue_cred = requests.post(url + '/issue-credential/send', json=credential)
+
+                   
+    return render(request, 'pharmacy/issue_cred.html', context)
+
 
 @csrf_exempt #(Security Excemption): The request send via a form doesn't has to originate from my website and can come from some other domain
 def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbased" proof

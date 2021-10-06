@@ -19,4 +19,18 @@ class Prescription(models.Model):
     date_redeemed       = models.DateTimeField(blank=True, null=True)
     redeemed            = models.BooleanField(default=False)
 
+class Credential(models.Model):
+    id          = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    pharmaceutical =  models.CharField(default='Aspirin', max_length=120)
+    price =  models.CharField(default='12.99', max_length=120)
+    prescription_id = models.CharField(default='test_id', max_length=120)
+
+class Connection(models.Model):
+    alias           = models.CharField(max_length=120)
+    invitation_link = models.CharField(max_length=500, blank=True, null=True)
+    connection_id   = models.CharField(max_length=50, blank=True, null=True)
+    date_added      = models.DateTimeField(auto_now=False, auto_now_add=True)
+    state           = models.CharField(max_length=50, blank=True, null=True)
+
+
 

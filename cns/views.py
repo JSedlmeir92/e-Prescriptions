@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Credential, Connection
 from .forms import CredentialForm, ConnectionForm
 
+import random
 import hashlib
 import json
 import requests
@@ -114,7 +115,7 @@ def schema_view(request):
 def create_schema():
     schema = {
             "attributes": ATTRIBUTES,
-            "schema_name": "CNS-Schema" + str(time.time())[:10],
+            "schema_name": "securite sociale",
             "schema_version": "1.0"
         }
     requests.post(url + '/schemas', json=schema)
@@ -230,6 +231,10 @@ def issue_cred_view(request):
 
                     attributes = [
                         {
+                            "name": "matricule",
+                            "value": f"{random.randint(10000, 100000)}{request.POST.get('birthday').replace('.', '')}"
+                        },
+                        {
                             # "mime-type": "image/jpeg",
                             "name": "firstname",
                             "value": request.POST.get('firstname')
@@ -256,7 +261,7 @@ def issue_cred_view(request):
                         },
                         {
                             "name": "expiration_date",
-                            "value": request.POST.get('expiration_date')
+                            "value": request.POST.get('expiration_date') #.replace(".", "")
                         },
                         {
                             "name": "date_issued",

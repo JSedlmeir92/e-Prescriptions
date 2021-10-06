@@ -35,7 +35,7 @@ class PrescriptionListView(ListView):
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
 
-@csrf_exempt #(Security Excemption): The request send via a form doesn't has to originate from my website and can come from some other domain
+@csrf_exempt #(Security Excemption): The request sent via a form doesn't have to originate from my website and can come from some other domain
 def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbased" proof
     context = {
         'title': 'Login',
@@ -118,7 +118,7 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
             invitation_splitted[1] = temp
             invitation_link = "=".join(invitation_splitted)
             if way == 1:
-                qr_code = f"https://api.qrserver.com/v1/create-qr-code/?data=http://{ip_address}:8000/pharmacy/login_url"
+                qr_code = f"https://api.qrserver.com/v1/create-qr-code/?data=http://{ip_address}:80/pharmacy/login_url"
             else:
                 qr_code = f"https://api.qrserver.com/v1/create-qr-code/?data={invitation_link}&amp;size=600x600" ##"Connection-based" inivitation
             context['qr_code'] = qr_code
@@ -163,9 +163,8 @@ def connection_view(request):
 def login_connectionless_view(request):
     context = {
         'title': 'Login',
-
     }
-    qr_code = f"https://api.qrserver.com/v1/create-qr-code/?data=http://{ip_address}:8000/pharmacy/login_url"
+    qr_code = f"https://api.qrserver.com/v1/create-qr-code/?data=http://{ip_address}:80/pharmacy/login_url"
     context['qr_code'] = qr_code
     return render(request, 'pharmacy/login_connectionless.html', context)
 
@@ -195,7 +194,8 @@ def login_confirmation_view(request, id = 0):
             #gets Object.ID from the database
             if Prescription.objects.filter(prescription_id=prescription_id).exists() == False:
                  print("Waiting for webhook...")
-                 time.sleep(10)
+                 time.sleep(5)
+
             id = Prescription.objects.filter(prescription_id=prescription_id).values('id')[0]['id']
             obj = get_object_or_404(Prescription, id=id)
     pharmaceutical = obj.pharmaceutical
@@ -315,7 +315,7 @@ def login_url_view(request):
     schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
     cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()[
         'credential_definition_ids'][0]
-    print("cred_def_id " + cred_def_id)
+    # print("cred_def_id " + cred_def_id)
     # Gets the unixstamp of the next day
     expiration = date.today() + relativedelta(days=+1, hour=0, minute=0)
     expiration = int(time.mktime(expiration.timetuple()))

@@ -119,7 +119,7 @@ def schema_view(request):
 def create_schema():
     schema = {
             "attributes": ATTRIBUTES,
-            "schema_name": "ePrescriptionSchema_" + str(time.time())[:10],
+            "schema_name": "e-Prescription",
             "schema_version": "1.0"
         }
     requests.post(url + '/schemas', json=schema)

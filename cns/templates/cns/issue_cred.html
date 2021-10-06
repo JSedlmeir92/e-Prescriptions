@@ -1,4 +1,4 @@
-{% extends 'cns/base_cns.html' %}
+{% extends 'base.html' %}
 
 {% block head %}{% endblock %}
 
@@ -40,7 +40,7 @@
 
 {% endblock %}
 
-{% block extracontent %}
+{% block body %}
 {% if available_schema %}
 <h5 style="color: darkred">There are no suitable schemas or credential definitions in your wallet. To issue a
     credential, please go back and publish new ones first.</h5><br>

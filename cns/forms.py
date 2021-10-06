@@ -22,6 +22,9 @@ class CredentialForm(forms.ModelForm):
     connection_id     = forms.ChoiceField(choices=[], widget=[])
     firstname         = forms.CharField(initial='Max', label='Insured person first name', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     lastname          = forms.CharField(initial='Mustermann', label='Insured person last name', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    street = forms.CharField(initial='Musterstraße 1', label='Insured person street address', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    zip_code = forms.CharField(initial='123456', label='Insured person zip code', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    city = forms.CharField(initial='Musterstadt', label='Insured person city', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     # doctor_type       = forms.CharField(initial='Physician', widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:700px; background-color: #bfbfbf'}))
     # doctor_address    = forms.CharField(initial='Health St. 10', widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:700px; background-color: #bfbfbf'}))
     # patient_fullname  = forms.CharField(initial='Max Mustermann', widget=forms.TextInput(attrs={'style': 'width:700px'}))
@@ -37,6 +40,9 @@ class CredentialForm(forms.ModelForm):
             'firstname',
             'lastname',
             'birthday',
+            'street',
+            'zip_code',
+            'city',
             'expiration_date'
             # 'prescription_id',
             # 'contractAddress',

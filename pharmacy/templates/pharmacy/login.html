@@ -1,4 +1,4 @@
-{% extends 'pharmacy/base_pharmacy.html' %}
+{% extends 'base.html' %}
 
 {% block head %}
     {% if name %}
@@ -45,7 +45,7 @@
     </style>
 {% endblock %}
 
-{% block content %}
+{% block body %}
     {% if available_schema %}
         <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd; margin-left: auto; margin-right: auto; width: 500px">Spend ePrescription</button><br>
         <h3 style="color: darkred; text-align: center">You can't use the functionality yet.</h3><br>

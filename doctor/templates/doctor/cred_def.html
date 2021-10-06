@@ -1,10 +1,10 @@
-{% extends 'doctor/base_doctor.html' %}
+{% extends 'base.html' %}
 
 {% block head %}{% endblock %}
 
 {% block style %}{% endblock %}
 
-{% block extracontent %}
+{% block body %}
     <h1>Available ePrescription Credential Definitions:</h1><br>
     {% if available_schema %}
         <h5 style="color: darkred">{{ available_schema }}</h5><br>

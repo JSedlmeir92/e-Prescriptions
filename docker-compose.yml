@@ -1,281 +1,287 @@
-version: "3.8"
+version: '3.8'
 
-x-quorum-def:
-  &quorum-def
-  restart: "on-failure"
-  image: "${QUORUM_DOCKER_IMAGE:-quorumengineering/quorum:latest}"
-  expose:
-    - "21000"
-    - "50400"
-  healthcheck:
-    test: ["CMD", "wget", "--spider", "--proxy", "off", "http://localhost:8545"]
-    interval: 4s
-    timeout: 4s
-    retries: 10
-    start_period: 5s
-  labels:
-    com.quorum.consensus: raft
-  entrypoint:
-    - /bin/sh
-    - -c
-    - |
-      DDIR=/qdata/dd
-      mkdir -p $${DDIR}/keystore
-      mkdir -p $${DDIR}/geth
-      cp /3nodes/raft/nodekey$${NODE_ID} $${DDIR}/geth/nodekey
-      cp /3nodes/keys/key$${NODE_ID} $${DDIR}/keystore/
-      cat /3nodes/permissioned-nodes.json | sed 's/^\(.*\)@.*\?\(.*\)raftport=5040\([0-9]\)\(.*\)$$/\1@172.16.239.1\3:21000?discport=0\&raftport=50400\4/g' > $${DDIR}/static-nodes.json
-      cp $${DDIR}/static-nodes.json $${DDIR}/permissioned-nodes.json
-      cat $${DDIR}/static-nodes.json
-      GENESIS_FILE="/3nodes/genesis.json"
-      NETWORK_ID=$$(cat $${GENESIS_FILE} | grep chainId | awk -F " " '{print $$2}' | awk -F "," '{print $$1}')
-      GETH_ARGS_raft="--raft --raftport 50400"
-      geth --datadir $${DDIR} init $${GENESIS_FILE}
-      geth \
-        --allow-insecure-unlock \
-        --identity node$${NODE_ID}-raft \
-        --datadir $${DDIR} \
-        --permissioned \
-        --nodiscover \
-        --verbosity 5 \
-        --networkid $${NETWORK_ID} \
-        --rpc \
-        --rpccorsdomain "*" \
-        --rpcvhosts "*" \
-        --rpcaddr 0.0.0.0 \
-        --rpcport 8545 \
-        --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,raft \
-        --port 21000 \
-        --ws \
-        --wsaddr 0.0.0.0 \
-        --wsport 8546 \
-        --wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,raft \
-        --wsorigins "*" \
-        --unlock 0 \
-        --password /3nodes/passwords.txt \
-        ${QUORUM_GETH_ARGS:-} $${GETH_ARGS_raft}
-
+x-quorum-def: &quorum-def
+    restart: 'on-failure'
+    image: '${QUORUM_DOCKER_IMAGE:-quorumengineering/quorum:latest}'
+    expose:
+        - '21000'
+        - '50400'
+    healthcheck:
+        test:
+            [
+                'CMD',
+                'wget',
+                '--spider',
+                '--proxy',
+                'off',
+                'http://localhost:8545',
+            ]
+        interval: 4s
+        timeout: 4s
+        retries: 10
+        start_period: 5s
+    labels:
+        com.quorum.consensus: raft
+    entrypoint:
+        - /bin/sh
+        - -c
+        - |
+            DDIR=/qdata/dd
+            mkdir -p $${DDIR}/keystore
+            mkdir -p $${DDIR}/geth
+            cp /3nodes/raft/nodekey$${NODE_ID} $${DDIR}/geth/nodekey
+            cp /3nodes/keys/key$${NODE_ID} $${DDIR}/keystore/
+            cat /3nodes/permissioned-nodes.json | sed 's/^\(.*\)@.*\?\(.*\)raftport=5040\([0-9]\)\(.*\)$$/\1@172.16.239.1\3:21000?discport=0\&raftport=50400\4/g' > $${DDIR}/static-nodes.json
+            cp $${DDIR}/static-nodes.json $${DDIR}/permissioned-nodes.json
+            cat $${DDIR}/static-nodes.json
+            GENESIS_FILE="/3nodes/genesis.json"
+            NETWORK_ID=$$(cat $${GENESIS_FILE} | grep chainId | awk -F " " '{print $$2}' | awk -F "," '{print $$1}')
+            GETH_ARGS_raft="--raft --raftport 50400"
+            geth --datadir $${DDIR} init $${GENESIS_FILE}
+            geth \
+              --allow-insecure-unlock \
+              --identity node$${NODE_ID}-raft \
+              --datadir $${DDIR} \
+              --permissioned \
+              --nodiscover \
+              --verbosity 5 \
+              --networkid $${NETWORK_ID} \
+              --rpc \
+              --rpccorsdomain "*" \
+              --rpcvhosts "*" \
+              --rpcaddr 0.0.0.0 \
+              --rpcport 8545 \
+              --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,raft \
+              --port 21000 \
+              --ws \
+              --wsaddr 0.0.0.0 \
+              --wsport 8546 \
+              --wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,raft \
+              --wsorigins "*" \
+              --unlock 0 \
+              --password /3nodes/passwords.txt \
+              ${QUORUM_GETH_ARGS:-} $${GETH_ARGS_raft}
 
 services:
-  tails-server:
-    container_name: tails-server
-    build:
-      context: ./indy-tails-server
-      dockerfile: ./docker/Dockerfile.tails-server 
-    ports:
-      - 6543:6543
-    command: >
-      tails-server
-        --host 0.0.0.0
-        --port 6543
-        --log-level debug
-        --storage-path /home/indy
-    volumes:
-      - ${dir_name}/docker_timezone:/etc/localtime:ro
+    tails-server:
+        container_name: tails-server
+        build:
+            context: ./indy-tails-server
+            dockerfile: ./docker/Dockerfile.tails-server
+        ports:
+            - 6543:6543
+        command: >
+            tails-server
+              --host 0.0.0.0
+              --port 6543
+              --log-level debug
+              --storage-path /home/indy
+        volumes:
+            - ${dir_name}/docker_timezone:/etc/localtime:ro
 
-  doctor-agent:
-    container_name: doctor-agent
-    build:
-      context: ./aries-cloudagent-python
-      dockerfile: ./docker/Dockerfile.run
-    ports:
-      - 7000:7000
-      - 7080:7080
-    entrypoint: aca-py
-    command: >
-      start
-        --auto-provision
-        --tails-server-base-url http://${ip_address}:6543 
-        --auto-respond-credential-proposal 
-        --auto-respond-credential-offer 
-        --auto-respond-credential-request
-        --auto-verify-presentation 
-        --inbound-transport http 0.0.0.0 7000 
-        --inbound-transport ws 0.0.0.0 7001 
-        --outbound-transport ws 
-        --outbound-transport http 
-        --genesis-file /var/lib/indy/my-net/pool_transactions_genesis 
-        --log-level info
-        --seed 000000000000000000000000Steward3
-        --wallet-type indy 
-        --wallet-key StewardWallet3 
-        --wallet-name StewardWallet3
-        --admin-insecure-mode 
-        --admin 0.0.0.0 7080 
-        -e http://${ip_address}:7000/ 
-        -l Doctor
-    volumes:
-      - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
-      - ./docker_timezone:/etc/localtime:ro
+    doctor-agent:
+        container_name: doctor-agent
+        build:
+            context: ./aries-cloudagent-python
+            dockerfile: ./docker/Dockerfile.run
+        ports:
+            - 7000:7000
+            - 7080:7080
+        entrypoint: aca-py
+        command: >
+            start
+              --auto-provision
+              --tails-server-base-url http://${ip_address}:6543
+              --auto-respond-credential-proposal
+              --auto-respond-credential-offer
+              --auto-respond-credential-request
+              --auto-verify-presentation
+              --inbound-transport http 0.0.0.0 7000
+              --inbound-transport ws 0.0.0.0 7001
+              --outbound-transport ws
+              --outbound-transport http
+              --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
+              --log-level info
+              --seed 000000000000000000000000Steward3
+              --wallet-type indy
+              --wallet-key StewardWallet3
+              --wallet-name StewardWallet3
+              --admin-insecure-mode
+              --admin 0.0.0.0 7080
+              -e http://${ip_address}:7000/
+              -l Doctor
+        volumes:
+            - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+            - ./docker_timezone:/etc/localtime:ro
 
-  cns-agent:
-    container_name: cns-agent
-    build:
-      context: ./aries-cloudagent-python
-      dockerfile: ./docker/Dockerfile.run
-    ports:
-      - 6000:6000
-      - 6080:6080
-    entrypoint: aca-py
-    command: >
-      start
-        --auto-provision
-        --tails-server-base-url http://${ip_address}:6543
-        --auto-respond-credential-proposal
-        --auto-respond-credential-offer
-        --auto-respond-credential-request
-        --auto-verify-presentation
-        --inbound-transport http 0.0.0.0 6000
-        --inbound-transport ws 0.0.0.0 6001
-        --outbound-transport ws
-        --outbound-transport http
-        --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
-        --log-level info
-        --seed 000000000000000000000000Steward1
-        --wallet-type indy
-        --wallet-key StewardWallet3
-        --wallet-name StewardWallet3
-        --admin-insecure-mode
-        --admin 0.0.0.0 6080
-        -e http://${ip_address}:6000
-        -l Cns
-    volumes:
-      - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
-      - ./docker_timezone:/etc/localtime:ro
+    cns-agent:
+        container_name: cns-agent
+        build:
+            context: ./aries-cloudagent-python
+            dockerfile: ./docker/Dockerfile.run
+        ports:
+            - 6000:6000
+            - 6080:6080
+        entrypoint: aca-py
+        command: >
+            start
+              --auto-provision
+              --tails-server-base-url http://${ip_address}:6543
+              --webhook http://${ip_address}:8000/cns
+              --auto-respond-credential-proposal
+              --auto-respond-credential-offer
+              --auto-respond-credential-request
+              --auto-verify-presentation
+              --inbound-transport http 0.0.0.0 6000
+              --inbound-transport ws 0.0.0.0 6001
+              --outbound-transport ws
+              --outbound-transport http
+              --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
+              --log-level info
+              --seed 000000000000000000000000Steward3
+              --wallet-type indy
+              --wallet-key StewardWallet3
+              --wallet-name StewardWallet3
+              --admin-insecure-mode
+              --admin 0.0.0.0 6080
+              -e http://${ip_address}:6000/
+              -l Cns
+        volumes:
+            - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+            - ./docker_timezone:/etc/localtime:ro
 
-  pharmacy-agent:
-    container_name: pharmacy-agent
-    build:
-      context: ./aries-cloudagent-python
-      dockerfile: ./docker/Dockerfile.run
-    ports:
-      - 9000:9000
-      - 9080:9080
-    entrypoint: aca-py
-    command: >
-      start
-        --auto-provision
-        --webhook http://${ip_address}:80/pharmacy
-        --auto-respond-credential-proposal 
-        --auto-respond-credential-offer 
-        --auto-respond-credential-request
-        --auto-verify-presentation 
-        --inbound-transport http 0.0.0.0 9000 
-        --inbound-transport ws 0.0.0.0 9001 
-        --outbound-transport ws 
-        --outbound-transport http 
-        --genesis-file /var/lib/indy/my-net/pool_transactions_genesis 
-        --log-level info
-        --debug-connections
-        --seed 000000000000000000000000Steward3
-        --wallet-type indy 
-        --wallet-key StewardWallet3 
-        --wallet-name StewardWallet3
-        --admin-insecure-mode 
-        --admin 0.0.0.0 9080 
-        -e http://${ip_address}:9000/ 
-        -l Pharmacy
-    volumes:
-      - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
-      - ./docker_timezone:/etc/localtime:ro
+    pharmacy-agent:
+        container_name: pharmacy-agent
+        build:
+            context: ./aries-cloudagent-python
+            dockerfile: ./docker/Dockerfile.run
+        ports:
+            - 9000:9000
+            - 9080:9080
+        entrypoint: aca-py
+        command: >
+            start
+              --auto-provision
+              --webhook http://${ip_address}:8000/pharmacy
+              --auto-respond-credential-proposal
+              --auto-respond-credential-offer
+              --auto-respond-credential-request
+              --auto-verify-presentation
+              --inbound-transport http 0.0.0.0 9000
+              --inbound-transport ws 0.0.0.0 9001
+              --outbound-transport ws
+              --outbound-transport http
+              --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
+              --log-level info
+              --debug-connections
+              --seed 000000000000000000000000Steward3
+              --wallet-type indy
+              --wallet-key StewardWallet3
+              --wallet-name StewardWallet3
+              --admin-insecure-mode
+              --admin 0.0.0.0 9080
+              -e http://${ip_address}:9000/
+              -l Pharmacy
+        volumes:
+            - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+            - ./docker_timezone:/etc/localtime:ro
 
-  quorum-node1:
-    << : *quorum-def
-    hostname: quorum-node1
-    ports:
-      - "22000:8545"
-      - "23000:8546"
-    volumes:
-      - vol1:/qdata
-      - ./quorum-network:/3nodes:ro
-      - ${dir_name}/docker_timezone:/etc/localtime:ro
-    environment:
-      - PRIVATE_CONFIG=ignore
-      - NODE_ID=1
-    networks:
-      quorum-simple-net:
-        ipv4_address: 172.16.239.11
-  quorum-node2:
-    << : *quorum-def
-    hostname: quorum-node2
-    ports:
-      - "22001:8545"
-      - "23001:8546"
-    volumes:
-      - vol2:/qdata
-      - ./quorum-network:/3nodes:ro
-      - ${dir_name}/docker_timezone:/etc/localtime:ro
-    environment:
-      - PRIVATE_CONFIG=ignore
-      - NODE_ID=2
-    networks:
-      quorum-simple-net:
-        ipv4_address: 172.16.239.12
-  quorum-node3:
-    << : *quorum-def
-    hostname: quorum-node3
-    ports:
-      - "22002:8545"
-      - "23002:8546"
-    volumes:
-      - vol3:/qdata
-      - ./quorum-network:/3nodes:ro
-      - ${dir_name}/docker_timezone:/etc/localtime:ro
-    environment:
-      - PRIVATE_CONFIG=ignore
-      - NODE_ID=3
-    networks:
-      quorum-simple-net:
-        ipv4_address: 172.16.239.13
+    quorum-node1:
+        <<: *quorum-def
+        hostname: quorum-node1
+        ports:
+            - '22000:8545'
+            - '23000:8546'
+        volumes:
+            - vol1:/qdata
+            - ./quorum-network:/3nodes:ro
+            - ${dir_name}/docker_timezone:/etc/localtime:ro
+        environment:
+            - PRIVATE_CONFIG=ignore
+            - NODE_ID=1
+        networks:
+            quorum-simple-net:
+                ipv4_address: 172.16.239.11
+    quorum-node2:
+        <<: *quorum-def
+        hostname: quorum-node2
+        ports:
+            - '22001:8545'
+            - '23001:8546'
+        volumes:
+            - vol2:/qdata
+            - ./quorum-network:/3nodes:ro
+            - ${dir_name}/docker_timezone:/etc/localtime:ro
+        environment:
+            - PRIVATE_CONFIG=ignore
+            - NODE_ID=2
+        networks:
+            quorum-simple-net:
+                ipv4_address: 172.16.239.12
+    quorum-node3:
+        <<: *quorum-def
+        hostname: quorum-node3
+        ports:
+            - '22002:8545'
+            - '23002:8546'
+        volumes:
+            - vol3:/qdata
+            - ./quorum-network:/3nodes:ro
+            - ${dir_name}/docker_timezone:/etc/localtime:ro
+        environment:
+            - PRIVATE_CONFIG=ignore
+            - NODE_ID=3
+        networks:
+            quorum-simple-net:
+                ipv4_address: 172.16.239.13
 
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile_web
-    working_dir: /app
-    environment:
-      - ip_address=${ip_address}
-    command: python3 start_demo.py
-    ports:
-      - 80:8000
-    volumes:
-      - ./:/app
-    networks:
-      quorum-simple-net:
-        ipv4_address: 172.16.239.14
-    tty: true
+    web:
+        build:
+            context: .
+            dockerfile: Dockerfile_web
+        working_dir: /app
+        environment:
+            - ip_address=${ip_address}
+        command: python3 start_demo.py
+        ports:
+            - 80:8000
+        volumes:
+            - ./:/app
+        networks:
+            quorum-simple-net:
+                ipv4_address: 172.16.239.14
+        tty: true
 
-  ganache:
-    image: trufflesuite/ganache-cli:latest
-    ports:
-      - "8545:8545"
-    volumes:
-      - ./ganache_data:/ganache_data
-    environment:
-      - ip_address=${ip_address}
-    entrypoint:
-      - node
-      - /app/ganache-core.docker.cli.js
-      - --deterministic
-      - --db=/ganache_data
-      - --mnemonic
-      - 'minimum symptom minute gloom tragic situate silver mechanic salad amused elite beef'
-      - --networkId
-      - '10'
-      - --hostname
-      - '0.0.0.0'
-      - --debug
+    ganache:
+        image: trufflesuite/ganache-cli:latest
+        ports:
+            - "8545:8545"
+        volumes:
+            - ./ganache_data:/ganache_data
+        environment:
+            - ip_address=${ip_address}
+        entrypoint:
+            - node
+            - /app/ganache-core.docker.cli.js
+            - --deterministic
+            - --db=/ganache_data
+            - --mnemonic
+            - 'minimum symptom minute gloom tragic situate silver mechanic salad amused elite beef'
+            - --networkId
+            - '5777'
+            - --hostname
+            - '0.0.0.0'
+            - --debug
 
 networks:
-  quorum-simple-net:
-    name: quorum-simple-net
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-      - subnet: 172.16.239.0/24
+    quorum-simple-net:
+        name: quorum-simple-net
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.16.239.0/24
 volumes:
-  "vol1":
-  "vol2":
-  "vol3":
-
+    'vol1':
+    'vol2':
+    'vol3':

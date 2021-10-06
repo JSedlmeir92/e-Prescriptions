@@ -4,7 +4,7 @@ from pharmacy.models import Prescription
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse 
+from django.http import HttpResponse
 from django.views.generic import ListView
 from .tables import PrescriptionTable
 
@@ -125,7 +125,8 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
 def login_connectionless_view(request):
     context = {
         'title': 'Login',
-    } 
+
+    }
     qr_code = f"https://api.qrserver.com/v1/create-qr-code/?data=http://{ip_address}:8000/pharmacy/login_url"
     context['qr_code'] = qr_code
     return render(request, 'pharmacy/login_connectionless.html', context)
@@ -212,6 +213,7 @@ def login_result_view(request, id = 0):
     os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
     result = os.popen("tail -n 1 %s" % "quorum_client/result").read().replace("\n", "")
     result = result == 'true' #Converts result to boolean
+
     if (result == True and verified == True):
         context = {
             'title': 'Spending Success',
@@ -435,7 +437,7 @@ def webhook_connection_view(request):
             "requested_predicates": {
                 "e-prescription": {
                     "name": "expiration_date",
-                    "p_type": ">=", 
+                    "p_type": ">=",
                     "p_value": expiration,
                     "restrictions": [
                         {
@@ -461,7 +463,7 @@ def webhook_connection_view(request):
 def webhook_proof_view(request):
     proof = json.loads(request.body)
     #proof_attributes = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']
-    if proof['state'] == 'verified': 
+    if proof['state'] == 'verified':
         print("valid: " + proof['verified'],)
         contract_address = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw'])
         prescription_id  = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw'])
@@ -470,7 +472,7 @@ def webhook_proof_view(request):
         not_spent = os.popen("tail -n 1 %s" % "quorum_client/check").read().replace("\n", "") == 'true'
         Prescription.objects.update_or_create(
             prescription_id     = prescription_id,
-            defaults={ 
+            defaults={
                 "prescription_id"     : prescription_id,
                 "patient_fullname"    : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_fullname']['raw'],
                 "patient_birthday"    : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_birthday']['raw'],
@@ -483,7 +485,7 @@ def webhook_proof_view(request):
                 "valid"               : proof['verified'] == "true",
                 "not_spent"           : not_spent,
                 "date_issued"         : proof['created_at'],
-                "date_presented"      : datetime.now() ##TODO: 
+                "date_presented"      : datetime.now() ##TODO:
             }
         )
     return HttpResponse()

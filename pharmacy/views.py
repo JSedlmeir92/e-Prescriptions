@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.views.generic import ListView
 from .tables import PrescriptionTable
 
-
+import subprocess
 import requests
 import time
 import os

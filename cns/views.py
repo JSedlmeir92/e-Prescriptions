@@ -299,11 +299,6 @@ def issue_cred_view(request):
                         # print(issue_cred)
                         # print(issue_cred.status_code)
                         # print(issue_cred.text)
-                    #thread_id = issue_cred.json()['credential_offer_dict']['@id']
-                    #Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
-                    #['form'] = form
-                    #context['name'] = request.POST.get('patient_fullname')
-
                 # else:
                     # print("Form invalid")
                     # print(form.errors)

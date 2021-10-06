@@ -100,7 +100,7 @@ services:
               --inbound-transport ws 0.0.0.0 7001
               --outbound-transport ws
               --outbound-transport http
-              --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
+              --genesis-url http://${ip_address}:8999/genesis
               --log-level info
               --seed 000000000000000000000000Steward3
               --wallet-type indy
@@ -127,7 +127,7 @@ services:
             start
               --auto-provision
               --tails-server-base-url http://${ip_address}:6543
-              --webhook http://${ip_address}:8000/cns
+              --webhook http://${ip_address}:80/cns
               --auto-respond-credential-proposal
               --auto-respond-credential-offer
               --auto-respond-credential-request
@@ -136,7 +136,7 @@ services:
               --inbound-transport ws 0.0.0.0 6001
               --outbound-transport ws
               --outbound-transport http
-              --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
+              --genesis-url http://${ip_address}:8999/genesis
               --log-level info
               --seed 000000000000000000000000Steward3
               --wallet-type indy
@@ -145,7 +145,7 @@ services:
               --admin-insecure-mode
               --admin 0.0.0.0 6080
               -e http://${ip_address}:6000/
-              -l Cns
+              -l CNS
         volumes:
             - ./pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
             - ./docker_timezone:/etc/localtime:ro
@@ -162,7 +162,7 @@ services:
         command: >
             start
               --auto-provision
-              --webhook http://${ip_address}:8000/pharmacy
+              --webhook http://${ip_address}:80/pharmacy
               --auto-respond-credential-proposal
               --auto-respond-credential-offer
               --auto-respond-credential-request
@@ -171,7 +171,7 @@ services:
               --inbound-transport ws 0.0.0.0 9001
               --outbound-transport ws
               --outbound-transport http
-              --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
+              --genesis-url http://${ip_address}:8999/genesis
               --log-level info
               --debug-connections
               --seed 000000000000000000000000Steward3

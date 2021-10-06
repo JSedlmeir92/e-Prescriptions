@@ -223,7 +223,7 @@ def issue_cred_view(request):
                     form = CredentialForm()
                     issue_cred = requests.post(url + '/issue-credential/send', json=credential)
 
-                   
+
     return render(request, 'pharmacy/issue_cred.html', context)
 
 

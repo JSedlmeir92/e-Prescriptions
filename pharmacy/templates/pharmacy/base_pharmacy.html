@@ -1,11 +1,62 @@
 {% extends 'base.html' %}
 
-{% block head %}{% endblock %}
+{% block head %}{% load static %}
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+    <!-- Sidebar Toggle (Topbar) -->
+    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+      <i class="fa fa-bars"></i>
+    </button>
+
+    <!-- Topbar Search -->
+    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+      <div class="input-group">
+        <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="button">
+            <i class="fas fa-search fa-sm"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <ul class="navbar-nav ml-auto">
+
+
+
+      <div class="topbar-divider d-none d-sm-block">
+      </div>
+      <!-- Nav Item - User Information -->
+      <li class="nav-item dropdown no-arrow">
+        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="mr-2  d-lg-inline text-gray-800">ePrescription Management System</span>
+          <span class="logo"><img src="./start/static/img/Screenshot_2021-10-05_at_23.07.20-removebg-preview.png" height="50px" width="50px" alt="Something"></span>
+        </a>
+
+        <!-- Dropdown - User Information -->
+        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+          <a class="dropdown-item" href="#">
+            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+            Profile
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+            Logout
+          </a>
+        </div>
+      </li>
+
+    </ul>
+
+  </nav>
+{% endblock %}
 
 {% block style %}{% endblock %}
 
+
 {% block body %}
-<!-- Basic Card Example -->
+<!-- Basic Card Example
 <div class="card shadow mb-4">
   <div class="card-header py-3">
     <h6 class="m-0 font-weight-bold text-primary">Create Connection</h6>
@@ -14,7 +65,7 @@
     The styling for this basic card example is created by using default Bootstrap utility classes. By using utility classes, the style of the card component can be easily modified with no need for any custom CSS!
     <a target="_blank" href="{% url 'connection_pharmacy' %}" class="btn btn-primary">Go</a>
   </div>
-</div>
+</div> -->
 
 </div>
 
@@ -22,13 +73,13 @@
 
 <!-- Basic Card Example -->
 <div class="card shadow mb-4">
-  <div class="card-header py-3">
-    <h6 class="m-0 font-weight-bold text-primary">Request Proof</h6>
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <h6 class="m-0 font-weight-bold text-primary">Present ePrescription</h6>
   </div>
   <div class="card-body">
     <a target="_blank" href="{% url 'pharmacy-connectionless' %}" class="btn btn-primary">Go</a>
-    TEditedhe styling for this basic card example is created by using default Bootstrap utility classes. By using utility classes, the style of the card component can be easily modified with no need for any custom CSS!
-  </div>
+Click here to present and redeem your ePrescription.
+</div>
 </div>
 
 </div>
@@ -37,11 +88,11 @@
 
 <!-- Basic Card Example -->
 <div class="card shadow mb-4">
-  <div class="card-header py-3">
-    <h6 class="m-0 font-weight-bold text-primary">Issue Bill Medication</h6>
+<div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <h6 class="m-0 font-weight-bold text-primary">Claim bill</h6>
   </div>
   <div class="card-body">
-    The styling for this basic card example is created by using default Bootstrap utility classes. By using utility classes, the style of the card component can be easily modified with no need for any custom CSS!
+    Click here to claim a bill for your redeemed pharmaceutical, which you can hand in to your CNS connection.
     <a target="_blank" href="{% url 'pharmacy-home' %}" class="btn btn-primary">Go</a>
   </div>
 </div>
@@ -50,7 +101,8 @@
  {% endblock %}
 
 {% block content %}
-    {% include 'pharmacy/navbar_side.html' %}
+    {% include 'start/navbar.html' %}
+    <!--{% include 'pharmacy/navbar_side.html' %}-->
     {% block extracontent %}{% endblock %}
 
 {% endblock %}

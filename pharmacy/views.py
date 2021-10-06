@@ -22,6 +22,7 @@ ip_address = os.getenv('ip_address')
 
 url = f'http://{ip_address}:9080'
 url2 = f'http://{ip_address}:9080'
+url_matricule=f'http://{ip_address}:6080'
 
 support_revocation = True
 
@@ -48,9 +49,7 @@ class PrescriptionListView(ListView):
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
 
-<<<<<<< HEAD
 @csrf_exempt #(Security Excemption): The request sent via a form doesn't have to originate from my website and can come from some other domain
-=======
 def connection_view(request):
     form = ConnectionForm(request.POST or None)
     if form.is_valid():
@@ -506,7 +505,10 @@ def login_url_view(request):
     # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
     created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
     schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
+    schema_name_matricule = requests.get(url_matricule + '/schemas/' + created_schema[0]).json()['schema']['name']
     cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()[
+        'credential_definition_ids'][0]
+    cred_def_id_matricule = requests.get(url_matricule + '/credential-definitions/created?schema_name=' + schema_name_matricule).json()[
         'credential_definition_ids'][0]
     # print("cred_def_id " + cred_def_id)
     # Gets the unixstamp of the next day
@@ -534,7 +536,17 @@ def login_url_view(request):
                         "cred_def_id": cred_def_id
                     }
                 ]
-                }
+                },
+                "matricule": [
+                    "zip_code",
+                    "street",
+                    "city"
+                ],
+                "restrictions": [
+                    {
+                        "cred_def_id": cred_def_id_matricule
+                    }
+                ]
             },
             "requested_predicates": {
                 "e-prescription": {

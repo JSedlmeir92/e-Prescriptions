@@ -1,4 +1,4 @@
-{% extends 'pharmacy/base_pharmacy.html' %}
+{% extends 'base.html' %}
 
 {% block head %}
 {% endblock %}
@@ -22,11 +22,11 @@
     </style>
 {% endblock %}
 
-{% block content %}
+{% block body %}
     <h2>Confirm ePrescription Redemption</h2>
-    <button class="button" onclick="window.location.href='{% url 'pharmacy-connection_result' id=id %}';">Yes, redeem the ePrescription for {{ number }} {{ pharmaceutical }}!</button>
-    <button class="button" onclick="window.location.href='{% url 'pharmacy-prescription_detail' id=id %}';">Show more details</button>
-    <button class="button" onclick="window.location.href='{% url 'pharmacy-prescription-table' %}';">Abort</button>
+    <button class="button btn-success" onclick="window.location.href='{% url 'pharmacy-connection_result' id=id %}';">Yes, redeem the ePrescription for {{ number }} {{ pharmaceutical }}!</button>
+    <button class="button btn" onclick="window.location.href='{% url 'pharmacy-prescription_detail' id=id %}';">Show more details</button>
+    <button class="button btn-danger" onclick="window.location.href='{% url 'pharmacy-prescription-table' %}';">Abort</button>
 
 
 {% endblock %}

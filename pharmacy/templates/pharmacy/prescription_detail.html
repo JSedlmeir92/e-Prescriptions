@@ -1,4 +1,4 @@
-{% extends 'pharmacy/base_pharmacy.html' %}
+{% extends 'base.html' %}
 
 {% block head %}{% endblock %}
 
@@ -27,7 +27,7 @@
     </style>
 {% endblock %}
 
-{% block content %}
+{% block body %}
     <h1>Prescription {{ object.id }}</h1><br>
     <table>
         <tr>
@@ -78,7 +78,7 @@
     <button class="button"><strike>Reedeem the ePrescription</strike></button>
     {% endif %}
     <form action="" method="post">{% csrf_token %}
-        <p><input type="submit" name="delete" class="button2" value="Delete the Prescription"/></p> 
+        <p><input type="submit" name="delete" class="button2" value="Delete the Prescription"/></p>
     </form>
     <button class="button" onclick="window.location.href='{% url 'pharmacy-prescription-table' %}';">Go Back</button><br><br>
 {% endblock %}

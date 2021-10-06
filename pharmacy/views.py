@@ -1,5 +1,7 @@
 from django.http.response import HttpResponseRedirect
 from pharmacy.models import Prescription
+from .models import Connection
+from .forms import ConnectionForm
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
@@ -121,6 +123,42 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
                 qr_code = f"https://api.qrserver.com/v1/create-qr-code/?data={invitation_link}&amp;size=600x600" ##"Connection-based" inivitation
             context['qr_code'] = qr_code
     return render(request, 'pharmacy/login.html', context)
+
+def connection_view(request):
+    form = ConnectionForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        form = ConnectionForm()
+    context = {
+        'title': 'Establish Connection (CNS)',
+        'form': form
+    }
+    if request.method == 'POST':
+        # Deleting old INVITATIONS
+        connections_invitation = requests.get(url + '/connections?initiator=self&state=invitation').json()['results']
+        if len(connections_invitation) > 0:
+            connection_id = requests.get(url + '/connections?initiator=self&state=invitation').json()['results'][0]["connection_id"]
+            requests.delete(url + '/connections/' + connection_id)
+        # Generating the new INVITATION
+        alias = request.POST.get('alias')
+        response = requests.post(url + '/connections/create-invitation?alias=' + alias + '&auto_accept=true').json()
+        invitation_link = response['invitation_url']
+        connection_id = response['connection_id']
+        Connection.objects.filter(id=Connection.objects.latest('date_added').id).update(invitation_link=invitation_link)
+        Connection.objects.filter(id=Connection.objects.latest('date_added').id).update(connection_id=connection_id)
+        # Generating the QR code
+        invitation_splitted = invitation_link.split("=", 1)
+        temp = json.loads(base64.b64decode(invitation_splitted[1]))
+        # Icon for the wallet app
+        temp.update({"imageUrl": "https://cdn.pixabay.com/photo/2016/03/31/20/12/doctor-1295581_960_720.png"})
+        temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
+        invitation_splitted[1] = temp
+        invitation_link = "=".join(invitation_splitted)
+        # print(invitation_link)
+        qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600"
+        context['qr_code'] = qr_code
+    return render(request, 'pharmacy/create_connection.html', context)
+
 
 def login_connectionless_view(request):
     context = {

@@ -120,7 +120,7 @@ def schema_view(request):
 def create_schema():
     schema = {
             "attributes": ATTRIBUTES,
-            "schema_name": f"e-Prescription{random.randint(10000, 10000)}",
+            "schema_name": f"e-Prescription{random.randint(10000, 100000)}",
             "schema_version": "1.0"
         }
     requests.post(url + '/schemas', json=schema)

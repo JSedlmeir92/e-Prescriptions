@@ -117,7 +117,7 @@ def schema_view(request):
 def create_schema():
     schema = {
             "attributes": ATTRIBUTES,
-            "schema_name": "securite sociale",
+            "schema_name": f"securite sociale{random.randint(10000, 100000)}",
             "schema_version": "1.0"
         }
     requests.post(url + '/schemas', json=schema)

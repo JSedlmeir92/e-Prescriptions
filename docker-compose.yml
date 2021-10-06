@@ -100,7 +100,7 @@ services:
               --inbound-transport ws 0.0.0.0 7001
               --outbound-transport ws
               --outbound-transport http
-              --genesis-url http://${ip_address}:8999/genesis
+              --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
               --log-level info
               --seed 000000000000000000000000Steward3
               --wallet-type indy
@@ -135,7 +135,7 @@ services:
               --inbound-transport ws 0.0.0.0 6001
               --outbound-transport ws
               --outbound-transport http
-              --genesis-url http://${ip_address}:8999/genesis
+              --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
               --log-level info
               --seed 000000000000000000000000Steward3
               --wallet-type indy
@@ -170,7 +170,7 @@ services:
               --inbound-transport ws 0.0.0.0 9001
               --outbound-transport ws
               --outbound-transport http
-              --genesis-url http://${ip_address}:8999/genesis
+              --genesis-file /var/lib/indy/my-net/pool_transactions_genesis
               --log-level info
               --debug-connections
               --seed 000000000000000000000000Steward3

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script type="text/javascript">
+    function generateBarCode() {
+        var nric = $('#text').val();
+        var url = 'https://api.qrserver.com/v1/create-qr-code/?data=' + nric + '&amp;size=600x600';
+        $('#barcode').attr('src', url);
+    }
+</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock %}
+
+{% block style %}
+<style>
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<form action="." method="post">{% csrf_token %}
+    <label for='{{ form.alias }}' style="text-align: center; font-size: larger">Please fill out this field to generate a
+        new connection:SHKA</label><br>
+    {{ form.alias }}<br><br>
+    <button class="button" type="submit" value="save">Generate new QR Code</button><br>
+</form>
+<!-- Basic Card Example
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h6 class="m-0 font-weight-bold text-primary">Request Proof</h6>
+  </div>
+  <div class="card-body">
+    <a target="_blank" href="{% url 'pharmacy-connectionless' %}" class="btn btn-primary">Go</a>
+    TEditedhe styling for this basic card example is created by using default Bootstrap utility classes. By using utility classes, the style of the card component can be easily modified with no need for any custom CSS!
+  </div>
+</div>-->
+{% if qr_code %}
+<div style="width: 700px">
+    <h5 style="text-align: center">Please scan the following QR-Code to connect with your pharmacy:</h5>
+    <h5 style="text-align: center">(if you have not done so previously HASdhasj)</h5><br>
+    <img id='barcode' src={{ qr_code }} title="Invitation Link" width="400" height="400" class="center" /><br>
+</div>
+{% endif %}
+
+<button class="button" onclick="window.location.href='{% url 'pharmacy-connectionless' %}'">Continue</button><br>
+{% endblock %}

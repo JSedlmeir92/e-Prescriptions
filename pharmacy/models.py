@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 class Prescription(models.Model):
     id                  = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
@@ -34,3 +35,14 @@ class Connection(models.Model):
 
 
 
+class Credential(models.Model):
+    id          = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    firstname   = models.CharField(default='Max', max_length=120, null=True)
+    lastname    = models.CharField(default='Mustermann', max_length=120, null=True)
+    birthday    = models.CharField(default='01.01.2000', max_length=120)
+    date_issued = models.DateField(auto_now=False, auto_now_add=True)
+    expiration_date  = models.CharField(default='01.01.2022', max_length=120)
+    date_added       = models.DateTimeField(auto_now=False, auto_now_add=True)
+
+    def get_absolute_url(self):
+        return reverse('cns-cred_detail', kwargs={'id': self.id})

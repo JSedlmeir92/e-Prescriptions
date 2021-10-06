@@ -290,7 +290,7 @@ def issue_cred_view(request):
                     with open("quorum_client/build/contracts/PrescriptionContract.json", "r") as file:
                         contract = json.load(file)
 
-                    contract_address = contract["networks"]['10']['address']
+                    contract_address = contract["networks"]['4']['address']
                     # print("contract_address: " + contract_address)
                     attributes.append(
                     {

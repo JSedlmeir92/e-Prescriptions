@@ -161,6 +161,7 @@ services:
         command: >
             start
               --auto-provision
+              --tails-server-base-url http://${ip_address}:6543
               --webhook http://${ip_address}:80/pharmacy
               --auto-respond-credential-proposal
               --auto-respond-credential-offer

@@ -433,6 +433,7 @@ def login_result_view(request, id = 0):
             print("prescription_id: " + prescription_id)
             spending_key = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw']
             print("spending_key: " + spending_key)
+            spending_key = spending_key.replace("0x", "")
             if Prescription.objects.filter(prescription_id=prescription_id).exists() == False:
                  print("Waiting for webhook...")
                  time.sleep(10)
@@ -474,7 +475,7 @@ def login_result_view(request, id = 0):
     else:
         print("Invalid result: ")
         print(result)
-    return render(request, 'pharmacy/login-result.html', context)
+    return render(request, 'pharmacy/issue_cred.html', context)
 
 
 def logged_in_view(request): ##No longer in use
@@ -724,7 +725,7 @@ def webhook_proof_view(request):
     proof = json.loads(request.body)
     #proof_attributes = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']
     if proof['state'] == 'verified':
-        print("valid: " + proof['verified'],)
+        print("valid: " + proof['verified'])
         contract_address = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw'])
         prescription_id  = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw'])
         spending_key     = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw'])

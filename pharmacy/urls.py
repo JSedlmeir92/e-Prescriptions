@@ -5,6 +5,15 @@ from . import views
 urlpatterns = [
     path('', views.home_view, name='pharmacy-home'),
 
+    path('schema/', views.schema_view, name='pharmacy-schema'),
+
+    path('cred_def/', views.cred_def_view, name='pharmacy-cred_def'),
+
+    path('connection/', views.connection_view, name='pharmacy-connection'),
+
+
+    path('issue_cred/', views.issue_cred_view, name='pharmacy-issue_cred'),
+
     ## The old Way; Displays the QR-Code for the proof-invitation AND redirects directly to login-connectionless/
     ##way 1 = connectionless; way 2 = connectionbased
     # And checks if a SCHEMA and a CREDENTIAL DEFINITION are available.

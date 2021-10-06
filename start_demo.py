@@ -19,7 +19,7 @@ if os.stat("ip_address_vm").st_size != 0:
     FileHandler = open("ip_address_vm", "r")
     ip_address = FileHandler.read()
     print("file", os.stat("ip_address_vm").st_size, ip_address)
-elif os.environ['ip_address']:
+elif os.environ['IP_ADDRESS']:
     ip_address = os.getenv('ip_address')
     FileHandler.write(ip_address)
     print("env", ip_address)
@@ -32,6 +32,7 @@ print("Your VM's current IP address is set to:", ip_address)
 print("Please change the IP address if necessary.\n")
 FileHandler.close()
 
+os.environ['IP_ADDRESS'] = ip_address
 # Getting the Quorum node's IP ADDRESS
 # FileHandler = open("ip_address_quorum_node", "a+")
 # if os.stat("ip_address_quorum_node").st_size == 0:
@@ -46,10 +47,8 @@ FileHandler.close()
 os.system("rm db.sqlite3")
 
 #Resetting and Starting Docker images
-# os.system("docker-compose rm")
-# os.system("docker-compose up -d")
-
-
+#os.system("docker-compose rm")
+#os.system("docker-compose up -d")
 
 print("\nDeploying the ePrescription contract...") ##
 os.system("cd quorum_client && npm install && truffle migrate --reset --network quorum")

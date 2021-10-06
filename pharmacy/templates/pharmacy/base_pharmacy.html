@@ -67,34 +67,43 @@
   </div>
 </div> -->
 
+
+<div class="row">
+
+<div class="col-lg-4">
+
+
+<!-- Basic Card Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+    <h6 class="m-0 font-weight-bold text-primary">Present ePrescription</h6>
+    <span><img src="/static/img/pharmacy-svgrepo-com.svg" height="100px" width="100px" alt="CNS"></span>
+  </div>
+<div class="card-body">
+  Click here to present and redeem your ePrescription.
+  <br></br>
+  <a target="_blank" href="{% url 'pharmacy-connectionless' %}" class="btn btn-primary btn-block">Go</a>
 </div>
+</div>
+
+</div>
+
+
 
 <div class="col-lg-4">
 
 <!-- Basic Card Example -->
 <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
-    <h6 class="m-0 font-weight-bold text-primary">Present ePrescription</h6>
-  </div>
-  <div class="card-body">
-    <a target="_blank" href="{% url 'pharmacy-connectionless' %}" class="btn btn-primary">Go</a>
-Click here to present and redeem your ePrescription.
-</div>
-</div>
-
-</div>
-
-<div class="col-lg-4">
-
-<!-- Basic Card Example -->
-<div class="card shadow mb-4">
-<div class="card-header py-3 d-flex justify-content-between align-items-center">
     <h6 class="m-0 font-weight-bold text-primary">Claim bill</h6>
+    <span><img src="/static/img/pharmacy-svgrepo-com.svg" height="100px" width="100px" alt="CNS"></span>
   </div>
-  <div class="card-body">
-    Click here to claim a bill for your redeemed pharmaceutical, which you can hand in to your CNS connection.
-    <a target="_blank" href="{% url 'pharmacy-home' %}" class="btn btn-primary">Go</a>
-  </div>
+<div class="card-body">
+  Click here to claim a bill for your pharmaceutical, which you can hand in at CNS.
+  <br></br>
+  <a target="_blank" href="{% url 'pharmacy-home' %}" class="btn btn-primary btn-block">Go</a>
+</div>
+</div>
 </div>
 
 </div>

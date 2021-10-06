@@ -52,11 +52,15 @@ os.system("rm db.sqlite3")
 
 print("\nDeploying the ePrescription contract...") ##
 #os.system("cd quorum_client && npm install && truffle migrate --reset --network quorum")
+<<<<<<< HEAD
 # os.system("cd quorum_client && npm install && truffle migrate --reset --network development")
+=======
+#os.system("cd quorum_client && npm install && truffle migrate --reset --network development")
+>>>>>>> a0c8087464090bbbce054f4d2d8af1b64b658be6
 os.system("cd quorum_client && npm install && truffle migrate --reset --network rinkeby")
 
 ##Django
-os.system("python3 manage.py makemigrations") 
+os.system("python3 manage.py makemigrations")
 os.system("python3 manage.py migrate --run-syncdb") ##
 
 print("\nStarting the Server...")
@@ -66,7 +70,7 @@ os.system("python3 manage.py runserver 0.0.0.0:8000")
 #os.system()
 
 #print("Starting Agents...")
-#os.system("gnome-terminal --geometry=52x54+960+0 --title=Doctor-Agent -- bash agent_doctor.sh") 
+#os.system("gnome-terminal --geometry=52x54+960+0 --title=Doctor-Agent -- bash agent_doctor.sh")
 #os.system("gnome-terminal --geometry=52x54+1440+0 --title=Pharmacy-Agent -- bash agent_pharmacy.sh")
 
 print("Starting complete")

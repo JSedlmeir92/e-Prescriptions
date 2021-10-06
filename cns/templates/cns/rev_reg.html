@@ -1,10 +1,10 @@
-{% extends 'cns/base_cns.html' %}
+{% extends 'base.html' %}
 
 {% block head %}{% endblock %}
 
 {% block style %}{% endblock %}
 
-{% block extracontent %}
+{% block body %}
 <h1>Available Active ePrescription Revocation Registry</h1><br>
 {% if available_schema %}
 <h5 style="color: darkred">{{ available_schema }}</h5><br>

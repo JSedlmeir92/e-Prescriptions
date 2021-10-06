@@ -1,4 +1,4 @@
-{% extends 'pharmacy/base_pharmacy.html' %}
+{% extends 'base.html' %}
 
 {% block head %}
     <meta http-equiv="refresh" content="1;URL={% url 'pharmacy-connection_result' %}">
@@ -6,7 +6,7 @@
 
 {% block style %}{% endblock %}
 
-{% block content %}
+{% block body %}
     <h5 style="text-align: center">Please accept the proof request on your mobile device.</h5>
     <div class="loader"></div>
 {% endblock %}

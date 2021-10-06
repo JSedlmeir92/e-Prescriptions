@@ -23,7 +23,7 @@ urlpatterns = [
     #create connection between pharmacy and doctor#
     # CNS - Connection
     path('connection/', views.connection_view, name='connection_pharmacy'),
-    
+
     # The new way: Displays a QR-Code for the connectionless proof
     # (QR-Code points to 'pharmacy-connectionless')
     path('login-connectionless/', views.login_connectionless_view, name='pharmacy-connectionless'),

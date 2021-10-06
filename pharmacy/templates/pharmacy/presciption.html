@@ -1,4 +1,4 @@
-{% extends 'pharmacy/base_pharmacy.html' %}
+{% extends 'base.html' %}
 {% load render_table from django_tables2 %}
 {% block style %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
@@ -14,7 +14,7 @@
 
 {% endblock %}
 
-{% block content %}
+{% block body %}
 
 
     {% render_table table %}

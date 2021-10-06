@@ -48,9 +48,8 @@ class PrescriptionListView(ListView):
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
 
-<<<<<<< HEAD
+
 @csrf_exempt #(Security Excemption): The request sent via a form doesn't have to originate from my website and can come from some other domain
-=======
 def connection_view(request):
     form = ConnectionForm(request.POST or None)
     if form.is_valid():
@@ -620,7 +619,7 @@ def prescription_check_item_view(request, id):
 @csrf_exempt
 def webhook_connection_view(request):
     state = json.loads(request.body)['state']
-    print(state)
+    print(f"_------------------ State: {state}")
     if state == 'response': #((state == 'active') or (state == 'response')):
         # Deletes old PROOF requests & presentations
         proof_records = requests.get(url2 + '/present-proof/records').json()['results']

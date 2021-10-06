@@ -22,6 +22,7 @@ ip_address = os.getenv('ip_address')
 
 url = f'http://{ip_address}:9080'
 url2 = f'http://{ip_address}:9080'
+url_doctor=f'http://{ip_address}:7080'
 url_matricule=f'http://{ip_address}:6080'
 
 support_revocation = True
@@ -163,6 +164,7 @@ def issue_cred_view(request):
     else:
         # Checks if there is a suitable CREDENTIAL DEFINITION
         schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
+        print(schema_name)
         created_credential_definitions_revocable = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids']
         if len(created_credential_definitions_revocable) < 1:
             context['available_cred_def'] = True
@@ -503,9 +505,14 @@ def login_url_view(request):
     context = {
     }
     # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
-    created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
-    schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
-    schema_name_matricule = requests.get(url_matricule + '/schemas/' + created_schema[0]).json()['schema']['name']
+    created_schema = requests.get(url_doctor + '/schemas/created').json()['schema_ids']
+    print(created_schema)
+    created_schema_matricule = requests.get(url_matricule + '/schemas/created').json()['schema_ids']
+    print(created_schema_matricule)
+    schema_name = requests.get(url_doctor + '/schemas/' + created_schema[0]).json()['schema']['name']
+    print(schema_name)
+    schema_name_matricule = requests.get(url_matricule + '/schemas/' + created_schema_matricule[0]).json()['schema']['name']
+    print(schema_name_matricule)
     cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()[
         'credential_definition_ids'][0]
     cred_def_id_matricule = requests.get(url_matricule + '/credential-definitions/created?schema_name=' + schema_name_matricule).json()[
@@ -515,38 +522,28 @@ def login_url_view(request):
     expiration = date.today() + relativedelta(days=+1, hour=0, minute=0)
     expiration = int(time.mktime(expiration.timetuple()))
     proof_request = {
-        "proof_request":{
+        "proof_request": {
             "name": "Proof of Receipt",
             "version": "1.0",
             "requested_attributes": {
                 "e-prescription": {
-                "names": [
-                    "patient_fullname",
-                    "patient_birthday",
-                    "doctor_fullname",
-                    "doctor_address",
-                    "pharmaceutical",
-                    "number",
-                    "prescription_id",
-                    "spending_key",
-                    "contract_address"
-                ],
-                "restrictions": [
-                    {
-                        "cred_def_id": cred_def_id
-                    }
-                ]
-                },
-                "matricule": [
-                    "zip_code",
-                    "street",
-                    "city"
-                ],
-                "restrictions": [
-                    {
-                        "cred_def_id": cred_def_id_matricule
-                    }
-                ]
+                    "names": [
+                        "patient_fullname",
+                        "patient_birthday",
+                         "doctor_fullname",
+                        "doctor_address",
+                        "pharmaceutical",
+                        "number",
+                        "prescription_id",
+                        "spending_key",
+                        "contract_address"
+                    ],
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
+                }
             },
             "requested_predicates": {
                 "e-prescription": {
@@ -560,7 +557,7 @@ def login_url_view(request):
                 ]
                 }
             },
-            "non_revoked":{
+            "non_revoked": {
                 "from": 0,
                 "to": round(time.time())
             }
@@ -643,10 +640,18 @@ def webhook_connection_view(request):
             x -= 1
         # Gets the CONNECTION ID (to which the proof should be sent)
         connection_id = requests.get(url2 + '/connections').json()['results'][0]['connection_id']
-        # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
-        created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
-        schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
-        cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()[
+        created_schema = requests.get(url_doctor + '/schemas/created').json()['schema_ids']
+        print(created_schema)
+        created_schema_matricule = requests.get(url_matricule + '/schemas/created').json()['schema_ids']
+        print(created_schema_matricule)
+        schema_name = requests.get(url_doctor + '/schemas/' + created_schema[0]).json()['schema']['name']
+        print(schema_name)
+        schema_name_matricule = requests.get(url_matricule + '/schemas/' + created_schema_matricule[0]).json()['schema']['name']
+        print(schema_name_matricule)
+        cred_def_id = requests.get(url_doctor + '/credential-definitions/created?schema_name=' + schema_name).json()[
+            'credential_definition_ids'][0]
+        cred_def_id_matricule = \
+        requests.get(url_matricule + '/credential-definitions/created?schema_name=' + schema_name_matricule).json()[
             'credential_definition_ids'][0]
         # Gets the unixstamp of the next day
         expiration = date.today() + relativedelta(days=+1, hour=0, minute=0)
@@ -673,6 +678,18 @@ def webhook_connection_view(request):
                     "restrictions": [
                         {
                             "cred_def_id": cred_def_id
+                        }
+                    ]
+                },
+                "matricule": {
+                    "names": [
+                        "zip_code",
+                        "street",
+                        "city"
+                    ],
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id_matricule
                         }
                     ]
                 }
@@ -711,6 +728,10 @@ def webhook_proof_view(request):
         contract_address = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw'])
         prescription_id  = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw'])
         spending_key     = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw'])
+
+        street          = str(proof['presentation']['requested_proof']['revealed_attr_groups']['matricule']['values']['street']['raw'])
+        print(f"street: {street}")
+
         os.system(f"quorum_client/checkPrescription.sh {contract_address} {prescription_id} {spending_key}")
         not_spent = os.popen("tail -n 1 %s" % "quorum_client/check").read().replace("\n", "") == 'true'
         Prescription.objects.update_or_create(

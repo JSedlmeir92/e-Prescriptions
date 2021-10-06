@@ -9,14 +9,14 @@ module.exports = {
       port: 8545,
       network_id: "*"
     },
-    // node0: {
-    //   host: "172.16.239.11",
-    //   port: 22000,
-    //   network_id: "*",
-    //   gasPrice: 0,
-    //   gas: 300000000,
-    //   type: "quorum"
-    // }
+    quorum: {
+       host: "172.16.239.11",
+       port: 8545,
+       network_id: "*",
+       gasPrice: 0,
+       gas: 300000000,
+       type: "quorum"
+    },
     rinkeby: {
       provider: function() {
         return new HDWalletProvider('eternal meadow wall mesh glad person outer salmon agree fish fiscal express', "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");

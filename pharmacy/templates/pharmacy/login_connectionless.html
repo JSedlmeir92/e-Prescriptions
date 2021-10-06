@@ -41,8 +41,8 @@
 {% endblock %}
 
 {% block body %}
-    {% include 'pharmacy/navbar_side.html' %}
-    <button class="button" style="pointer-events: none; margin-left: auto; margin-right: auto; width: 300px">Show ePrescription</button><br>
+    <!--{% include 'pharmacy/navbar_side.html' %}-->
+    <!--<button class="button" style="pointer-events: none; margin-left: auto; margin-right: auto; width: 300px">Show ePrescription</button><br>-->
     <h5>Please scan the following QR-Code to show and spend your ePrescription:</h5><br>
     <img id='barcode'
             src={{ qr_code }}
@@ -52,7 +52,7 @@
             height="300"
             class="center"
     /><br>
-    <button class="button" style=" margin-left: auto; margin-right: auto; width: 300px", onclick="window.location.href='{% url 'pharmacy-prescription-table' %}';">List presented ePrescriptions</button><br><br>
+    <!--<button class="button" style=" margin-left: auto; margin-right: auto; width: 300px", onclick="window.location.href='{% url 'pharmacy-prescription-table' %}';">List presented ePrescriptions</button><br><br>-->
     <br>
     <br><br><br><br>
 {% endblock %}

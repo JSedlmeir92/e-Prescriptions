@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block head %}{% endblock %}
+
+{% block style %}
+    <style>
+        .alert {
+            padding: 20px;
+            color: white;
+            opacity: 1;
+            transition: opacity 0.6s;
+            margin-bottom: 15px;
+            margin-left: 40px;
+            min-width: 400px;
+        }
+
+        .alert.success {background-color: #4CAF50}
+        .alert.info {background-color: #008CBA}
+
+        .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .closebtn:hover {
+            color: black;
+        }
+    </style>
+{% endblock %}
+
+<!--
+attributes = [
+              {
+                  "name": "matricule",
+                  "value": f"{random.randint(10000, 100000)}{request.POST.get('birthday').replace('.', '')}"
+              },
+              {
+                  # "mime-type": "image/jpeg",
+                  "name": "firstname",
+                  "value": request.POST.get('firstname')
+              },
+              {
+                  "name": "lastname",
+                  "value": request.POST.get('lastname')
+              },
+              {
+                  "name": "birthday",
+                  "value": request.POST.get('birthday')
+              },
+              {
+                  "name": "street",
+                  "value": request.POST.get('street')
+              },
+              {
+                  "name": "zip_code",
+                  "value": request.POST.get('zip_code')
+              },
+              {
+                  "name": "city",
+                  "value": request.POST.get('city')
+              },
+              {
+                  "name": "expiration_date",
+                  "value": request.POST.get('expiration_date') #.replace(".", "")
+              },
+              {
+                  "name": "date_issued",
+                  "value": f"{datetime.now()}"
+              }
+          ]
+-->
+{% block body %}
+    {% if available_schema %}
+        <h5 style="color: darkred">There are no suitable schemas or credential definitions in your wallet. To issue a credential, please go back and publish new ones first.</h5><br>
+        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-schema' %}';">Go Back</button><br><br>
+    {% elif available_cred_def %}
+        <h5 style="color: darkred">There are no suitable credential definitions in your wallet or on the ledger. To issue a credential, publish a new credential definition first.</h5><br>
+        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Go Back</button><br><br>
+    {% elif rev_reg %}
+        <h5 style="color: darkred">There are no suitable revocation registries. To issue a credential, publish a new revocation registry.</h5><br>
+        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-rev_reg' %}';">Go Back</button><br><br>
+    {% else %}
+        <table>
+            <tr>
+                <td>
+                    <form action="." method="post">{% csrf_token %}
+                        <label for='{{ form.matricule}}'>Matricule</label><br>
+                        {{ form.matricule }}<br><br>
+                        <label for='{{ form.fîrstname}}'>firstname</label><br>
+                        {{ form.firstname }}<br><br>
+                        <label for='{{ form.lastname}}'>lastname</label><br>
+                        {{ form.lastname }}<br><br>
+                        <label for='{{ form.birthday}}'>birthday</label><br>
+                        {{ form.birthday }}<br><br>
+                        <label for='{{ form.street}}'>street</label><br>
+                        {{ form.connection_id }}<br><br>
+                        <label for='{{ form.zip_code}}'>zip-code</label><br>
+                        {{ form.zip_code}}<br><br>
+                        <label for='{{ form.city }}'>City</label><br>
+                        {{ form.city }}<br><br>
+                        <label for='{{ form.expiration_date }}'>Expiration date</label><br>
+                        {{ form.expiration_date}}<br><br>
+                        <label for='{{ form.date_issued}}'>:</date issued><br>
+                        {{ form.date_issued }}<br><br>
+                        <label for='{{ form.doctor_fullname}}'>Doctor Full Name</label><br>
+                        {{ form.doctor_fullname}}<br><br>
+                        <label for='{{ form.doctor_type}}'>Doctor Type</label><br>
+                        {{ form.doctor_type}}<br><br>
+                        <label for='{{ form.doctor_address}}'>Doctor Address</label><br>
+                        {{ form.doctor_address}}<br><br>
+                        <label for='{{ form.patient_fullname}}'>Patient Full Name</label><br>
+                        {{ form.patient_fullname }}<br><br>
+                        <label for='{{ form.patient}}'>Patient Birthday</label><br>
+                        {{ form.patient_birthday}}<br><br>
+                        <label for='{{ form.pharmaceutical}}'>pharmaceutical</label><br>
+                        {{ form.pharmaceutical}}<br><br>
+                        <label for='{{ form.number}}'>number</label><br>
+                        {{ form.number}}<br><br>
+                        <label for='{{ form.date_issued}}'>date_issued</label><br>
+                        {{ form.date_issued}}<br><br>
+                        <button class="button" type="submit" value="save">Okay, thats my proof presentation (Credential + Token)</button><br>
+                    </form>
+                </td>
+                <td style="vertical-align: top">
+                    {% if name %}
+                    <div class="alert info">
+                        <span class="closebtn">&times;</span>
+                        <strong>Info!</strong> The credential has been issued to {{ name }}.
+                    </div>
+                    {% endif %}
+
+                    <!--<div class="alert success">
+                        <span class="closebtn">&times;</span>
+                        <strong>Success!</strong> {{ name }} accepted the credential.
+                    </div>-->
+
+                    <script>
+                        var close = document.getElementsByClassName("closebtn");
+                        var i;
+                        for (i = 0; i < close.length; i++) {
+                            close[i].onclick = function(){
+                                var div = this.parentElement;
+                                div.style.opacity = "0";
+                                setTimeout(function(){ div.style.display = "none"; }, 600);
+                            }
+                        }
+                    </script>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="button" onclick="window.location.href='{% url 'pharmacy-connectionless' %}';">Continue</button><br><br>
+                </td>
+            </tr>
+        </table>
+    {% endif %}
+{% endblock %}

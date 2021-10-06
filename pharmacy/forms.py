@@ -20,28 +20,17 @@ class CredentialForm(forms.ModelForm):
     ]
 
     connection_id     = forms.ChoiceField(choices=[], widget=[])
-    firstname         = forms.CharField(initial='Max', label='Insured person first name', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    lastname          = forms.CharField(initial='Mustermann', label='Insured person last name', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    # doctor_type       = forms.CharField(initial='Physician', widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:700px; background-color: #bfbfbf'}))
-    # doctor_address    = forms.CharField(initial='Health St. 10', widget=forms.TextInput(attrs={'readonly': 'readonly', 'style': 'width:700px; background-color: #bfbfbf'}))
-    # patient_fullname  = forms.CharField(initial='Max Mustermann', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    birthday  = forms.CharField(initial='01.01.2000', label='Birthday', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    expiration_date        = forms.CharField(initial='01.01.2022', label='Expiration', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    # prescription_id  = forms.CharField(label='Id', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    # contractAddress  = forms.CharField(label='ContractAddress', widget=forms.TextInput(attrs={'style': 'width:700px'}))
-    # spendingKey      = forms.CharField(label='spendingKey', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    pharmaceutical         = forms.CharField(initial='Aspirin', label='Insured person first name', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    price          = forms.CharField(initial='9.99', label='Insured person last name', widget=forms.TextInput(attrs={'style': 'width:700px'}))
+    prescription_id = forms.CharField(initial='1234567890', label='Insured person street address', widget=forms.TextInput(attrs={'style': 'width:700px'}))
 
     class Meta:
         model = Credential
         fields = [
-            'firstname',
-            'lastname',
-            'birthday',
-            'expiration_date'
-            # 'prescription_id',
-            # 'contractAddress',
-            # 'spendingKey'
-        ]
+            'pharmaceutical',
+            'price',
+            'prescription_id',
+        ] 
 
     # Updating the dropdown list with all the available connections (which have either the state 'active' or 'response') every time the page loads
     def __init__(self, *args, **kwargs):

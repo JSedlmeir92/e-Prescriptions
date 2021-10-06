@@ -24,7 +24,7 @@
 
 {% block body %}
     <h2>Confirm ePrescription Redemption</h2>
-    <button class="button btn-success" onclick="window.location.href='{% url 'pharmacy-connection_result' id=id %}';">Yes, redeem the ePrescription for {{ number }} {{ pharmaceutical }}!</button>
+    <button class="button btn-success" onclick="window.location.href='{% url 'pharmacy-issue_cred' %}';">Yes, redeem the ePrescription for {{ number }} {{ pharmaceutical }}!</button>
     <button class="button btn" onclick="window.location.href='{% url 'pharmacy-prescription_detail' id=id %}';">Show more details</button>
     <button class="button btn-danger" onclick="window.location.href='{% url 'pharmacy-prescription-table' %}';">Abort</button>
 

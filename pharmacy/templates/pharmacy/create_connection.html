@@ -26,7 +26,7 @@
 {% block body %}
 <form action="." method="post">{% csrf_token %}
     <label for='{{ form.alias }}' style="text-align: center; font-size: larger">Please fill out this field to generate a
-        new connection:SHKA</label><br>
+        new connection:</label><br>
     {{ form.alias }}<br><br>
     <button class="button" type="submit" value="save">Generate new QR Code</button><br>
 </form>
@@ -48,5 +48,5 @@
 </div>
 {% endif %}
 
-<button class="button" onclick="window.location.href='{% url 'pharmacy-connectionless' %}'">Continue</button><br>
+<button class="button" onclick="window.location.href='{% url 'pharmacy-connection_confirmation' %}'">Continue</button><br>
 {% endblock %}

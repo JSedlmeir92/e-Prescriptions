@@ -1,10 +1,10 @@
-{% extends 'cns/base_cns.html' %}
+{% extends 'base.html' %}
 
 {% block head %}{% endblock %}
 
 {% block style %}{% endblock %}
 
-{% block extracontent %}
+{% block body %}
 <h1>Available ePrescription Schemass:</h1><br>
 {% if created_schema %}
 <h5>The ePrescription schema <strong>{{ created_schema }}</strong> is available in your wallet.</h5><br>

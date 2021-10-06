@@ -34,6 +34,9 @@ ATTRIBUTES = [
                 "firstname",
                 "lastname",
                 "birthday",
+                "street",
+                "zip_code",
+                "city",
                 "date_issued",
                 "expiration_date",
             ]
@@ -41,7 +44,10 @@ ATTRIBUTES = [
 COMMENTS = [
     "The first name of the insured person",
     "The last name of the insured person",
-    "The birthday of the insured persion in the format dd.mm.yyyy",
+    "The birthday of the insured person in the format dd.mm.yyyy",
+    "The street address of the insured person",
+    "The zip code of the insured person",
+    "The city address of the insured person",
     "The issuance date of the insurance credential",
     "The expiration date of the insurance credential",
 ]
@@ -235,6 +241,18 @@ def issue_cred_view(request):
                         {
                             "name": "birthday",
                             "value": request.POST.get('birthday')
+                        },
+                        {
+                            "name": "street",
+                            "value": request.POST.get('street')
+                        },
+                        {
+                            "name": "zip_code",
+                            "value": request.POST.get('zip_code')
+                        },
+                        {
+                            "name": "city",
+                            "value": request.POST.get('city')
                         },
                         {
                             "name": "expiration_date",

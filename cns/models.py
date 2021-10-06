@@ -8,6 +8,7 @@ from django.urls import reverse
 
 class Credential(models.Model):
     id          = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    matricule   = models.CharField(default='0000000000000', max_length=120, null=True)
     firstname   = models.CharField(default='Max', max_length=120, null=True)
     lastname    = models.CharField(default='Mustermann', max_length=120, null=True)
     birthday    = models.CharField(default='01.01.2000', max_length=120)

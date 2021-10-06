@@ -20,6 +20,7 @@ class CredentialForm(forms.ModelForm):
     ]
 
     connection_id     = forms.ChoiceField(choices=[], widget=[])
+    # matricule         = forms.CharField(initial='000000000000', label='Insured person matricule', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     firstname         = forms.CharField(initial='Max', label='Insured person first name', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     lastname          = forms.CharField(initial='Mustermann', label='Insured person last name', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     street = forms.CharField(initial='Musterstraße 1', label='Insured person street address', widget=forms.TextInput(attrs={'style': 'width:700px'}))
@@ -37,6 +38,7 @@ class CredentialForm(forms.ModelForm):
     class Meta:
         model = Credential
         fields = [
+            # 'matricule',
             'firstname',
             'lastname',
             'birthday',

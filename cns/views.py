@@ -32,6 +32,7 @@ url = f'http://{ip_address}:6080'
 support_revocation = True
 
 ATTRIBUTES = [
+                "matricule",
                 "firstname",
                 "lastname",
                 "birthday",
@@ -43,6 +44,7 @@ ATTRIBUTES = [
             ]
 
 COMMENTS = [
+    "The matricule of the insured person",
     "The first name of the insured person",
     "The last name of the insured person",
     "The birthday of the insured person in the format dd.mm.yyyy",
@@ -82,7 +84,7 @@ def connection_view(request):
         invitation_splitted = invitation_link.split("=", 1)
         temp = json.loads(base64.b64decode(invitation_splitted[1]))
         # Icon for the wallet app
-        temp.update({"imageUrl": "https://cdn.pixabay.com/photo/2016/03/31/20/12/doctor-1295581_960_720.png"})
+        temp.update({"imageUrl": "https://www.topaze.lu/files/31525.jpg"})
         temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
         invitation_splitted[1] = temp
         invitation_link = "=".join(invitation_splitted)
@@ -186,6 +188,7 @@ def rev_reg_view(request):
     return render(request, 'cns/rev_reg.html', context)
 
 def issue_cred_view(request):
+    print("Issuing credential")
     # Updates the STATE of all CONNECTIONS that do not have the state 'active' or 'response'
     update_state = Connection.objects.all()
     for object in update_state:
@@ -304,9 +307,9 @@ def issue_cred_view(request):
                         # print(issue_cred)
                         # print(issue_cred.status_code)
                         # print(issue_cred.text)
-                # else:
-                    # print("Form invalid")
-                    # print(form.errors)
+                else:
+                    print("Form invalid")
+                    print(form.errors)
     return render(request, 'cns/issue_cred.html', context)
 
 def revoke_cred_view(request):

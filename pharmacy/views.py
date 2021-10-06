@@ -48,9 +48,8 @@ class PrescriptionListView(ListView):
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
 
-<<<<<<< HEAD
-@csrf_exempt #(Security Excemption): The request sent via a form doesn't have to originate from my website and can come from some other domain
-=======
+
+
 def connection_view(request):
     form = ConnectionForm(request.POST or None)
     if form.is_valid():
@@ -224,7 +223,7 @@ def issue_cred_view(request):
                     form = CredentialForm()
                     issue_cred = requests.post(url + '/issue-credential/send', json=credential)
 
-                   
+
     return render(request, 'pharmacy/issue_cred.html', context)
 
 

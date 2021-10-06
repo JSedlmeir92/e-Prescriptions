@@ -127,7 +127,6 @@ services:
             start
               --auto-provision
               --tails-server-base-url http://${ip_address}:6543
-              --webhook http://${ip_address}:80/cns
               --auto-respond-credential-proposal
               --auto-respond-credential-offer
               --auto-respond-credential-request

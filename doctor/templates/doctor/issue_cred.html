@@ -67,7 +67,7 @@
                         {{ form.number }}<br><br>
                         <label for='{{ form.expiration }}'>Expiration:</label><br>
                         {{ form.expiration }}<br><br>
-                        <button class="button" type="submit" value="save">Issue ePrescription (Credential + Token)</button><br>
+                        <button class="button btn btn-primary" type="submit" value="save">Issue ePrescription (Credential + Token)</button><br>
                     </form>
                 </td>
                 <td style="vertical-align: top">
@@ -97,9 +97,7 @@
                 </td>
             </tr>
             <tr>
-                <td>
-                    <button class="button" onclick="window.location.href='{% url 'pharmacy-connectionless' %}';">Continue</button><br><br>
-                </td>
+
             </tr>
         </table>
     {% endif %}

@@ -117,7 +117,7 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
             invitation_splitted[1] = temp
             invitation_link = "=".join(invitation_splitted)
             if way == 1:
-                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://" + ip_adress_vm + ":8000/pharmacy/login_url"
+                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://" + ip_adress_vm + "/pharmacy/login_url"
             else:
                 qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600" ##"Connection-based" inivitation
             context['qr_code'] = qr_code
@@ -127,7 +127,7 @@ def login_connectionless_view(request):
     context = {
         'title': 'Login',
     } 
-    qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://" + ip_adress_vm + ":8000/pharmacy/login_url"
+    qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://" + ip_adress_vm + "/pharmacy/login_url"
     context['qr_code'] = qr_code
     return render(request, 'pharmacy/login_connectionless.html', context)
 
@@ -347,7 +347,7 @@ def login_url_view(request):
     }
     invitation_string = json.dumps(proof_request_conless)
     invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
-    invitation_url_doctor_agent = "http://" + str(ip_adress_vm + ":9000") + "/?c_i=" + str(invitation_string)
+    invitation_url = "http://" + str(ip_adress_vm + ":9000") + "/?c_i=" + str(invitation_string)
     context['invitation'] = invitation_url
     return HttpResponseRedirect(invitation_url)
 
@@ -421,11 +421,6 @@ def webhook_connection_view(request):
                         "prescription_id",
                         "spending_key",
                         "contract_address"
-                    ],
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
                     ]
                 }
             },

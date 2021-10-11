@@ -1,0 +1,139 @@
+<ul class="navbar-nav nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
+
+  {% if 'doctor' in request.path %}
+
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'start-home' %}">
+      <div class="sidebar-brand-icon rotate-n-15">
+        <i class="fas fa-laugh-wink"></i>
+      </div>
+      <div class="sidebar-brand-text mx-3">Welcome back!</div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'start-home' %}">
+        <i class="fas fa-fw fa-home"></i>
+        <span>Home</span></a>
+    </li>
+    <hr class="sidebar-divider my-0">
+
+    <li class="nav-item ">
+      <a class="nav-link" href="{% url 'doctor-home' %}">
+        <i class="fas fa-fw fa-paste"></i>
+        <span>Doctor-App</span></a>
+    </li>
+      <!-- Nav Item - Doctor -->
+    <li class="nav-item ">
+      <a class="nav-link" href="{% url 'doctor-connection' %}">
+        <i class="fas fa-fw fa-paste"></i>
+        <span>Create Connection</span></a>
+    </li>
+
+    <li class="nav-item ">
+      <a class="nav-link" href="{% url 'doctor-issue_cred' %}">
+        <i class="fas fa-fw fa-paste"></i>
+        <span>Issue Credential</span></a>
+    </li>
+  
+    <li class="nav-item ">
+      <a class="nav-link" href="{% url 'doctor-revoke_cred' %}">
+        <i class="fas fa-fw fa-paste"></i>
+        <span>Revoke Credential</span></a>
+    </li>
+    <hr class="sidebar-divider my-0">
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'pharmacy-home' %}">
+        <i class="fas fa-fw fa-graduation-cap"></i>
+        <span>Pharmacy-App</span></a>
+    </li>
+  {% elif 'pharmacy' in request.path %}
+
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'start-home' %}">
+      <div class="sidebar-brand-icon rotate-n-15">
+        <i class="fas fa-laugh-wink"></i>
+      </div>
+      <div class="sidebar-brand-text mx-3">Welcome back!</div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'start-home' %}">
+        <i class="fas fa-fw fa-home"></i>
+        <span>Home</span></a>
+    </li>
+    <hr class="sidebar-divider my-0">
+
+    <li class="nav-item ">
+      <a class="nav-link" href="{% url 'doctor-home' %}">
+        <i class="fas fa-fw fa-paste"></i>
+        <span>Doctor-App</span></a>
+    </li>
+    <hr class="sidebar-divider my-0">
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'pharmacy-home' %}">
+        <i class="fas fa-fw fa-graduation-cap"></i>
+        <span>Pharmacy-App</span></a>
+    </li>
+    <li class="nav-item ">
+      <a class="nav-link"  href="{% url 'pharmacy-connectionless' %}">
+        <i class="fas fa-fw fa-paste"></i>
+        <span>Connectiomless</span></a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'pharmacy-prescription-table' %}">
+        <i class="fas fa-fw fa-graduation-cap"></i>
+        <span>Overview</span></a>
+    </li>
+    {% comment %} <li class="nav-item">
+      <a class="nav-link" href="{% url 'pharmacy-connection_confirmation' %}">
+        <i class="fas fa-fw fa-graduation-cap"></i>
+        <span>Connection_based</span></a>
+    </li> {% endcomment %}
+    {% else %}
+
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'start-home' %}">
+      <div class="sidebar-brand-icon rotate-n-15">
+        <i class="fas fa-laugh-wink"></i>
+      </div>
+      <div class="sidebar-brand-text mx-3">Welcome back!</div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'start-home' %}">
+        <i class="fas fa-fw fa-home"></i>
+        <span>Home</span></a>
+    </li>
+    <hr class="sidebar-divider my-0">
+
+    <li class="nav-item ">
+      <a class="nav-link" href="{% url 'doctor-home' %}">
+        <i class="fas fa-fw fa-paste"></i>
+        <span>Doctor-App</span></a>
+    </li>
+    <hr class="sidebar-divider my-0">
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'pharmacy-home' %}">
+        <i class="fas fa-fw fa-graduation-cap"></i>
+        <span>Pharmacy-App</span></a>
+    </li>
+  {% endif %}
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+      <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+  </ul>

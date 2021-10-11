@@ -1,4 +1,4 @@
-{% extends 'doctor/base_doctor.html' %}
+{% extends 'base.html' %}
 
 {% block head %}{% endblock %}
 
@@ -27,7 +27,7 @@
     </style>
 {% endblock %}
 
-{% block extracontent %}
+{% block body %}
     <h1>Credential {{ object.id }}</h1><br>
     <table>
         <tr>

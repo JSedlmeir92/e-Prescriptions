@@ -1,4 +1,4 @@
-{% extends 'doctor/base_doctor.html' %}
+{% extends 'base.html' %}
 
 {% block head %}
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -24,11 +24,15 @@
     </style>
 {% endblock %}
 
-{% block extracontent %}
+{% block body %}
     <form action="." method="post">{% csrf_token %}
         <label for='{{ form.alias }}' style="text-align: center; font-size: larger">Please fill out this field to generate a new connection:</label><br>
         {{ form.alias }}<br><br>
-        <button class="button" type="submit" value="save">Generate new QR Code</button><br>
+        <button class="button btn btn-primary" type="submit" value="save">Generate new QR Code</button><br>
+        <br>
+        <div>
+        <button class="button btn btn-primary" onclick="window.location.href='{% url 'doctor-issue_cred' %}'">Continue</button>
+        </div>
     </form>
     {% if qr_code %}
         <div style="width: 700px">
@@ -37,5 +41,5 @@
             <img id='barcode' src={{ qr_code }} title="Invitation Link" width="400" height="400" class="center"/><br>
         </div>
     {% endif %}
-    <button class="button" onclick="window.location.href='{% url 'doctor-issue_cred' %}'">Continue</button><br>
+
 {% endblock %}

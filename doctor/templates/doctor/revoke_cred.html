@@ -1,10 +1,10 @@
-{% extends 'doctor/base_doctor.html' %}
+{% extends 'base.html' %}
 
 {% block head %}{% endblock %}
 
 {% block style %}{% endblock %}
 
-{% block extracontent %}
+{% block body %}
     <h1>Revoke ePrescription</h1><br>
     {% if len == 1 %}
         <p>There is <span style="color: #ff0000">{{ len }}</span> ePrescriptions that can be revoked.</p>

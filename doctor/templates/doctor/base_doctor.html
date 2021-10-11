@@ -4,7 +4,41 @@
 
 {% block style %}{% endblock %}
 
-{% block content %}
-    {% include 'doctor/navbar_side.html' %}
+{% block body %}
+<div class="row">
+  <div class="col-lg-4">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Create Connection</h6>
+      </div>
+      <div class="card-body">
+        The styling for this basic card example is created by using default Bootstrap utility classes. By using utility classes, the style of the card component can be easily modified with no need for any custom CSS!
+        <a href="{% url 'doctor-connection' %}" class="btn btn-primary">Go</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Request Proof</h6>
+      </div>
+      <div class="card-body">
+        TEditedhe styling for this basic card example is created by using default Bootstrap utility classes. By using utility classes, the style of the card component can be easily modified with no need for any custom CSS!
+        <a href="{% url 'doctor-issue_cred' %}" class="btn btn-primary">Go</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Issue Bill Medication</h6>
+      </div>
+      <div class="card-body">
+        The styling for this basic card example is created by using default Bootstrap utility classes. By using utility classes, the style of the card component can be easily modified with no need for any custom CSS!
+        <a href="{% url 'doctor-revoke_cred' %}" class="btn btn-primary">Go</a>
+      </div>
+    </div>
+  </div>
+</div>
     {% block extracontent %}{% endblock %}
 {% endblock %}

@@ -8,15 +8,21 @@ import requests
 import time
 import os
 from pathlib import Path
+from django.conf import settings
 
 import base64
 
 from datetime import datetime, date
 from dateutil.relativedelta import *
 import logging
+
 logger = logging.getLogger(__name__)
 
-url = 'http://0.0.0.0:7080'
+ip_address = settings.IP_ADDRESS
+print(ip_address)
+
+url = f'http://{ip_address}:7080'
+
 support_revocation = True
 
 ATTRIBUTES = [
@@ -88,6 +94,7 @@ def connection_view(request):
     return render(request, 'doctor/connection.html', context)
 
 def schema_view(request):
+    print(ip_address)
     created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
     context = {
         'title': 'Schema'

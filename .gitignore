@@ -21,3 +21,4 @@ doctor/migrations/
 /ganache_data
 indy-tails-server/*
 */migrations/*
+.env

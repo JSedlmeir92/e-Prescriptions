@@ -2,33 +2,46 @@ import asyncio
 import os
 import sys
 import time
+from dotenv import load_dotenv
 
 print("If you are executing this demo inside a virtual machine, make sure the following ports are open:\n7000 and 7080\n8000\n9000 and 9080\n")
 
+load_dotenv()
+
+
 # Getting the VM's IP ADDRESS
 FileHandler = open("ip_address_vm", "a+")
-if os.stat("ip_address_vm").st_size == 0:
-    ip_address = input("\nPlease enter your VM's IP address: ")
-    FileHandler.write(ip_address)
-else:
-    FileHandler = open("ip_address_vm", "r")
-    print("Your VM's current IP address is set to:", FileHandler.read())
-    print("Please change the IP address if necessary.\n")
-FileHandler.close()
 
-# Getting the Quorum node's IP ADDRESS
-FileHandler = open("ip_address_quorum_node", "a+")
-if os.stat("ip_address_quorum_node").st_size == 0:
-    ip_address = input("\nPlease enter your quorum node's IP address: ")
-    FileHandler.write(ip_address)
-elif os.environ['ip_address']:
+
+
+if os.stat("ip_address_vm").st_size != 0:
+    FileHandler = open("ip_address_vm", "r")
+    ip_address = FileHandler.read()
+    print("file", os.stat("ip_address_vm").st_size, ip_address)
+elif os.environ['IP_ADDRESS']:
     ip_address = os.getenv('ip_address')
     FileHandler.write(ip_address)
+    print("env", ip_address)
 else:
-    FileHandler = open("ip_address_quorum_node", "r")
-    print("Your quorum node's current IP address is set to:", FileHandler.read())
-    print("Please change the IP address if necessary.\n")
+    ip_address = input("\nPlease enter your VM's IP address: ")
+    FileHandler.write(ip_address)
+    print("type", ip_address)
+
+print("Your VM's current IP address is set to:", ip_address)
+print("Please change the IP address if necessary.\n")
 FileHandler.close()
+
+os.environ['IP_ADDRESS'] = ip_address
+# Getting the Quorum node's IP ADDRESS
+# FileHandler = open("ip_address_quorum_node", "a+")
+# if os.stat("ip_address_quorum_node").st_size == 0:
+#     ip_address = input("\nPlease enter your quorum node's IP address: ")
+#     FileHandler.write(ip_address)
+# else:
+#     FileHandler = open("ip_address_quorum_node", "r")
+#     print("Your quorum node's current IP address is set to:", FileHandler.read())
+#     print("Please change the IP address if necessary.\n")
+# FileHandler.close()
 
 os.system("rm db.sqlite3")
 

@@ -18,8 +18,6 @@ from datetime import date, datetime
 from dateutil.relativedelta import *
 
 ip_address = settings.IP_ADDRESS
-print(ip_address)
-
 url_pharmarcy_agent = f'http://{ip_address}:9080'
 url_doctor_agent = f'http://{ip_address}:7080'
 

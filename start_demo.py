@@ -21,6 +21,9 @@ FileHandler = open("ip_address_quorum_node", "a+")
 if os.stat("ip_address_quorum_node").st_size == 0:
     ip_address = input("\nPlease enter your quorum node's IP address: ")
     FileHandler.write(ip_address)
+elif os.environ['ip_address']:
+    ip_address = os.getenv('ip_address')
+    FileHandler.write(ip_address)
 else:
     FileHandler = open("ip_address_quorum_node", "r")
     print("Your quorum node's current IP address is set to:", FileHandler.read())
@@ -29,7 +32,7 @@ FileHandler.close()
 
 os.system("rm db.sqlite3")
 
-#Resetting and Starting Docker images
+#Resetting and starting Docker images
 os.system("docker-compose rm")
 os.system("docker-compose up -d")
 
@@ -66,3 +69,13 @@ print("Starting complete")
 #
 #loop = asyncio.get_event_loop()
 #loop.run_until_complete(main())
+
+# Creating schemas TODO: 
+#cns.views.create_schema()
+#doctor.views.create_schema()
+#pharmacy.views.create_schema()
+
+#TODO: Create cred defs
+#cns.views.create_cred_def()
+#doctor.views.create_cred_def()
+#pharmacy.views.create_cred_def()

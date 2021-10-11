@@ -19,8 +19,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 ip_address = settings.IP_ADDRESS
-print(ip_address)
-
 url = f'http://{ip_address}:7080'
 
 support_revocation = True
@@ -119,6 +117,15 @@ def schema_view(request):
         requests.post(url + '/schemas', json=schema)
         return redirect('.')
     return render(request, 'doctor/schema.html', context)
+
+
+def create_schema(): #TODO:Integrating into schema.view and start_demo.py
+    schema = {
+            "attributes": ATTRIBUTES,
+            "schema_name": "ePrescriptionSchema_" + str(time.time())[:10],
+            "schema_version": "1.0"
+        }
+    requests.post(url + '/schemas', json=schema)
 
 def cred_def_view(request):
     context = {

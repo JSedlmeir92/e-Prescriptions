@@ -1,5 +1,5 @@
 {
-    "node": "http://localhost:22000",
+    "node": "http://172.16.239.11:8545",
     "account": "0xed9d02e382b34818e88B88a309c7fe71E65f419d",
     "sender": "0xed9d02e382b34818e88B88a309c7fe71E65f419d",
     "receiver": ""

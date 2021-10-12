@@ -12,13 +12,15 @@ load_dotenv()
 # Getting the VM's IP ADDRESS
 FileHandler = open("ip_address_vm", "a+")
 
+print(os.environ)
+print(os.environ['ip_address'])
 
 
 if os.stat("ip_address_vm").st_size != 0:
     FileHandler = open("ip_address_vm", "r")
     ip_address = FileHandler.read()
     print("file", os.stat("ip_address_vm").st_size, ip_address)
-elif os.environ['IP_ADDRESS']:
+elif os.environ['ip_address']:
     ip_address = os.getenv('ip_address')
     FileHandler.write(ip_address)
     print("env", ip_address)
@@ -31,6 +33,7 @@ print("Your VM's current IP address is set to:", ip_address)
 print("Please change the IP address if necessary.\n")
 FileHandler.close()
 
+print(os.environ['ip_address'])
 os.environ['IP_ADDRESS'] = ip_address
 # Getting the Quorum node's IP ADDRESS
 # FileHandler = open("ip_address_quorum_node", "a+")

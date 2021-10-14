@@ -23,9 +23,6 @@ url_doctor_agent = f'http://{ip_address}:7080'
 port = settings.PORT
 url_webapp = f'http://{ip_address}:{port}'
 
-
-FileHandler = open("ip_address_vm", "r")
-ip_adress_vm = FileHandler.read()
 ##Table-stuff
 class PrescriptionListView(ListView):
     model = Prescription
@@ -120,7 +117,7 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
             invitation_splitted[1] = temp
             invitation_link = "=".join(invitation_splitted)
             if way == 1:
-                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://" + url_webapp + "/pharmacy/login_url"
+                qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + url_webapp + "/pharmacy/login_url"
             else:
                 qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600" ##"Connection-based" inivitation
             context['qr_code'] = qr_code
@@ -130,7 +127,7 @@ def login_connectionless_view(request):
     context = {
         'title': 'Login',
     } 
-    qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + "http://" + url_webapp + "/pharmacy/login_url"
+    qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + url_webapp + "/pharmacy/login_url"
     context['qr_code'] = qr_code
     return render(request, 'pharmacy/login_connectionless.html', context)
 

@@ -1,2 +1,5 @@
 django
 requests
+python-dotenvnano
+django_tables2
+python-dateutil

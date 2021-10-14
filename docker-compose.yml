@@ -204,7 +204,7 @@ services:
           - ip_address=${ip_address}
       command: python3 start_demo.py
       ports:
-          - 80:8000
+          - {port}:8000
       volumes:
           - ./:/app
       networks:

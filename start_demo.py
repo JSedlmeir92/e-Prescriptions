@@ -24,7 +24,7 @@ print("Please change the IP address if necessary.\n")
 os.system("rm db.sqlite3")
 
 #Resetting and starting Docker images
-os.system("docker-compose rm")
+#os.system("docker-compose rm")
 #os.system("docker-compose up -d")
 
 
@@ -33,7 +33,7 @@ print("\nDeploying the ePrescription contract...") ##
 os.system("cd quorum_client && npm install && truffle migrate --reset --network node0")
 
 ##Django
-os.system("python3 manage.py makemigrations") 
+os.system("python3 manage.py makemigrations --noinput") 
 os.system("python3 manage.py migrate") ##
 
 print("\nStarting the Server...")

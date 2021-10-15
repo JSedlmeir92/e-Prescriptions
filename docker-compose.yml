@@ -121,7 +121,7 @@ services:
     command: >
       start
         --auto-provision
-        --webhook http://${ip_address}:{port}/pharmacy
+        --webhook http://${ip_address}:${port}/pharmacy
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request

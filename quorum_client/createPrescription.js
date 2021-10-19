@@ -21,12 +21,13 @@ const stdio = require("stdio");
 const args = stdio.getopt({
     "id": {key: "id", args: 1, description: "id of the prescription", mandatory: true},
 });
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 
 
 const config = require("./config.json")
 const Web3 = require("web3");
 const TruffleContract = require("truffle-contract");
-const provider = new Web3.providers.HttpProvider(config.node);
+const provider = new Web3(new HDWalletProvider("eternal meadow wall mesh glad person outer salmon agree fish fiscal express", "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"));
 const web3 = new Web3(provider);
 
 const account = config.account
@@ -50,7 +51,7 @@ async function createPrescription(id) {
 	//console.log(typeof(patientAccount.address));
 	//console.log(typeof(adminAccount));
 	let returnValue = await instance.methods.create(patientAccount.address, id).send({
-		from: adminAccount.toString(),
+		from: adminAccount[0].toString(),
 		gas: 300000
 	}).catch(err => {return Promise.reject(err)});
 	//console.log(returnValue);

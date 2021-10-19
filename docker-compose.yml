@@ -71,7 +71,7 @@ services:
         --log-level debug
         --storage-path /home/indy
     volumes:
-      - /Users/chef/MA/e-Prescriptions/docker_timezone:/etc/localtime:ro
+      - ${dir_name}/docker_timezone:/etc/localtime:ro
 
   doctor-agent:
     container_name: doctor-agent
@@ -105,7 +105,7 @@ services:
         -e http://${ip_address}:7000/ 
         -l Doctor
     volumes:
-      - /Users/chef/MA/e-Prescriptions/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      - ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
 
   pharmacy-agent:
     container_name: pharmacy-agent
@@ -140,8 +140,8 @@ services:
         -e http://${ip_address}:9000/ 
         -l Pharmacy
     volumes:
-      - /Users/chef/MA/e-Prescriptions/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
-      - /Users/chef/MA/e-Prescriptions/docker_timezone:/etc/localtime:ro
+      - ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      - ${dir_name}/docker_timezone:/etc/localtime:ro
 
 
   quorum-node1:
@@ -153,7 +153,7 @@ services:
     volumes:
       - vol1:/qdata
       - ./quorum-network:/3nodes:ro
-      - /Users/chef/MA/e-Prescriptions/docker_timezone:/etc/localtime:ro
+      - ${dir_name}/docker_timezone:/etc/localtime:ro
     environment:
       - PRIVATE_CONFIG=ignore
       - NODE_ID=1
@@ -169,7 +169,7 @@ services:
     volumes:
       - vol2:/qdata
       - ./quorum-network:/3nodes:ro
-      - /Users/chef/MA/e-Prescriptions/docker_timezone:/etc/localtime:ro
+      - ${dir_name}/docker_timezone:/etc/localtime:ro
     environment:
       - PRIVATE_CONFIG=ignore
       - NODE_ID=2
@@ -185,7 +185,7 @@ services:
     volumes:
       - vol3:/qdata
       - ./quorum-network:/3nodes:ro
-      - /Users/chef/MA/e-Prescriptions/docker_timezone:/etc/localtime:ro
+      - ${dir_name}/docker_timezone:/etc/localtime:ro
     environment:
       - PRIVATE_CONFIG=ignore
       - NODE_ID=3

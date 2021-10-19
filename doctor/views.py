@@ -92,7 +92,6 @@ def connection_view(request):
     return render(request, 'doctor/connection.html', context)
 
 def schema_view(request):
-    print(ip_address)
     created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
     context = {
         'title': 'Schema'

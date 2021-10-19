@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()
-IP_ADDRESS = os.getenv('ip_address')
+IP_ADDRESS = os.getenv('IP_ADDRESS')
 PORT = os.getenv('port')
 
 

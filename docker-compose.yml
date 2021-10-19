@@ -73,7 +73,6 @@ services:
     volumes:
         - ${dir_name}/docker_timezone:/etc/localtime:ro
 
-
   doctor-agent:
     container_name: doctor-agent
     build:
@@ -95,7 +94,7 @@ services:
         --inbound-transport ws 0.0.0.0 7001 
         --outbound-transport ws 
         --outbound-transport http 
-        --genesis-file /var/lib/indy/my-net/pool_transactions_genesis 
+        --genesis-url http://${ip_address}:9700/genesis
         --log-level info
         --seed 000000000000000000000000Steward3
         --wallet-type indy 
@@ -106,7 +105,7 @@ services:
         -e http://${ip_address}:7000/ 
         -l Doctor
     volumes:
-      - ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      #- ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
       - ${dir_name}/docker_timezone:/etc/localtime:ro
 
   pharmacy-agent:
@@ -130,7 +129,7 @@ services:
         --inbound-transport ws 0.0.0.0 9001 
         --outbound-transport ws 
         --outbound-transport http 
-        --genesis-file /var/lib/indy/my-net/pool_transactions_genesis 
+        --genesis-url http://${ip_address}:9700/genesis
         --log-level info
         --debug-connections
         --seed 000000000000000000000000000Agent
@@ -142,9 +141,8 @@ services:
         -e http://${ip_address}:9000/ 
         -l Pharmacy
     volumes:
-      - ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      #- ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
       - ${dir_name}/docker_timezone:/etc/localtime:ro
-
 
   quorum-node1:
     << : *quorum-def

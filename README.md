@@ -7,7 +7,7 @@ sudo apt-get update
 sudo apt-get -y upgrade
 
 sudo apt-get install -y docker.io
-sudo apt-get install -y docker-compose (make sure docker-compose is version 1.29.2 or higher)
+sudo apt-get install -y docker-compose (make sure docker-compose is version 1.29.2 or higher - especially on debian!)
 
 sudo usermod -aG docker "$USER"
 newgrp docker
@@ -23,14 +23,25 @@ pip3 install python-dateutil django-tables2
 - Make sure that the ports in the Used Ports section are open for your docker network.
   The doctor agent and pharmacy agent must be available from your mobile phone with the SSI wallet app.   
 - Create a .env file in the main directory. It should look as follows:
-  + ip_address=IP address where the application is running and that is available for your mobile phone
-  + dir_name=path to the directory of the project, e.g., /home/user/e-Prescriptions
-  + port =port where the webapp is listening
+  + IP_ADDRESS=IP address where the application is running and that is available for your mobile phone
+  + DIR_NAME=path to the directory of the project, e.g., /home/user/e-Prescriptions
+  + PORT =port where the webapp is listening
+- Create an another .env file in the von-network folder. It should include following parameters:
+  + DOCKERHOST= the same IP-Adress as previous
+  + WEB_SERVER_HOST_PORT=9700 (or any port other used in the prototype)
+  + REGISTER_NEW_DIDS=True
+  + LEDGER_INSTANCE_NAME=ePrescription-Demo (for example)
 ### STEP 3: Start the demo: ###
-
-In the project directory,
+- Start the portable development Indy Node Network
+  - In the von-network directory
+    -./manage build
+    -./manage start
+- In the project directory,
     - run 'docker-compose up'
     - ...and enjoy our demo! :)
+
+## STEP 4: Add the genesis.txt to your wallet
+- DOCKERHOST:WEB_SERVER_HOST_PORT/genesis.txt
 
 ### Used Ports:
 - Web-Apps: specified in .env
@@ -40,7 +51,10 @@ In the project directory,
   + 22001 - 22003 (for node gossip)
   + 23001 - 23003 (Node RPC for interacting with the blockchain)
   + 50401 - 50403 (for RAFT consensus)
-- Other: Port 8999
+- von-network
+  + specified in .env (WEB_SERVER_HOST_PORT)
+  + 9701-9708
+- Other: Port 8999 (really?)
 
 # Description
 The application launches two blockchains (the PBS blockchain from Luxemburg and an Indy blockchain for handling SSI operations).

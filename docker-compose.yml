@@ -55,7 +55,6 @@ x-quorum-def:
         --password /3nodes/passwords.txt \
         ${QUORUM_GETH_ARGS:-} $${GETH_ARGS_raft}
 
-
 services:
   tails-server:
     container_name: tails-server

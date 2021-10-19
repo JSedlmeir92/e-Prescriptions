@@ -3,6 +3,8 @@ import os
 import sys
 import time
 from dotenv import load_dotenv
+import subprocess
+
 
 print("If you are executing this demo inside a virtual machine, make sure the following ports are open:\n7000 and 7080\n8000\n9000 and 9080\n")
 
@@ -27,8 +29,9 @@ os.system("rm db.sqlite3")
 #os.system("docker-compose rm")
 #os.system("docker-compose up -d")
 
-
-
+##Deploying Smart-Contract
+print("\nWaiting for quorum...")
+subprocess.call("./scripts/wait-for-it.sh -h 172.16.239.11 -p 8545 -t 0", shell=True)
 print("\nDeploying the ePrescription contract...") ##
 os.system("cd quorum_client && npm install && truffle migrate --reset --network node0")
 

@@ -93,7 +93,7 @@ services:
         --inbound-transport ws 0.0.0.0 7001 
         --outbound-transport ws 
         --outbound-transport http 
-        --genesis-url http://${ip_address}:9700/genesis
+        --genesis-url ${genesis_url}
         --log-level info
         --seed 000000000000000000000000Steward3
         --wallet-type indy 
@@ -128,7 +128,7 @@ services:
         --inbound-transport ws 0.0.0.0 9001 
         --outbound-transport ws 
         --outbound-transport http 
-        --genesis-url http://${ip_address}:9700/genesis
+        --genesis-url ${genesis_url}
         --log-level info
         --debug-connections
         --seed 000000000000000000000000000Agent

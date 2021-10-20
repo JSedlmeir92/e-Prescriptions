@@ -1,22 +1,19 @@
 {% extends 'base.html' %}
-{% load render_table from django_tables2 %}
 {% block style %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-    <style>
-        .table-success{
-            opacity: 0.5;
-        }
-        .table-danger{
-            opacity: 0.5;
-        }
-
-    </style>
 
 {% endblock %}
+{% load render_table from django_tables2 %}
+
 
 {% block body %}
-
-
     {% render_table table %}
 
 {% endblock %}
+
+{% block script %}
+<script
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
+</script
+{% endblock script %}

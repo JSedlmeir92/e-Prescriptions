@@ -1,0 +1,12 @@
+{% if record.valid == True and record.not_spent == True%}
+    <a class="btn btn-info" role="button" href="{% url 'pharmacy-connection_result' record.id %}">Redeem</a>
+{% endif %}
+{% if record.valid != True or record.not_spent != True%}
+    <span class="d-inline-block" data-toggle="popover" data-content="The ePrescription can't be redeemed!">
+        <button class="btn btn-primary" style="pointer-events: none;" type="button" disabled>Redeem</button>
+    </span>
+<span class="d-inline-block" data-toggle="popover" data-content="Disabled popover">
+  <button class="btn btn-primary" style="pointer-events: none;" type="button" disabled>Disabled button</button>
+</span>
+
+{% endif %}

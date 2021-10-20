@@ -1,5 +1,6 @@
 from django.urls.conf import include
 import django_tables2 as tables
+from django_tables2 import TemplateColumn
 from .models import Prescription
 from django_tables2.utils import A  # alias for Accessor
 
@@ -15,11 +16,10 @@ def custom_row_attrs(**kwargs):
             tr_class = 'table-danger'
     return tr_class
 
-
 class PrescriptionTable(tables.Table):
     more_information = tables.LinkColumn('pharmacy-prescription_detail', args=[A('pk')], text='More information', attrs={'a': {'class': 'btn btn-primary'}})
-    redeem = tables.LinkColumn('pharmacy-connection_confirmation', args=[A('pk')], text='Redeem', attrs={'a': {'class': 'btn btn-success'}})
     delete = tables.LinkColumn('pharmacy-prescription_delete_item', args=[A('pk')], text='Delete', attrs={'a': {'class': 'btn btn-danger'}})
+    redeem = TemplateColumn(template_name='pharmacy/tables/overview_redeem_column.html')
     
     class Meta:
         model    = Prescription

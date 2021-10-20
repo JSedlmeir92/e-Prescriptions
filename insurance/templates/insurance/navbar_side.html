@@ -1,0 +1,63 @@
+<style>
+    .sidenav {
+        padding: 0.6vw 0;
+        width: 14vw;
+        position: fixed;
+        z-index: 1;
+        top: 75px;
+        left: 20px;
+        background: #333;
+        overflow-x: hidden;
+        min-height: fit-content;
+    }
+
+    .sidenav a {
+        padding: 10px 8px 6px 16px;
+        text-decoration: none;
+        display: block;
+        transition: 0.3s;
+        font-size: 20px;
+        color: white;
+    }
+
+    .sidenav a:hover {
+        background-color: #333;
+    }
+
+    .openbtn {
+        font-size: 20px;
+        cursor: pointer;
+        background-color: #333;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        position: fixed;
+        left: 20px;
+    }
+
+    .openbtn:hover {
+        background-color: #111;
+    }
+</style>
+
+<!--<div id="mySidepanel" class="sidenav">
+    <a href="javascript:void(0)" onclick="closeNav()">☰</a>
+    <a href="{% url 'insurance-schema' %}">ePrescription Schema</a>
+    <a href="{% url 'insurance-cred_def' %}">ePrescription Credential Definition</a>
+    <a href="{% url 'insurance-rev_reg' %}">ePrescription Revocation Registry</a>
+    <a href="{% url 'insurance-connection' %}">Establish Connection</a>
+    <a href="{% url 'insurance-issue_cred' %}">Issue ePrescription</a>
+    <a href="{% url 'insurance-revoke_cred' %}">Revoke ePrescription</a>
+</div>-->
+
+<button class="openbtn" onclick="openNav()">☰</button>
+
+<script>
+    function openNav() {
+        document.getElementById("mySidepanel").style.width = "14vw";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidepanel").style.width = "0";
+    }
+</script>

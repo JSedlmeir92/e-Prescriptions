@@ -65,7 +65,7 @@
     <div class="card shadow mb-4">
       <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">CNS</h6>
-        <span><img src="/static/img/cns.svg" height="100px" width="100px" alt="CNS"></span>
+        <span><img src="/static/img/insurance.svg" height="100px" width="100px" alt="CNS"></span>
       </div>
       <div class="card-body">
         This module provides opportunities for employees of the <b>CNS</b> to handle privacy-preserving and user-friendly electronic prescriptions.
@@ -76,9 +76,21 @@
 
   </div> {% endcomment %}
 
-  <div class="col-lg-4">
+  <div class="col-lg-3">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Insurance company</h6>
+        <span><img src="/static/img/health-insurance.png" height="100px" width="100px" alt="CNS"></span>
+      </div>
+      <div class="card-body">
+        This module provides opportunities for employees of the <b>Insurance Company</b> to handle privacy-preserving and user-friendly electronic prescriptions.
+        <br>
+        <a href="{% url 'insurance-home' %}" class="btn btn-primary btn-block">Go</a>
+      </div>
+    </div>
+  </div>
 
-    <!-- Basic Card Example -->
+  <div class="col-lg-3">
     <div class="card shadow mb-4">
       <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Doctor</h6>
@@ -93,7 +105,7 @@
 
   </div>
 
-  <div class="col-lg-4">
+  <div class="col-lg-3">
     <div class="card shadow mb-4">
       <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Pharmacy</h6>
@@ -107,15 +119,15 @@
     </div>
   </div>
 
-  <div class="col-lg-4">
+  <div class="col-lg-3">
     <div class="card shadow mb-4">
       <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Technical Stuff</h6>
         <span><img src="/static/img/settings-svgrepo-com.svg" height="100px" width="100px" alt="CNS"></span>
       </div>
       <div class="card-body">
-        This module functions for resetting the agents.
-        <br></br></br>
+        This module provides functions for resetting the agents.
+        <br></br></br><br>
         <a href="{% url 'manage_agent-home' %}" class="btn btn-primary btn-block">Go</a>
       </div>
     </div>

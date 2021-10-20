@@ -65,11 +65,11 @@ print("Starting complete")
 #loop.run_until_complete(main())
 
 # Creating schemas TODO: 
-#cns.views.create_schema()
+#insurance.views.create_schema()
 #doctor.views.create_schema()
 #pharmacy.views.create_schema()
 
 #TODO: Create cred defs
-#cns.views.create_cred_def()
+#insurance.views.create_cred_def()
 #doctor.views.create_cred_def()
 #pharmacy.views.create_cred_def()

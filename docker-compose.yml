@@ -72,6 +72,43 @@ services:
     volumes:
         - ${dir_name}/docker_timezone:/etc/localtime:ro
 
+  insurance-agent:
+    container_name: insurance-agent
+    build:
+      context: ./aries-cloudagent-python
+      dockerfile: ./docker/Dockerfile.run
+    ports:
+      - 6000:6000
+      - 6080:6080
+    entrypoint: aca-py
+    command: >
+      start
+        --auto-provision
+        --tails-server-base-url http://${ip_address}:6543 
+        --webhook http://${ip_address}:${port}/insurance
+        --auto-respond-credential-proposal 
+        --auto-respond-credential-offer 
+        --auto-respond-credential-request
+        --auto-verify-presentation 
+        --inbound-transport http 0.0.0.0 6000 
+        --inbound-transport ws 0.0.0.0 6001 
+        --outbound-transport ws 
+        --outbound-transport http 
+        --genesis-url ${genesis_url}
+        --log-level info
+        --debug-connections
+        --seed 00000000000000000000000insurance
+        --wallet-type indy 
+        --wallet-key StewardWallet3 
+        --wallet-name StewardWallet3
+        --admin-insecure-mode 
+        --admin 0.0.0.0 6080 
+        -e http://${ip_address}:6000/ 
+        -l Pharmacy
+    volumes:
+      #- ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      - ${dir_name}/docker_timezone:/etc/localtime:ro
+
   doctor-agent:
     container_name: doctor-agent
     build:
@@ -120,6 +157,7 @@ services:
       start
         --auto-provision
         --webhook http://${ip_address}:${port}/pharmacy
+        --tails-server-base-url http://${ip_address}:6543 
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request

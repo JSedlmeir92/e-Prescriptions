@@ -1,12 +1,25 @@
+from django.http import response
 from django.shortcuts import render, redirect
 from doctor.models import Connection, Credential
 from django.conf import settings
+from insurance import views as insurance_views
 
 import requests
 
 ip_address = settings.IP_ADDRESS
 url_doctor_agent = f'http://{ip_address}:7080'
 url_pharmarcy_agent = f'http://{ip_address}:9080'
+url_insurance_agent = f'http://{ip_address}:6080'
+
+def machine_room_view(request):
+    context = {
+        'title': 'Machine room'
+    }
+    return render(request, 'start/machine_room.html', context)
+
+def start_demo_view(request):
+    response = insurance_views.create_schema(request)
+    return
 
 def remove_connections_agent_1():
     Connection.objects.all().delete()

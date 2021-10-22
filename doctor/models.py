@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.query_utils import check_rel_lookup_compatibility
 from django.urls import reverse
 
 # Create your models here.
@@ -29,8 +30,15 @@ class Credential(models.Model):
         return reverse('doctor-cred_detail', kwargs={'id': self.id})
 
 class Connection(models.Model):
-    alias           = models.CharField(max_length=120)
-    invitation_link = models.CharField(max_length=500, blank=True, null=True)
+    firstname       = models.CharField(max_length=50)
+    lastname        = models.CharField(max_length=50)
+    street          = models.CharField(max_length=120)
+    zip_code        = models.CharField(max_length=50)
+    city            = models.CharField(max_length=50)
+    birthday        = models.CharField(max_length=50)
+    insurance_company = models.CharField(max_length=50)
+    insurance_id    = models.CharField(max_length=50)
     connection_id   = models.CharField(max_length=50, blank=True, null=True)
+    connection_state = models.CharField(max_length=50)
     date_added      = models.DateTimeField(auto_now=False, auto_now_add=True)
-    state           = models.CharField(max_length=50, blank=True, null=True)
+

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    {% if name %}
+    {% elif available_schema %}
+    {% elif available_cred_def %}
+    {% endif %}
+{% endblock %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+
+        <h1> Connect with your Doctor</h1>
+    </div>
+    <div class="row">
+        <div class="col-lg-10">
+            <h5 style="text-align: center">Please scan the following QR-Code to connect with your doctor:</h5>
+            <h5 style="text-align: center">(if you have not done so previously)</h5><br>
+            <img id='barcode' src={{ qr_code }} title="Invitation Link"class="mx-auto"/><br>
+        </div>
+    </div>
+</div>
+{% endblock %}

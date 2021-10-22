@@ -16,5 +16,8 @@ urlpatterns = [
     # CNS - Issue Credential
     path('revoke_cred/', views.revoke_cred_view, name='insurance-revoke_cred'),
     # CNS - Detailed Overview over a credential
-    path('cred_detail/<int:id>/', views.cred_detail_view, name='insurance-cred_detail')
+    path('cred_detail/<int:id>/', views.cred_detail_view, name='insurance-cred_detail'),
+    #Webhook
+    path('topic/', views.webhook_catch_all_view, name='doctor-webhook-catchall')
+
 ]

@@ -5,7 +5,11 @@ urlpatterns = [
     path('', views.home_view, name='start-home'),
     # manage agent
     path('manage_agent/', views.manage_agent_view, name='manage_agent-home'),
-    # manage established connections & invitations
+    #machine room
+    path('machine_room', views.machine_room_view, name='machine_room'),
+    #create schemas, definitions and demo data
+    path('start_demo', views.start_demo_view, name='start_demo'),
+    # manage established connections & invitation
     path('manage_agent/connection-1/', views.remove_connection_1, name='manage_agent_1-remove_connection'),
     path('manage_agent/connection-2/', views.remove_connection_2, name='manage_agent_2-remove_connection'),
     # manage issued credentials

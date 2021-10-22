@@ -23,7 +23,7 @@ url_doctor_agent = f'http://{ip_address}:7080'
 port = settings.PORT
 url_webapp = f'http://{ip_address}:{port}'
 
-##Table-stuff
+##Table
 class PrescriptionListView(ListView):
     model = Prescription
     table_class = PrescriptionTable
@@ -34,7 +34,7 @@ class PrescriptionListView(ListView):
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
 
-@csrf_exempt #(Security Excemption): The request send via a form doesn't has to originate from my website and can come from some other domain
+@csrf_exempt 
 def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbased" proof
     context = {
         'title': 'Login',
@@ -135,7 +135,7 @@ def login_confirmation_view(request, id = 0):
     if id != 0: #Gets the attributes from the database when id is provided
         print(id)
         obj = get_object_or_404(Prescription, id=id)
-    else: #Old way
+    else: #Old way: The app periodically asks the agent if there is a new presented proof. If not the app waits for 5 seconds.
         x = 0
         while len(requests.get(url_pharmarcy_agent + '/present-proof/records?state=verified').json()['results']) == 0:
             time.sleep(5)
@@ -174,7 +174,7 @@ def login_confirmation_view(request, id = 0):
     return render(request, 'pharmacy/login-confirmation.html', context)
 
 
-def login_result_view(request, id = 0):
+def login_result_view(request, id = 0): ##Checks the validity of the eprescription
     if id != 0: #Gets the attributes from the database when id is provided
         print(id)
         obj = get_object_or_404(Prescription, id=id)
@@ -347,8 +347,9 @@ def login_url_view(request):
     }
     invitation_string = json.dumps(proof_request_conless)
     invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
-    invitation_url = "http://" + str(url_pharmarcy_agent) + "/?c_i=" + str(invitation_string)
+    invitation_url = str(url_doctor_agent)[:-4] + "7000/?c_i=" + str(invitation_string) ##Changing Agent-Port from API to the Agents' one
     context['invitation'] = invitation_url
+    print(invitation_url)
     return HttpResponseRedirect(invitation_url)
 
 def prescription_table_view(request):

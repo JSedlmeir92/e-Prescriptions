@@ -348,3 +348,9 @@ def cred_detail_view(request, id):
 @csrf_exempt
 def webhook_proof_view(request):
     return
+
+@require_POST
+@csrf_exempt
+def webhook_catch_all_view(request):
+    print(json.loads(request.body))
+    return

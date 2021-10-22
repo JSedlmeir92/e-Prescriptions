@@ -35,7 +35,7 @@ urlpatterns = [
     
     # Pharmarcy - Prescription Overview
     path("prescription/", views.prescription_table_view, name="pharmacy-prescription-table"),
-    #Show more information about an ePrescription
+    #Shows more information about an ePrescription
     path('prescription/detail/<int:id>/', views.prescription_detail_view, name='pharmacy-prescription_detail'),
     #Deletes the ePrescription from the database and redirects to pharmacy-prescription-table
     path('prescription/delete_item/<int:id>', views.prescription_delete_item_view, name="pharmacy-prescription_delete_item"),

@@ -104,7 +104,7 @@ services:
         --admin-insecure-mode 
         --admin 0.0.0.0 6080 
         -e http://${ip_address}:6000/ 
-        -l Pharmacy
+        -l Insurance
     volumes:
       #- ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
       - ${dir_name}/docker_timezone:/etc/localtime:ro
@@ -139,6 +139,7 @@ services:
         --admin-insecure-mode 
         --admin 0.0.0.0 7080 
         -e http://${ip_address}:7000/ 
+        --webhook http://${ip_address}:${port}/doctor
         -l Doctor
     volumes:
       #- ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis

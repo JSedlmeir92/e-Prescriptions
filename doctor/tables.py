@@ -1,7 +1,7 @@
 from django.urls.conf import include
 import django_tables2 as tables
 from django_tables2 import TemplateColumn
-from .models import Connection
+from .models import Connection, Credential
 from django_tables2.utils import A  # alias for Accessor
 
 def custom_row_attrs(**kwargs):
@@ -19,4 +19,14 @@ class ConnectionTable(tables.Table):
         fields  = ("id", "firstname", "lastname", "birthday",)
         template_name = "django_tables2/bootstrap4.html"
         sequence = ("id", "lastname", "firstname", "birthday", 'more_information', "prescribe", "delete",)
+        row_attrs = {'class': custom_row_attrs}
+
+class CredentialTable(tables.Table):
+    more_information = tables.LinkColumn('doctor-cred_detail', args=[A('pk')], text='More information', attrs={'a': {'class': 'btn btn-primary'}})
+    
+    class Meta:
+        model    = Credential
+        fields  = ("patient_fullname", "pharmaceutical", "number", "date_issued", "revoked",)
+        template_name = "django_tables2/bootstrap4.html"
+        sequence = ("patient_fullname", "pharmaceutical", "number", "date_issued", "revoked", 'more_information',)
         row_attrs = {'class': custom_row_attrs}

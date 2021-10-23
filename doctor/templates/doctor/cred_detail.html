@@ -3,67 +3,82 @@
 {% block head %}{% endblock %}
 
 {% block style %}
-    <style>
-        .button2 {
-            border: none;
-            background-color: #008CBA;
-            color: white;
-            max-width: 100%;
-            width: 700px;
-            min-height: 50px;
-            font-size: 30px;
-            text-align: center;
-            text-decoration: none;
-            display: block;
-            margin: 4px 2px;
-            transition-duration: 0.4s;
-            cursor: pointer;
-        }
 
-        .button2:hover {
-            background-color: darkred;
-            color: white;
-        }
-    </style>
 {% endblock %}
 
 {% block body %}
-    <h1>Credential {{ object.id }}</h1><br>
-    <table>
-        <tr>
-            <th>Doctor Full Name:</th>
-            <td>{{ object.doctor_fullname }}</td>
-        </tr>
-        <tr>
-            <th>Pharmaceutical:</th>
-            <td>{{ object.pharmaceutical }}</td>
-        </tr>
-        <tr>
-            <th>Number:</th>
-            <td>{{ object.number }}</td>
-        </tr>
-        <tr>
-            <th>Patient Full Name:</th>
-            <td>{{ object.patient_fullname }}</td>
-        </tr>
-        <tr>
-            <th>Revoked:</th>
-            <td>{{ object.revoked }}</td>
-        </tr>
-        <tr>
-            <th>Issued on:</th>
-            <td>{{ object.date_issued }}</td>
-        </tr>
-        <tr>
-            <th>Revocation ID:</th>
-            <td>{% if object.rev_id == None %}<p>Test</p>{% else %}{{ object.rev_id }}{% endif %}</td>
-        </tr>
-    </table><br>
-    {% if object.revoked == False %}
-    <form action="." method="post">{% csrf_token %}
-        <h3>Do you want to revoke this credential?</h3>
-        <p><input type="submit" class="button2" value="Yes"/></p>
-    </form>
-    {% endif %}
-    <button class="button" onclick="window.location.href='{% url 'doctor-revoke_cred' %}';">Go Back</button><br><br>
+<div class="col-md-6">
+    <div class="card shadow mb-8">
+        <div class="card-body">
+            <h1 class="card-title">Credential Detailed View<br></h1>
+                <div class="row">
+                    <div class="col-5">
+                        Patient's Fullname:
+                    </div>
+                    <div class="col-7">
+                        {{ object.patient_fullname }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        Doctor Full Name:
+                    </div>
+                    <div class="col-7">
+                        {{ object.doctor_fullname }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        Pharmaceutical:
+                    </div>
+                    <div class="col-7">
+                        {{ object.pharmaceutical }}
+                    </div>
+                </div>                            
+                <div class="row">
+                    <div class="col-5">
+                        Quantity:
+                    </div>
+                    <div class="col-7">
+                        {{ object.number }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        Revoked:
+                    </div>
+                    <div class="col-7">
+                        {{ object.revoked }}
+                    </div>
+                </div>                
+                <div class="row">
+                    <div class="col-5">
+                        Issued on:
+                    </div>
+                    <div class="col-7">
+                        {{ object.date_issued }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        Rovcation ID:
+                    </div>
+                    <div class="col-7">
+                        {% if object.rev_id == None %}<p>Test</p>{% else %}{{ object.rev_id }}{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </br>
+    <div class="contact">
+        {% if object.revoked == False %}
+            <form action="." method="post">{% csrf_token %}
+                <h3>Do you want to revoke this credential?</h3>
+                <button type="submit" value="Yes" class="btn btn-block btn-danger" >Yes</button>
+
+            </form>
+        {% endif %}</br>
+    <a href="{% url 'doctor-patients' %}" class="btn btn-block btn-secondary"><i class="fa fa-envelope-o"></i> Go back</a>
+   </div>
+</div>
 {% endblock %}

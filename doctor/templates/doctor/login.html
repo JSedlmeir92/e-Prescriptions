@@ -12,16 +12,17 @@
 {% endblock %}
 
 {% block body %}
-<div class="container">
-    <div class="row">
+<div class="col-md-12">
+    <div class="card shadow mb-8">
+        <div class="card-body">
+            <h1 class="card-title">Connect with your Doctor<br></h5>
 
-        <h1> Connect with your Doctor</h1>
-    </div>
-    <div class="row">
-        <div class="col-lg-10">
-            <h5 style="text-align: center">Please scan the following QR-Code to connect with your doctor:</h5>
+
+            <img class="img-thumbnail mx-auto d-block" src={{ qr_code }} title="Invitation Link">
+            <br>
+                        <h5 style="text-align: center">Please scan the QR-Code to connect with your doctor:</h5>
             <h5 style="text-align: center">(if you have not done so previously)</h5><br>
-            <img id='barcode' src={{ qr_code }} title="Invitation Link"class="mx-auto"/><br>
+            <a href="{% url 'doctor-patients' %}" class="btn btn-primary btn-block">Next step</a>
         </div>
     </div>
 </div>

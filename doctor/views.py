@@ -1,13 +1,12 @@
 from django.db.models.query import InstanceCheckMeta
 from django.shortcuts import render, get_object_or_404, redirect
 
-from doctor.tables import ConnectionTable
+from doctor.tables import ConnectionTable, CredentialTable
 from .models import Credential, Connection
 from .forms import CredentialForm, ConnectionForm
 from django.http.response import HttpResponseRedirect
 from django.http import HttpResponse 
 from django.views.generic import ListView
-from .tables import ConnectionTable
 
 
 
@@ -76,6 +75,11 @@ class PrescriptionListView(ListView):
     model = Connection
     table_class = ConnectionTable
     template_name = 'pharmacy/presciption.html'
+
+class CredentialListView(ListView):
+    model = Credential
+    table_class = CredentialTable
+    #template_name = 'pharmacy/rovoke_cred.html'
 
 
 def home_view(request):
@@ -274,7 +278,6 @@ def login_view(request):
 
 def patients_table_view(request):
     table = ConnectionTable(Connection.objects.all())
-    table.order_by = "-date_presented"
     return render(request, "doctor/patients.html", {
         "table": table
     })
@@ -301,6 +304,7 @@ def patients_delete_item_view(request, id):
 def issue_cred_view(request, id):
     # Updates the STATE of all CONNECTIONS that do not have the state 'active' or 'response'
     update_state = Connection.objects.all()
+    obj = get_object_or_404(Connection, id=id)
     for object in update_state:
         connection = requests.get(url_doctor_agent + '/connections/' + object.connection_id).status_code
         if connection == 200:
@@ -312,7 +316,8 @@ def issue_cred_view(request, id):
     form = CredentialForm(request.POST or None)
     context = {
         'title': 'Issue Credential',
-        'form': form
+        'form': form,
+        'object': obj
     }
     # Checks if there is a suitable SCHEMA
     created_schema = requests.get(url_doctor_agent + '/schemas/created').json()['schema_ids']
@@ -331,7 +336,6 @@ def issue_cred_view(request, id):
             if len(revocation_registry_id) < 1:
                 context['rev_reg'] = True
             else:
-                print(form)
                 if form.is_valid():
                     obj = get_object_or_404(Connection, id=id)
                     # Sending the data to the patient
@@ -361,7 +365,7 @@ def issue_cred_view(request, id):
                         },
                         {
                             "name": "patient_fullname",
-                            "value": obj.firstname
+                            "value": str(obj.firstname + obj.lastname)
                         },
                         {
                             "name": "patient_birthday",
@@ -470,10 +474,13 @@ def revoke_cred_view(request):
         else:
             pass
     queryset = Credential.objects.filter(revoked=False).order_by('-id')
+    table = CredentialTable(Credential.objects.all())
+
     context = {
         'title': 'Revoke Credential',
         'object_list': queryset,
-        'len': len(queryset)
+        'len': len(queryset),
+        'table': table
     }
     return render(request, 'doctor/revoke_cred.html', context)
 

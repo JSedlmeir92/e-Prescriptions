@@ -3,35 +3,6 @@
 {% block head %}{% endblock %}
 
 {% block style %}
-    <style>
-        .alert {
-            padding: 20px;
-            color: white;
-            opacity: 1;
-            transition: opacity 0.6s;
-            margin-bottom: 15px;
-            margin-left: 40px;
-            min-width: 400px;
-        }
-
-        .alert.success {background-color: #4CAF50}
-        .alert.info {background-color: #008CBA}
-
-        .closebtn {
-            margin-left: 15px;
-            color: white;
-            font-weight: bold;
-            float: right;
-            font-size: 22px;
-            line-height: 20px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .closebtn:hover {
-            color: black;
-        }
-    </style>
 {% endblock %}
 
 {% block body %}
@@ -45,31 +16,116 @@
         <h5 style="color: darkred">There are no suitable revocation registries. To issue a credential, publish a new revocation registry.</h5><br>
         <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-rev_reg' %}';">Go Back</button><br><br>
     {% else %}
-        <table>
+        <div class="col-md-9">
+    
+            <div class="card shadow mb-8">
+                <div class="card-body">
+                    <h1 class="card-title">Issue ePrescription<br></h1>
+                <div class="card-group">
+                    <form action="." method="post">{% csrf_token %}
+                    <div class="card">
+                         <div class="card-body">
+                            <h5 class="card-title">Patient</h5>
+                                <div class="row">
+                                    <div class="col-5">
+                                        Fullname
+                                    </div>
+                                    <div class="col-7">
+                                        {{ object.firstname }} {{ object.lastname }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5">
+                                        Birthday
+                                    </div>
+                                    <div class="col-7">
+                                        {{ object.birthday }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5">
+                                        Addresss
+                                    </div>
+                                    <div class="col-7">
+                                        {{ object.street }}</br>
+                                        {{ object.zip_code }} {{ object.city }}
+                                    </div>
+                                </div>                            
+                                <div class="row">
+                                    <div class="col-5">
+                                        Insurance company
+                                    </div>
+                                    <div class="col-7">
+                                        {{ object.insurance_company }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5">
+                                        Insurance-ID
+                                    </div>
+                                    <div class="col-7">
+                                        {{ object.insurance_id }}
+                                    </div>
+                                </div>
+                            
+                         </div>
+                    </div>
+                    <div class="card">
+                         <div class="card-body">
+                            <h5 class="card-title">Doctor</h5>
+                                <div class="row">
+                                    <div class="col-5">
+                                        Fullname
+                                    </div>
+                                    <div class="col-7">
+                                        {{ form.doctor_fullname }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5">
+                                        Doctor's Type
+                                    </div>
+                                    <div class="col-7">
+                                        {{ form.doctor_type }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5">
+                                        Addresss
+                                    </div>
+                                    <div class="col-7">
+                                        {{ form.doctor_address }}
+                                    </div>
+                                </div>                            
+                                <div class="row">
+                                    <div class="col-5">
+                                        Doctor's ID
+                                    </div>
+                                    <div class="col-7">
+                                        XYZ
+                                    </div>
+                         </div>
+                    </div>
+                </div>
+
+                
+                <table>
             <tr>
                 <td>
-                    <form action="." method="post">{% csrf_token %}
-                        <label for='{{ form.connection_id }}'>Choose a Connection:</label><br>
-                        {{ form.connection_id }}<br><br>
-                        <label for='{{ form.doctor_fullname }}'>Doctor's Full Name:</label><br>
-                        {{ form.doctor_fullname }}<br><br>
-                        <label for='{{ form.doctor_type }}'>Doctor's Type:</label><br>
-                        {{ form.doctor_type }}<br><br>
-                        <label for='{{ form.doctor_address }}'>Doctor's Address:</label><br>
-                        {{ form.doctor_address }}<br><br>
-                        <label for='{{ form.patient_fullname }}'>Patient's Full Name:</label><br>
-                        {{ form.patient_fullname }}<br><br>
-                        <label for='{{ form.patient_birthday }}'>Patient's Birthday:</label><br>
-                        {{ form.patient_birthday }}<br><br>
                         <label for='{{ form.pharmaceutical }}'>Pharmaceutical :</label><br>
                         {{ form.pharmaceutical }}<br><br>
                         <label for='{{ form.number }}'>Number:</label><br>
                         {{ form.number }}<br><br>
                         <label for='{{ form.expiration }}'>Expiration:</label><br>
                         {{ form.expiration }}<br><br>
+                        PRESCRIPTION-ID <br>
+                        Smart-Contract-Adress
                         <button class="button btn btn-primary" type="submit" value="save">Issue ePrescription (Credential + Token)</button><br>
+
                     </form>
+
                 </td>
+
                 <td style="vertical-align: top">
                     {% if name %}
                     <div class="alert info">
@@ -77,11 +133,6 @@
                         <strong>Info!</strong> The credential has been issued to {{ name }}.
                     </div>
                     {% endif %}
-
-                    <!--<div class="alert success">
-                        <span class="closebtn">&times;</span>
-                        <strong>Success!</strong> {{ name }} accepted the credential.
-                    </div>-->
 
                     <script>
                         var close = document.getElementsByClassName("closebtn");
@@ -100,5 +151,6 @@
 
             </tr>
         </table>
+    </div></div></div>
     {% endif %}
 {% endblock %}

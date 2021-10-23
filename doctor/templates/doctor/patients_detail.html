@@ -6,65 +6,68 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container"> 
-        <h1>Patienteninformationen</h1><br><br>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4">
-                <div class="user-info-left">
-                    <img class="rounded-circle mx-auto" src="/static/img/hospital-patient.svg" alt="Profile Picture">
-                    <h2>{{ object.firstname }} {{ object.lastname }}</h2>
-                    <div class="contact">
-                        <a href="#" class="btn btn-block btn-success"><i class="fa fa-book"></i> Create ePrescription</a>
-                        <a href="#" class="btn btn-block btn-danger"><i class="fa fa-envelope-o"></i> Delete Profile</a>
-                        <a href="#" class="btn btn-block btn-danger"><i class="fa fa-envelope-o"></i> Go back</a>
+    <div class="col-md-11">
+        <div class="card shadow">
+            <div class="card-body">
+                <h1 class="card-title">Patient Detailed View</h5>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="user-info-left">
+                                <img class="rounded-circle mx-auto" src="/static/img/hospital-patient.svg" alt="Profile Picture">
+                                <h3>{{ object.firstname }} {{ object.lastname }}</h2>
+                                <div class="contact">
+                                    <a href="{% url 'doctor-issue_cred' id=object.id%}" class="btn btn-block btn-success"><i class="fa fa-book"></i> Create ePrescription</a>
+                                    <a href="{% url 'doctor-patients_delete_item' id=object.id%}" class="btn btn-block btn-danger"><i class="fa fa-envelope-o"></i> Delete Profile</a>
+                                    <a href="{% url 'doctor-patients' %}" class="btn btn-block btn-secondary"><i class="fa fa-envelope-o"></i> Go back</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="user-info-right">
+                                <div class="basic-info">
+                                    <h4><i class="fa fa-square"></i> Basic Information</h4>
+                                    <p class="data-row">
+                                        <span class="data-name">Patient Number</span>
+                                    <span class="data-value">{{ object.id }}</span>
+                                    </p>
+                                    <p class="data-row">
+                                        <span class="data-name">Fullname</span>
+                                        <span class="data-value">{{ object.firstname }} {{ object.lastname }}</span>
+                                    </p>
+                                    <p class="data-row">
+                                        <span class="data-name">Birth Date</span>
+                                        <span class="data-value">{{ object.birthday }} </span>
+                                    </p>
+                                    <p class="data-row">
+                                        <span class="data-name">Street</span>
+                                        <span class="data-value">{{ object.street }}</span>
+                                    </p>
+                                    <p class="data-row">
+                                        <span class="data-name">City</span>
+                                        <span class="data-value">{{ object.zip_code }} {{ object.city }}</span>
+                                    </p>
+                                </div>
+                                <div class="contact_info">
+                                    <h4><i class="fa fa-square"></i> Additional Information</h4>
+                                    <p class="data-row">
+                                        <span class="data-name">Number of Prescriptions</span>
+                                        <span class="data-value">{{ object.zip_code }}</span>
+                                    </p>
+                                    <p class="data-row">
+                                        <span class="data-name">Insurance ID</span>
+                                        <span class="data-value">{{ object.insurance_id }}</span>
+                                    </p>
+                                    <p class="data-row">
+                                        <span class="data-name">Insurance Company</span>
+                                        <span class="data-value">{{ object.insurance_company }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-lg-8">
-                <div class="user-info-right">
-                    <div class="basic-info">
-                        <h3><i class="fa fa-square"></i> Basic Information</h3>
-                        <p class="data-row">
-                            <span class="data-name">Patient Number</span>
-                        <span class="data-value">{{ object.id }}</span>
-                        </p>
-                        <p class="data-row">
-                            <span class="data-name">Fullname</span>
-                            <span class="data-value">{{ object.firstname }} {{ object.lastname }}</span>
-                        </p>
-                        <p class="data-row">
-                            <span class="data-name">Birth Date</span>
-                            <span class="data-value">{{ object.birthday }} </span>
-                        </p>
-                        <p class="data-row">
-                            <span class="data-name">Street</span>
-                            <span class="data-value">{{ object.street }}</span>
-                        </p>
-                        <p class="data-row">
-                            <span class="data-name">City</span>
-                            <span class="data-value">{{ object.zip_code }} {{ object.city }}</span>
-                        </p>
-                    </div>
-                    <div class="contact_info">
-                        <h3><i class="fa fa-square"></i> Additional Information</h3>
-                        <p class="data-row">
-                            <span class="data-name">Number of Prescriptions</span>
-                            <span class="data-value">{{ object.zip_code }}</span>
-                        </p>
-                        <p class="data-row">
-                            <span class="data-name">Insurance ID</span>
-                            <span class="data-value">{{ object.insurance_id }}</span>
-                        </p>
-                        <p class="data-row">
-                            <span class="data-name">Insurance Company</span>
-                            <span class="data-value">{{ object.insurance_company }}</span>
-                        </p>
-                    </div>
-                </div>
+                <div>
             </div>
         </div>
-    <div>
+    </div>
     <!-- END PROFILE TAB CONTENT -->                                      
 {% endblock %}

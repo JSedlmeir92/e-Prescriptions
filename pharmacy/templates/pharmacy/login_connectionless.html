@@ -8,27 +8,26 @@
 {% endblock %}
 
 {% block body %}
-<div class="col-md-12">
-    <div class="card shadow mb-8">
-        <div class="card-header">
-            <h1 class="card-title">Show your ePrecription<br></h1>
+<div class="row mx-auto">
+    <div class="col-md-12">
+        <div class="card shadow mb-6">
+            <div class="card-header">
+                <h1 class="card-title">Show your ePrecription</h1>
+            </div>
+            <div class="card-body mx-auto">    
+                <img id='barcode'
+                        src={{ qr_code }}
+                        alt=""
+                        title="Invitation Link"
+                        width="300"
+                        height="300"
+                        class="center"
+                />
+                <br></br>
+                <p class="text-center">Please scan the  QR-Code</p>
+            </div>
         </div>
-        <div class="card-body">
-        </div>
-    
-
-        <img id='barcode'
-                src={{ qr_code }}
-                alt=""
-                title="Invitation Link"
-                width="300"
-                height="300"
-                class="center"
-        />
-        <h5>Please scan the  QR-Code</h5><br>
-
     </div>
 </div>
-
 
 {% endblock %}

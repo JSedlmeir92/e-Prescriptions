@@ -6,8 +6,16 @@
 
 
 {% block body %}
-    {% render_table table %}
-
+<div class="col-md-12">
+    <div class="card shadow mb-12">
+        <div class="card-header">
+            <h1 class="card-title">Shown ePrescriptions<br></h5>
+        </div>
+        <div class="card-body">
+            {% render_table table %}
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block script %}

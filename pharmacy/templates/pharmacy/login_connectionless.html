@@ -5,60 +5,30 @@
 {% endblock %}
 
 {% block style %}
-    <style>
-        .button2 {
-            background-color: slategray;
-            color: white;
-        }
-
-        .button2:hover{
-            background-color: lightgray;
-            color: black;
-        }
-
-        form {
-            text-align: center;
-        }
-
-        input[type=submit]{
-            border: none;
-            color: white;
-            width: 300px;
-            height: 50px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 30px;
-            margin: 4px 2px;
-            transition-duration: 0.4s;
-            cursor: pointer;
-        }
-
-        h5 {
-            text-align: center;
-        }
-    </style>
 {% endblock %}
 
 {% block body %}
-    <!--{% include 'pharmacy/navbar_side.html' %}-->
-    <!--<button class="button" style="pointer-events: none; margin-left: auto; margin-right: auto; width: 300px">Show ePrescription</button><br>-->
-<div class="col-lg-4">
-    <h5>Please scan the following QR-Code to show and spend your ePrescription:</h5><br>
+<div class="col-md-12">
+    <div class="card shadow mb-8">
+        <div class="card-header">
+            <h1 class="card-title">Show your ePrecription<br></h1>
+        </div>
+        <div class="card-body">
+        </div>
+    
+
+        <img id='barcode'
+                src={{ qr_code }}
+                alt=""
+                title="Invitation Link"
+                width="300"
+                height="300"
+                class="center"
+        />
+        <h5>Please scan the  QR-Code</h5><br>
+
     </div>
-
-    <div class="col-lg-4">
-    <img id='barcode'
-            src={{ qr_code }}
-            alt=""
-            title="Invitation Link"
-            width="300"
-            height="300"
-            class="center"
-    /></div>
+</div>
 
 
-    <!--<button class="button" style=" margin-left: auto; margin-right: auto; width: 300px", onclick="window.location.href='{% url 'pharmacy-prescription-table' %}';">List presented ePrescriptions</button><br><br>-->
-    <br>
-    <br><br><br><br>
 {% endblock %}

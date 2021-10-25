@@ -14,28 +14,40 @@
 {% endblock %}
 
 {% block style %}
-<style>
-    .center {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-</style>
 {% endblock %}
 
 {% block body %}
-<form action="." method="post">{% csrf_token %}
-    <label for='{{ form.alias }}' style="text-align: center; font-size: larger">Please fill out this field to generate a
-        new connection:</label><br>
-    {{ form.alias }}<br><br>
-    <button class="button btn btn-primary" type="submit" value="save">Generate new QR Code</button><br>
-</form>
-{% if qr_code %}
-<div style="width: 700px">
-    <h5 style="text-align: center">Please scan the following QR-Code to connect with your doctor:</h5>
-    <h5 style="text-align: center">(if you have not done so previously)</h5><br>
-    <img id='barcode' src={{ qr_code }} title="Invitation Link" width="400" height="400" class="center" /><br>
+<div class="row mx-auto">
+    <div class="col-md-12">
+        <div class="card shadow mb-6">
+            <div class="card-header">
+                <h1 class="card-title">Connect with your Insurance</h1>
+            </div>
+            <div class="card-body">    
+                <div class="row d-flex justify-content-center align-items-center">
+                    <form action="." method="post">{% csrf_token %}
+                        <label for='{{ form.alias }}' style="text-align: center; font-size: larger">Please fill out this field to generate a
+                            new connection:</label><br>
+                        {{ form.alias }}<br><br>
+                        <button class="button btn btn-primary" type="submit" value="save">Generate new QR Code</button><br>
+                    </form>
+                    {% if qr_code %}
+                    <div style="width: 700px">
+                        <h5 style="text-align: center">Please scan the following QR-Code to connect with your doctor:</h5>
+                        <h5 style="text-align: center">(if you have not done so previously)</h5><br>
+                        <img id='barcode' src={{ qr_code }} title="Invitation Link" width="400" height="400" class="center" /><br>
+                    </div>
+                    <div class="row">
+                    <p class="text-center">Please scan the  QR-Code and spend your ePrecription, if you have not done so previously</br>
+                    (Afterwards you will automatically receive a proof request on your smartphone)</p></br>
+                    </div>
+                    {% endif %}
+                    <div class="row">
+                         <button class="button btn btn-primary" onclick="window.location.href='{% url 'insurance-issue_cred' %}'">Continue</button><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-{% endif %}
-<button class="button" onclick="window.location.href='{% url 'insurance-issue_cred' %}'">Continue</button><br>
 {% endblock %}

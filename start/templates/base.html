@@ -10,11 +10,14 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>
-    {% block title %}
+  {% block title %}
+  {% if title %}
+      <title>Let's Fix ID - {{ title }}</title>
+  {% else %}
+      <title>Let's Fix ID </title>
+  {% endif %}
 
-    {% endblock title %}
-  </title>
+  {% endblock title %}
 
   <!-- Custom fonts for this template-->
 

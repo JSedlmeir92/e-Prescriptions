@@ -10,39 +10,6 @@
 {% endblock %}
 
 {% block style %}
-    <style>
-        .button2 {
-            background-color: slategray;
-            color: white;
-        }
-
-        .button2:hover{
-            background-color: lightgray;
-            color: black;
-        }
-
-        form {
-            text-align: center;
-        }
-
-        input[type=submit]{
-            border: none;
-            color: white;
-            width: 300px;
-            height: 50px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 30px;
-            margin: 4px 2px;
-            transition-duration: 0.4s;
-            cursor: pointer;
-        }
-
-        h5 {
-            text-align: center;
-        }
-    </style>
 {% endblock %}
 
 {% block body %}
@@ -57,28 +24,31 @@
         <h5 style="color: darkred">{{ available_cred_def }}</h5><br>
         <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Go Back</button><br><br>
     {% else %}
-        <button class="button" style="pointer-events: none; margin-left: auto; margin-right: auto; width: 300px">Spend ePrescription the old way</button><br>
-        <h5>Please scan the following QR-Code to show and spend your ePrescription:</h5><br>
-        <img id='barcode'
-             src={{ qr_code }}
-             alt=""
-             title="Invitation Link"
-             width="300"
-             height="300"
-             class="center"
-        /><br>
-        {% if way == 1 %}
-            <button style="margin-left: auto; margin-right: auto; width: 300px" class="button" onclick="window.location.href='{% url 'pharmacy-connection' way=2 %}';">"Connectionbased" Proof</button>
-        {% endif %}
+        <div class="row mx-auto">
+            <div class="col-md-12">
+                <div class="card shadow mb-6">
+                    <div class="card-header">
+                        <h1 class="card-title">Show your ePrecription</h1>
+                    </div>
+                    <div class="card-body">    
+                        <div class="row d-flex justify-content-center align-items-center">
 
-        {% if way == 2 %}
-            <h5>(Afterwards you will automatically receive a proof request on your smartphone)</h5></br></br>
-            <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'pharmacy-connection' way=1 %}';">Connectionless Proof</button>
-
-
-        {% endif %}
+                            <img id='barcode'
+                                src={{ qr_code }}
+                                alt=""
+                                title="Invitation Link"
+                                width="350"
+                                height="350"
+                            /><br>
+                        </div>
+                        <div class="row">
+                            <p class="text-center">Please scan the  QR-Code and spend your ePrecription</br>
+                            (Afterwards you will automatically receive a proof request on your smartphone)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     {% endif %}
-    <br>
-    <br><br><br><br>
 {% endblock %}

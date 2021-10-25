@@ -292,14 +292,14 @@ def issue_cred_view(request):
                         "connection_id": connection_id,
                         "trace": False
                     }
-                    print(json.dumps(credential))
                     # Saving the data in the database
                     form.save()
                     form = CredentialForm()
                     issue_cred = requests.post(url + '/issue-credential/send', json=credential)
+                    context['name'] = str(request.POST.get('firstname') + " " + request.POST.get('lastname'))
+                    print(context['name'])
                 else:
-                    print("Form invalid")
-                    print(form.errors)
+                    print("")
     return render(request, 'insurance/issue_cred.html', context)
 
 def revoke_cred_view(request):

@@ -23,7 +23,7 @@ else:
 print("Your VM's current IP address is set to:", ip_address)
 print("Please change the IP address if necessary.\n")
 
-os.system("rm db.sqlite3")
+#os.system("rm db.sqlite3")
 
 #Resetting and starting Docker images
 #os.system("docker-compose rm")

@@ -12,17 +12,28 @@
 {% endblock %}
 
 {% block body %}
-<div class="col-md-12">
-    <div class="card shadow mb-8">
-        <div class="card-body">
-            <h1 class="card-title">Connect with your Doctor<br></h1>
+<div class="row mx-auto">
+    <div class="col-md-12">
+        <div class="card shadow mb-6">
+            <div class="card-header">
+                <h1 class="card-title">Connect with your Doctor</h1>
+            </div>
+            <div class="card-body">    
+                <div class="row d-flex justify-content-center align-items-center">
 
-
-            <img class="img-thumbnail mx-auto d-block" src={{ qr_code }} title="Invitation Link">
-            <br>
-                        <h5 style="text-align: center">Please scan the QR-Code to show your Insurance-ID and connect with your doctor:</h5>
-            <h5 style="text-align: center">(if you have not done so previously)</h5><br>
-            <a href="{% url 'doctor-patients' %}" class="btn btn-primary btn-block">Next step</a>
+                    <img id='barcode'
+                        src={{ qr_code }}
+                        alt=""
+                        title="Invitation Link"
+                        width="350"
+                        height="350"
+                    /><br>
+                </div>
+                <div class="row">
+                    <p class="text-center">Please scan the  QR-Code and spend your ePrecription, if you have not done so previously</br>
+                    (Afterwards you will automatically receive a proof request on your smartphone)</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>

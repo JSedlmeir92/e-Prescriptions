@@ -31,7 +31,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 ip_address = settings.IP_ADDRESS
-ip_address = settings.IP_ADDRESS
 url_doctor_agent = f'http://{ip_address}:7080'
 url_insurance_agent = f'http://{ip_address}:6080'
 port = settings.PORT
@@ -274,6 +273,7 @@ def login_view(request):
             invitation_link = "=".join(invitation_splitted)
             qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600" ##"Connection-based" inivitation
             context['qr_code'] = qr_code
+            print(invitation_link)
     return render(request, 'doctor/login.html', context)
 
 def patients_table_view(request):
@@ -365,7 +365,7 @@ def issue_cred_view(request, id):
                         },
                         {
                             "name": "patient_fullname",
-                            "value": str(obj.firstname + obj.lastname)
+                            "value": str(obj.firstname + " " + obj.lastname)
                         },
                         {
                             "name": "patient_birthday",
@@ -453,7 +453,7 @@ def issue_cred_view(request, id):
                         thread_id = issue_cred.json()['credential_offer_dict']['@id']
                         Credential.objects.filter(id=Credential.objects.latest('date_added').id).update(thread_id=thread_id)
                         context['form'] = form
-                        context['name'] = request.POST.get('patient_fullname')
+                        context['name'] = str(obj.firstname + " " + obj.lastname)
 
                 # else:
                     # print("Form invalid")
@@ -467,6 +467,8 @@ def issue_cred_view(request, id):
 def revoke_cred_view(request):
     # Updates all issued Credentials
     update_credential = Credential.objects.all()
+    print(url_doctor_agent)
+
     for object in update_credential:
         credential = requests.get(url_doctor_agent + '/issue-credential/records?thread_id=' + str(object.thread_id)).json()['results']
         if len(credential) < 1:
@@ -475,7 +477,6 @@ def revoke_cred_view(request):
             pass
     queryset = Credential.objects.filter(revoked=False).order_by('-id')
     table = CredentialTable(Credential.objects.all())
-
     context = {
         'title': 'Revoke Credential',
         'object_list': queryset,

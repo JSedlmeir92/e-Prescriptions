@@ -8,7 +8,7 @@ import requests
 
 ip_address = settings.IP_ADDRESS
 url_doctor_agent = f'http://{ip_address}:7080'
-url_pharmarcy_agent = f'http://{ip_address}:9080'
+url_pharmacy_agent = f'http://{ip_address}:9080'
 url_insurance_agent = f'http://{ip_address}:6080'
 
 def machine_room_view(request):

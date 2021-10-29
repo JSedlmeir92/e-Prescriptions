@@ -95,7 +95,7 @@
             </div>
             <div class="contact">
                 {% if object.valid == True and object.not_spent == True%}
-                    <button class="btn btn-block btn-success" onclick="window.location.href='{% url 'pharmacy-connection_confirmation' id=object.id %}';">Redeem the ePrescription</button>
+                    <button class="btn btn-block btn-success" onclick="window.location.href='{% url 'pharmacy-connection_result' id=object.id %}';">Redeem the ePrescription</button>
                 {% elif object.valid != True or object.not_spent != True%}
                     <button type="button" class="btn btn-block btn-success" disabled><strike>Reedeem the ePrescription</strike></button>
                 {% endif %}

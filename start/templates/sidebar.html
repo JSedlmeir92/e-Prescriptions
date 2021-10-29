@@ -4,7 +4,8 @@
       <i class="fas fa-file-medical"></i>
     </div>
   </a>
-  {% if 'doctor' in request.path %}
+  {% comment %} Navlinks specific for the doctor-application {% endcomment %}
+  {% if 'doctor' in request.path %} 
     <!-- Divider -->
     <hr class="sidebar-divider my-0">
     <li class="nav-item">
@@ -24,7 +25,6 @@
         <i class="fas fa-user-md"></i>
         <span>Doctor-App</span></a>
     </li>
-      <!-- Nav Item - Doctor -->
     <li class="nav-item ">
       <a class="nav-link" href="{% url 'doctor-connection' %}">
         <i class="fas fa-wifi"></i>
@@ -48,11 +48,9 @@
         <i class="fas fa-prescription-bottle-alt"></i>
         <span>Pharmacy-App</span></a>
     </li>
+  {% comment %} Navlinks specific for the pharmacy-application {% endcomment %}
   {% elif 'pharmacy' in request.path %}
-
-    <!-- Divider -->
     <hr class="sidebar-divider my-0">
-
     <li class="nav-item">
       <a class="nav-link" href="{% url 'start-home' %}">
         <i class="fas fa-fw fa-home"></i>
@@ -87,18 +85,9 @@
         <i class="fas fa-list"></i>
         <span>Overview</span></a>
     </li>
-    {% comment %} <li class="nav-item">
-      <a class="nav-link" href="{% url 'pharmacy-connection_confirmation' %}">
-<i class="fas fa-prescription-bottle-alt"></i>
-        <span>Connection_based</span></a>
-    </li> {% endcomment %}
-
-
+  {% comment %} Navlinks specific for the insurance application {% endcomment %}
   {% elif 'insurance' in request.path %}
-
-    <!-- Divider -->
     <hr class="sidebar-divider my-0">
-
     <li class="nav-item">
       <a class="nav-link" href="{% url 'start-home' %}">
         <i class="fas fa-fw fa-home"></i>
@@ -116,9 +105,9 @@
         <span>Create Connection</span></a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'insurance-connection' %}">
+      <a class="nav-link" href="{% url 'insurance-issue_cred' %}">
         <i class="fas fa-address-card"></i>
-        <span>Request Proof</span></a>
+        <span>Issue Credential</span></a>
     </li>
     <hr class="sidebar-divider my-0">
     <li class="nav-item ">
@@ -132,18 +121,8 @@
         <i class="fas fa-prescription-bottle-alt"></i>
         <span>Pharmacy-App</span></a>
     </li>
-    {% comment %} <li class="nav-item">
-      <a class="nav-link" href="{% url 'pharmacy-connection_confirmation' %}">
-<i class="fas fa-prescription-bottle-alt"></i>
-        <span>Connection_based</span></a>
-    </li> {% endcomment %}
-
   {% else %}
-
-    <!-- Divider -->
     <hr class="sidebar-divider my-0">
-
-    <!-- Nav Item - Dashboard -->
     <li class="nav-item">
       <a class="nav-link" href="{% url 'start-home' %}">
         <i class="fas fa-fw fa-home"></i>
@@ -168,11 +147,7 @@
         <span>Pharmacy-App</span></a>
     </li>
   {% endif %}
-
-    <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
-
-    <!-- Sidebar Toggler (Sidebar) -->
     <div class="text-center d-none d-md-inline">
       <button class="rounded-circle border-0" id="sidebarToggle"></button>
     </div>

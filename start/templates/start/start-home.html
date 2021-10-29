@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}ePrescriptions{% endblock title %}
-
 {% block styles %}
 
 {% endblock styles%}
@@ -83,7 +81,8 @@
         <span><img src="/static/img/health-insurance.png" height="100px" width="100px" alt="CNS"></span>
       </div>
       <div class="card-body">
-        This module provides opportunities for employees of the <b>Insurance Company</b> to handle privacy-preserving and user-friendly electronic prescriptions.
+        This module provides opportunities for employees of the <b>Insurance Company</b> to create privacy-preserving insurance IDs.
+        </br>
         <br>
         <a href="{% url 'insurance-home' %}" class="btn btn-primary btn-block">Go</a>
       </div>
@@ -127,7 +126,7 @@
       </div>
       <div class="card-body">
         This module provides functions for resetting the agents.
-        <br></br></br><br>
+        <br></br></br><br></br>
         <a href="{% url 'machine_room' %}" class="btn btn-primary btn-block">Go</a>
       </div>
     </div>

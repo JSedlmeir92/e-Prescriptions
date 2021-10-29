@@ -18,7 +18,7 @@ from datetime import date, datetime
 from dateutil.relativedelta import *
 
 ip_address = settings.IP_ADDRESS
-url_pharmarcy_agent = f'http://{ip_address}:9080'
+url_pharmacy_agent = f'http://{ip_address}:9080'
 url_doctor_agent = f'http://{ip_address}:7080'
 port = settings.PORT
 url_webapp = f'http://{ip_address}:{port}'
@@ -54,11 +54,11 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
             if request.method == 'POST' and 'submit_new_invitation' in request.POST:
                 request.session.flush()
                 request.session.save()
-                proof_records = requests.get(url_pharmarcy_agent + '/present-proof/records').json()['results']
+                proof_records = requests.get(url_pharmacy_agent + '/present-proof/records').json()['results']
                 x = len(proof_records)
                 while x > 0:
                     pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-                    requests.delete(url_pharmarcy_agent + '/present-proof/records/' + pres_ex_id)
+                    requests.delete(url_pharmacy_agent + '/present-proof/records/' + pres_ex_id)
                     x -= 1
                 return redirect('pharmacy-connectionless')
             # In case the session key is None, the session is stored to get a key
@@ -66,40 +66,40 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
                 request.session.save()
             # Checks if there is a CONNECTION with the current session key and a verified proof
             session_key = request.session.session_key
-            connections = requests.get(url_pharmarcy_agent + '/connections?alias=' + session_key + '&state=active').json()['results']
+            connections = requests.get(url_pharmacy_agent + '/connections?alias=' + session_key + '&state=active').json()['results']
             if len(connections) > 0:
                 connection_id = connections[0]['connection_id']
-                proof = requests.get(url_pharmarcy_agent + '/present-proof/records?connection_id=' + connection_id + '&state=verified').json()['results']
+                proof = requests.get(url_pharmacy_agent + '/present-proof/records?connection_id=' + connection_id + '&state=verified').json()['results']
                 if (len(proof) > 0):
                     name = proof[0]['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
                     context['name'] = name
                 else:
                     pass
             else:
-                proof_records = requests.get(url_pharmarcy_agent + '/present-proof/records').json()['results']
+                proof_records = requests.get(url_pharmacy_agent + '/present-proof/records').json()['results']
                 x = len(proof_records)
                 while x > 0:
                     pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-                    requests.delete(url_pharmarcy_agent + '/present-proof/records/' + pres_ex_id)
+                    requests.delete(url_pharmacy_agent + '/present-proof/records/' + pres_ex_id)
                     x -= 1
-                connections = requests.get(url_pharmarcy_agent + '/connections').json()['results']
+                connections = requests.get(url_pharmacy_agent + '/connections').json()['results']
                 y = len(connections)
                 while y > 0:
                     connection_id = connections[y - 1]["connection_id"]
-                    requests.delete(url_pharmarcy_agent + '/connections/' + connection_id)
+                    requests.delete(url_pharmacy_agent + '/connections/' + connection_id)
                     y -= 1
             # Checks if it is necessary to create a new INVITATION QR Code and creates one if necessary
-            invitations = requests.get(url_pharmarcy_agent + '/connections?alias=' + session_key + '&state=invitation').json()['results']
+            invitations = requests.get(url_pharmacy_agent + '/connections?alias=' + session_key + '&state=invitation').json()['results']
             # Creates a new INVITATION, if none exists
             if len(invitations) == 0:
-                invitation_link = requests.post(url_pharmarcy_agent + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
+                invitation_link = requests.post(url_pharmacy_agent + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
                 FileHandler = open("pharmacy/connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
                 FileHandler.close()
             elif os.stat("pharmacy/connection_pharmacy").st_size == 0:
                 connection_id = invitations[0]["connection_id"]
-                requests.delete(url_pharmarcy_agent + '/connections/' + connection_id)
-                invitation_link = requests.post(url_pharmarcy_agent + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
+                requests.delete(url_pharmacy_agent + '/connections/' + connection_id)
+                invitation_link = requests.post(url_pharmacy_agent + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
                 FileHandler = open("pharmacy/connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
                 FileHandler.close()
@@ -137,7 +137,7 @@ def login_confirmation_view(request, id = 0):
         obj = get_object_or_404(Prescription, id=id)
     else: #Old way: The app periodically asks the agent if there is a new presented proof. If not the app waits for 5 seconds.
         x = 0
-        while len(requests.get(url_pharmarcy_agent + '/present-proof/records?state=verified').json()['results']) == 0:
+        while len(requests.get(url_pharmacy_agent + '/present-proof/records?state=verified').json()['results']) == 0:
             time.sleep(5)
             print("waiting...")
             # redirect to the login page after 2 minutes of not receiving a proof presentation
@@ -145,7 +145,7 @@ def login_confirmation_view(request, id = 0):
             if x > 23:
                 return redirect('pharmacy-connection_confirmation')
         else:
-            proof = requests.get(url_pharmarcy_agent + '/present-proof/records?state=verified').json()['results'][0]
+            proof = requests.get(url_pharmacy_agent + '/present-proof/records?state=verified').json()['results'][0]
             verified = proof['verified'] == 'true'
             print("revoked" + str(verified))
             contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
@@ -184,7 +184,7 @@ def login_result_view(request, id = 0): ##Checks the validity of the eprescripti
         spending_key = obj.spending_key
     else: #Old way
         x = 0
-        while len(requests.get(url_pharmarcy_agent + '/present-proof/records?state=verified').json()['results']) == 0:
+        while len(requests.get(url_pharmacy_agent + '/present-proof/records?state=verified').json()['results']) == 0:
             time.sleep(5)
             print("waiting...")
             # redirect to the login page after 2 minutes of not receiving a proof presentation
@@ -192,7 +192,7 @@ def login_result_view(request, id = 0): ##Checks the validity of the eprescripti
             if x > 23:
                 return redirect('pharmacy-connection')
         else:
-            proof = requests.get(url_pharmarcy_agent + '/present-proof/records?state=verified').json()['results'][0]
+            proof = requests.get(url_pharmacy_agent + '/present-proof/records?state=verified').json()['results'][0]
             verified = proof['verified'] == 'true'
             print("revoked" + str(verified))
             contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw']
@@ -242,14 +242,14 @@ def login_result_view(request, id = 0): ##Checks the validity of the eprescripti
 
 def logged_in_view(request): ##No longer in use
     if request.method == 'POST':
-        proof_records = requests.get(url_pharmarcy_agent + '/present-proof/records').json()['results']
+        proof_records = requests.get(url_pharmacy_agent + '/present-proof/records').json()['results']
         x = len(proof_records)
         while x > 0:
             pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-            requests.delete(url_pharmarcy_agent + '/present-proof/records/' + pres_ex_id)
+            requests.delete(url_pharmacy_agent + '/present-proof/records/' + pres_ex_id)
             x -= 1
         return redirect('pharmacy-prescription-table')
-    proof = requests.get(url_pharmarcy_agent + '/present-proof/records?state=verified').json()['results']
+    proof = requests.get(url_pharmacy_agent + '/present-proof/records?state=verified').json()['results']
     if len(proof) > 0:
         # print(proof[0])
         pharmaceutical = proof[0]['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['pharmaceutical']['raw']
@@ -318,13 +318,13 @@ def login_url_view(request):
             }
         }
     }
-    present_proof = requests.post(url_pharmarcy_agent + '/present-proof/create-request', json=proof_request).json()
+    present_proof = requests.post(url_pharmacy_agent + '/present-proof/create-request', json=proof_request).json()
     presentation_request = json.dumps(present_proof["presentation_request"])
     presentation_request = base64.b64encode(presentation_request.encode('utf-8')).decode('ascii')
-    invitation = requests.post(url_pharmarcy_agent + '/connections/create-invitation').json()
+    invitation = requests.post(url_pharmacy_agent + '/connections/create-invitation').json()
 
     reciepentKeys = invitation["invitation"]["recipientKeys"]
-    #verkey = requests.get(url_pharmarcy_agent + '/wallet/did').json()["results"][0]["verkey"]
+    #verkey = requests.get(url_pharmacy_agent + '/wallet/did').json()["results"][0]["verkey"]
     serviceEndPoint = invitation["invitation"]["serviceEndpoint"]
     #routingkeys = invitation["invitation"]["routing_keys"] #TODO: Relevant?
     proof_request_conless = {
@@ -388,14 +388,14 @@ def webhook_connection_view(request):
     print(state)
     if state == 'response': #((state == 'active') or (state == 'response')):
         # Deletes old PROOF requests & presentations
-        proof_records = requests.get(url_pharmarcy_agent + '/present-proof/records').json()['results']
+        proof_records = requests.get(url_pharmacy_agent + '/present-proof/records').json()['results']
         x = len(proof_records)
         while x > 0:
             pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-            requests.delete(url_pharmarcy_agent + '/present-proof/records/' + pres_ex_id)
+            requests.delete(url_pharmacy_agent + '/present-proof/records/' + pres_ex_id)
             x -= 1
         # Gets the CONNECTION ID (to which the proof should be sent)
-        connection_id = requests.get(url_pharmarcy_agent + '/connections').json()['results'][0]['connection_id']
+        connection_id = requests.get(url_pharmacy_agent + '/connections').json()['results'][0]['connection_id']
         # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
         created_schema = requests.get(url_doctor_agent + '/schemas/created').json()['schema_ids']
         schema_name = requests.get(url_doctor_agent + '/schemas/' + created_schema[0]).json()['schema']['name']
@@ -444,7 +444,7 @@ def webhook_connection_view(request):
             }
         }
         print(proof_records)
-        requests.post(url_pharmarcy_agent + '/present-proof/send-request', json=proof_request)
+        requests.post(url_pharmacy_agent + '/present-proof/send-request', json=proof_request)
     else:
         pass
     return HttpResponse()

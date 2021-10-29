@@ -30,7 +30,7 @@ urlpatterns = [
     path('login-result/', views.login_result_view, name='pharmacy-connection_result'),
     path('login-result/<int:id>', views.login_result_view, name='pharmacy-connection_result'),
 
-    ## Presentaation of the spent ePrescription --NOT USED
+    ## Presentation of the spent ePrescription --NOT USED
     path('logged-in/', views.logged_in_view, name='pharmacy-logged_in'),
     
     # Pharmarcy - Prescription Overview

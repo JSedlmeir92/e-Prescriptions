@@ -23,7 +23,6 @@
                  </div>
                 <div class="card-body">
                     {% if name %}
-
                         <div classs="container p-5">
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                             <strong>Sucess!</strong> Thre credential has been issued to {{ name }}!
@@ -33,112 +32,111 @@
                             </div>
                         </div>
                     {% endif %}
-                    <div class="card-group">
-                        <form action="." method="post">{% csrf_token %}
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Patient</h5>
-                                    <div class="row">
-                                        <div class="col-5">
-                                            Fullname
-                                        </div>
-                                        <div class="col-7">
-                                            {{ object.firstname }} {{ object.lastname }}
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-5">
-                                            Birthday
-                                        </div>
-                                        <div class="col-7">
-                                            {{ object.birthday }}
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-5">
-                                            Addresss
-                                        </div>
-                                        <div class="col-7">
-                                            {{ object.street }}</br>
-                                            {{ object.zip_code }} {{ object.city }}
-                                        </div>
-                                    </div>                            
-                                    <div class="row">
-                                        <div class="col-5">
-                                            Insurance company
-                                        </div>
-                                        <div class="col-7">
-                                            {{ object.insurance_company }}
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-5">
-                                            Insurance-ID
-                                        </div>
-                                        <div class="col-7">
-                                            {{ object.insurance_id }}
-                                        </div>
-                                    </div>
-                                
+                    <form action="." method="post">{% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="card-title">Patient</h5>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="patient_firstname">Firstname</label>
+                                <input type="text" class="form-control" id="patient_firstname" placeholder="{{ object.firstname }}" readonly>
+                                </div>
+                                <div class="form-group col-md-6">
+                                <label for="patient_lastname">Lastname</label>
+                                <input type="text" class="form-control" id="patient_lastname" placeholder="{{ object.lastname }}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="patient_insurance_company">Insurance Company</label>
+                                <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.insurance_company }}" readonly>
+                                </div>
+                                <div class="form-group col-md-6">
+                                <label for="patient_insurance_id">Insurance ID</label>
+                                <input type="text" class="form-control" id="patient_insurance_id" placeholder="{{ object.insurance_id }}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="patient_adress">Address</label>
+                                <input type="text" class="form-control" id="patient_adress" placeholder="{{ object.street }}" readonly> 
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                <label for="patient_city">City</label>
+                                <input type="text" class="form-control" id="patient_city" placeholder="{{ object.city }}" readonly>
+                                </div>
+                                <div class="form-group col-md-6">
+                                <label for="patient_zip">Zip</label>
+                                <input type="text" class="form-control" id="patient_zip" placeholder="{{ object.zip_code }}" readonly>
+                                </div>
                             </div>
                         </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Doctor</h5>
-                                    <div class="row">
-                                        <div class="col-5">
-                                            Fullname
-                                        </div>
-                                        <div class="col-7">
-                                            {{ form.doctor_fullname }}
-                                        </div>
+                        <div class="col-md-6">
+                            <h5 class="card-title">Doctor</h5>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="doctor_fullname">Fullname</label>
+                                    {{ form.doctor_fullname }}
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="doctor_ID">Doctor ID </label>
+                                    <input type="text" class="form-control" id="doctor_ID" placeholder="X1234123" readonly>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-5">
-                                            Doctor's Type
-                                        </div>
-                                        <div class="col-7">
-                                            {{ form.doctor_type }}
-                                        </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="doctor_type">Doctor's type</label>
+                                    {{ form.doctor_type }}
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <label for="doctor_address">Address</label>
+                                    {{ form.doctor_address }}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5 class="card-title">Pharmaceutical</h5>
+                            <div class="col-md-12">
+                                <div class="form-group row">
+                                    <label for='{{ form.pharmaceutical }}' class="col-sm-3 col-form-label">Pharmaceutical :</label>
+                                    <div class="col-sm-9">
+                                        {{ form.pharmaceutical }}
                                     </div>
-                                    <div class="row">
-                                        <div class="col-5">
-                                            Addresss
-                                        </div>
-                                        <div class="col-7">
-                                            {{ form.doctor_address }}
-                                        </div>
-                                    </div>                            
-                                    <div class="row">
-                                        <div class="col-5">
-                                            Doctor's ID
-                                        </div>
-                                        <div class="col-7">
-                                            XYZ
-                                        </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for='{{ form.number }}' class="col-sm-3 col-form-label">Quantity:</label>
+                                    <div class="col-sm-9">
+                                        {{ form.number }}
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for='{{ form.expiration }}' class="col-sm-3 col-form-label">Expiration:</label>
+                                    <div class="col-sm-9">
+                                        {{ form.expiration }}
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label for="exampleFormControlTextarea1" class=" col-form-label">Additional information:</label>
+                                        <small id="emailHelp" class="form-text text-muted">optional</small>
+                                    </div>
+                                    <div class="col-sm-9">
+                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="2"></textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <table>
-                        <tr>
-                            <td>
-                                <label for='{{ form.pharmaceutical }}'>Pharmaceutical :</label><br>
-                                {{ form.pharmaceutical }}<br><br>
-                                <label for='{{ form.number }}'>Number:</label><br>
-                                {{ form.number }}<br><br>
-                                <label for='{{ form.expiration }}'>Expiration:</label><br>
-                                {{ form.expiration }}<br><br>
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>PRESCRIPTION-ID</td>
-                        </tr>
-                        <tr>
-                            <td>PRESCRIPTION-ID</td>
-                        </tr>
-                </table>
-                <button class="button btn btn-primary" type="submit" value="save">Issue ePrescription (Credential + Token)</button><br>
+                </div>
+                <button class="button btn btn-primary" type="submit" value="save">Issue ePrescription (Credential + Token)</button>
                 </form>
             </div>
         </div>

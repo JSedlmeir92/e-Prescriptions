@@ -23,7 +23,7 @@ class PrescriptionTable(tables.Table):
     
     class Meta:
         model    = Prescription
-        fields  = ("patient_fullname", "pharmaceutical", "number", "valid", "not_spent", 'date_presented', 'redeemed')
+        fields  = ("id", "patient_fullname", "pharmaceutical", "number", "valid", "not_spent", 'date_presented', 'redeemed')
         template_name = "django_tables2/bootstrap4.html"
-        sequence = ("patient_fullname", "pharmaceutical", "number", 'date_presented', "valid", "not_spent", 'redeemed', 'more_information', 'redeem', 'delete',)
+        sequence = ("id", "patient_fullname", "pharmaceutical", "number", 'date_presented', "valid", "not_spent", 'redeemed', 'more_information', 'redeem', 'delete',)
         row_attrs = {'class': custom_row_attrs}

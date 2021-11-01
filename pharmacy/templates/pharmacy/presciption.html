@@ -13,6 +13,17 @@
         </div>
         <div class="card-body">
             {% render_table table %}
+            <div class="row">
+                <div class="col-md-1">
+                    <small id="emailHelp" class="form-text text-muted"><b>Annotation:</b></small>
+                </div>
+                <div class="col-md-11">
+                    <small class="form-text text-muted">
+                    Red highlighted ePrecription: Can't be redeemed</br>
+                    Green highlighted epPrescription: Successfully redeemed at the pharmarcy </br> 
+                    Else: ePrecription can be redeemed.
+                    </small>
+            </div>
         </div>
     </div>
 </div>

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block head %}{% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block body %}
+<div class="col-xl-6 mx-auto">
+    <div class="card shadow mb-8">
+        <div class="card-header">
+            <h1 class="card-title">Prescription {{ object.id }}<br></h1>
+        </div>
+        <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        Patient's Fullname:
+                    </div>
+                    <div class="col-7">
+                        {{ object.patient_fullname }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        Pharmaceutical:
+                    </div>
+                    <div class="col-7">
+                        {{ object.pharmaceutical }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        Quantity:
+                    </div>
+                    <div class="col-7">
+                        {{ object.number }}
+                    </div>
+                </div>                            
+                <div class="row">
+                    <div class="col-5">
+                        Doctor Full Name:
+                    </div>
+                    <div class="col-7">
+                        {{ object.doctor_fullname }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        Doctor Address:
+                    </div>
+                    <div class="col-7">
+                        {{ object.doctor_address }}
+                    </div>
+                </div>                
+                <div class="row">
+                    <div class="col-5">
+                        Doctor Type:
+                    </div>
+                    <div class="col-7">
+                        {{ object.doctor_type }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        Valid:
+                    </div>
+                    <div class="col-7">
+                        {{ object.valid }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        Not Spent:
+                    </div>
+                    <div class="col-7">
+                        {{ object.not_spent }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        Issued on:
+                    </div>
+                    <div class="col-7">
+                        {{ object.date_issued }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        Presented at:
+                    </div>
+                    <div class="col-7">
+                        {{ object.date_presented }}
+                    </div>
+                </div>
+            </div>
+            <div class="contact">
+                {% if object.valid == True and object.not_spent == True%}
+                    <button class="btn btn-block btn-success" onclick="window.location.href='{% url 'pharmacy-connection_result' id=object.id %}';">Redeem the ePrescription</button>
+                {% elif object.valid != True or object.not_spent != True%}
+                    <button type="button" class="btn btn-block btn-success" disabled><strike>Reedeem the ePrescription</strike></button>
+                {% endif %}
+                <form action="" method="post">{% csrf_token %}
+                    <p><input type="submit" name="delete" class="btn btn-block btn-danger" value="Delete the Prescription"/></p>
+                </form>
+                    <a href="{% url 'pharmacy-prescription-table' %}" class="btn btn-block btn-secondary"><i class="fa fa-envelope-o"></i> Go back</a>
+
+            </div>
+        </div>
+
+</div>
+
+{% endblock %}

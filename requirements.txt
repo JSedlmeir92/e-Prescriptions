@@ -3,3 +3,4 @@ requests
 python-dotenv
 django_tables2
 python-dateutil
+django-crispy-forms

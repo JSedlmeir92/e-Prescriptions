@@ -712,31 +712,32 @@ def webhook_proof_view(request):
         contract_address = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw'])
         prescription_id  = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw'])
         spending_key     = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw'])
-        os.system(f"quorum_client/checkPrescription.sh {contract_address} {prescription_id} {spending_key}")
-        not_spent = os.popen("tail -n 1 %s" % "quorum_client/check").read().replace("\n", "") == 'true'
+        if spending_key != None:
+            os.system(f"quorum_client/checkPrescription.sh {contract_address} {prescription_id} {spending_key}")
+            not_spent = os.popen("tail -n 1 %s" % "quorum_client/check").read().replace("\n", "") == 'true'
 
-        Prescription.objects.update_or_create(
-            prescription_id     = prescription_id,
-            defaults={ 
-                "prescription_id"     : prescription_id,
-                "doctor_id"           : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_id']['raw'],
-                "doctor_fullname"     : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_fullname']['raw'],
-                "doctor_type"         : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_type']['raw'],
-                "doctor_phonenumber"  : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_phonenumber']['raw'],
-                "patient_insurance_id"  : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_insurance_id']['raw'],
-                "patient_insurance_company" : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_insurance_company']['raw'],
-                "patient_fullname"    : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_fullname']['raw'],
-                "patient_birthday"    : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_birthday']['raw'],
-                "pharmaceutical"      : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['pharmaceutical']['raw'],
-                "number"              : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['number']['raw'],
-                "extra_information"  : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['extra_information']['raw'],
-                "contract_address"    : contract_address,
-                "spending_key"        : spending_key,
-                "valid"               : proof['verified'] == "true",
-                "not_spent"           : not_spent,
-                "date_issued"         : proof['created_at'],
-                "date_presented"      : datetime.now(),
-                "connection_id"       : connection_id
-            }
+            Prescription.objects.update_or_create(
+                prescription_id     = prescription_id,
+                defaults={ 
+                    "prescription_id"     : prescription_id,
+                    "doctor_id"           : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_id']['raw'],
+                    "doctor_fullname"     : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_fullname']['raw'],
+                    "doctor_type"         : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_type']['raw'],
+                    "doctor_phonenumber"  : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_phonenumber']['raw'],
+                    "patient_insurance_id"  : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_insurance_id']['raw'],
+                    "patient_insurance_company" : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_insurance_company']['raw'],
+                    "patient_fullname"    : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_fullname']['raw'],
+                    "patient_birthday"    : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_birthday']['raw'],
+                    "pharmaceutical"      : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['pharmaceutical']['raw'],
+                    "number"              : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['number']['raw'],
+                    "extra_information"  : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['extra_information']['raw'],
+                    "contract_address"    : contract_address,
+                    "spending_key"        : spending_key,
+                    "valid"               : proof['verified'] == "true",
+                    "not_spent"           : not_spent,
+                    "date_issued"         : proof['created_at'],
+                    "date_presented"      : datetime.now(),
+                    "connection_id"       : connection_id
+                }
         )
     return HttpResponse()

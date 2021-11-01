@@ -24,7 +24,7 @@
                 <h6 style="color: darkred"> There are no suitable Insurance schemas in your wallet
                     <!-- or on the ledger-->. Please publish a new one.</h6><br>
                 <form method="post">{% csrf_token %}
-                    <button class="btn btn-block btn-dark">Publish New Insurance Schema</button><br>
+                    <button class="btn btn-block btn-primary">Publish New Insurance Schema</button><br>
                 </form>
                 <a href="{% url 'insurance-cred_def' %}" class="btn btn-block btn-secondary"><i class="fa fa-envelope-o"></i>Continue</a>
             {% endif %}

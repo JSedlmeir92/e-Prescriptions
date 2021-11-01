@@ -24,9 +24,9 @@
                 <h6 style="color: darkred"> There are no suitable Doctor schemas in your wallet
                     <!-- or on the ledger-->. Please publish a new one.</h6><br>
                 <form method="post">{% csrf_token %}
-                    <button class="btn btn-block btn-dark">Publish New Doctor Schema</button><br>
+                    <button class="btn btn-block btn-primary">Publish New Doctor Schema</button><br>
                 </form>
-                <a href="{% url 'doctor-cred_def' %}" class="btn btn-block btn-primary"><i class="fa fa-envelope-o"></i>Continue</a>
+                <a href="{% url 'doctor-cred_def' %}" class="btn btn-block btn-dark"><i class="fa fa-envelope-o"></i>Continue</a>
             {% endif %}
         </div>
     </div>

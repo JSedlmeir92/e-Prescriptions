@@ -13,7 +13,7 @@ class Prescription(models.Model):
     pharmaceutical      = models.CharField(max_length=120)
     number              = models.CharField(max_length=120, verbose_name="Quantity")
     extra_information   = models.CharField(max_length=1200)
-    date_issued         = models.CharField(max_length=120)
+    date_issued         = models.DateTimeField()
     contract_address    = models.CharField(max_length=120)
     prescription_id     = models.CharField(max_length=120)
     spending_key        = models.CharField(max_length=120)

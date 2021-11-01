@@ -2,6 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Credential, Connection
 from .forms import CredentialForm, ConnectionForm
 
+
+from django.http.response import HttpResponseRedirect
+
 import random
 import hashlib
 import json
@@ -21,6 +24,8 @@ logger = logging.getLogger(__name__)
 
 ip_address = settings.IP_ADDRESS
 
+url_webapp = f'http://{ip_address}'
+url_pharmacy_agent = f'http://{ip_address}:9080'
 url = f'http://{ip_address}:6080'
 # print(f"url: {url}")
 
@@ -270,7 +275,7 @@ def issue_cred_view(request):
                         },
                         {
                             "name": "insurance_company",
-                            "value": "Technical Barma"
+                            "value": "MediScare"
                         }
                     ]
 
@@ -344,6 +349,170 @@ def cred_detail_view(request, id):
 
     return render(request, 'insurance/cred_detail.html', context)
 
+
+def login_view(request):
+    context = {
+        'title': 'Login',
+    }
+    # Checks if a SCHEMA and a CREDENTIAL DEFINITION are available.
+    qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + url_webapp + "/insurance/login_url"
+    context['qr_code'] = qr_code
+    return render(request, 'insurance/login.html', context)
+
+def login_result_view(request): ##Checks the validity of the eprescription
+    proof_records = requests.get(url + '/present-proof/records').json()['results']
+    x = len(proof_records)
+    print(x)
+    while x > 0:
+        pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
+        requests.delete(url + '/present-proof/records/' + pres_ex_id)
+        print(x)
+        x -= 1
+    x = 0
+    while len(requests.get(url + '/present-proof/records?state=verified').json()['results']) == 0:
+        time.sleep(5)
+        print("waiting...")
+        # redirect to the login page after 2 minutes of not receiving a proof presentation
+        x += 1
+        if x > 23:
+            return redirect('insurance-base')
+    proof = requests.get(url + '/present-proof/records?state=verified').json()['results'][0]
+    insurance_insurance_id = proof['presentation']['requested_proof']['revealed_attr_groups']['insurance']['values']['insurance_id']['raw']
+    pharmacy_insurance_id = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['insurance_id']['raw']
+    if insurance_insurance_id == pharmacy_insurance_id:
+        verified = proof['verified'] == 'true'
+        print("revoked" + str(verified))
+        contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['contract_address']['raw']
+        print("contract_address: " + contract_address)
+        prescription_id = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['invoice_id']['raw']
+        print("prescription_id: " + prescription_id)
+        spending_key = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['spending_key']['raw']
+        print("spending_key: " + spending_key)
+        os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
+        result = os.popen("tail -n 1 %s" % "quorum_client/result").read().replace("\n", "")
+        result = result == 'true' #Converts result to boolean
+        price = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['price']['raw']
+
+        if (result == True and verified == True):
+            context = {
+                'price': price,
+                'verified': "true"
+            }
+        elif (result == False and verified == True):
+            context = {
+                'title': 'Invoice already cashed',
+                'verified': 'spent'
+            }
+        elif (result == True and verified == False):
+            context = {
+                'title': 'Invoice revoked',
+                'verified': 'revoked'
+            }
+        elif (result == False and verified == False):
+            context = {
+                'title': 'Invoice already cashed and spent',
+                'verified': 'revoked_and_spent'
+            }
+        else:
+            print("Invalid result: ")
+            print(result)
+    else:
+        print("insurance " + insurance_insurance_id + "pharmacy : " + pharmacy_insurance_id)
+        verified = False
+        context = {
+            'title': 'Invoice was not issued to the person',
+            'verified': 'revoked_and_spent'
+        }
+    return render(request, 'insurance/login-result.html', context)
+
+def login_url_view(request):
+    context = {
+    }
+    # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
+    pharmacy_created_schema = requests.get(url_pharmacy_agent + '/schemas/created').json()['schema_ids']
+    pharmacy_schema_name = requests.get(url_pharmacy_agent + '/schemas/' + pharmacy_created_schema[0]).json()['schema']['name']
+    pharmacy_cred_def_id = requests.get(url_pharmacy_agent + '/credential-definitions/created?schema_name=' + pharmacy_schema_name).json()[
+        'credential_definition_ids'][0]
+    insurance_created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
+    insurance_schema_name = requests.get(url + '/schemas/' + insurance_created_schema[0]).json()['schema']['name']
+    insurance_cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + insurance_schema_name).json()[
+        'credential_definition_ids'][0]
+    print("pharmacy_cred_def_id " + pharmacy_cred_def_id)
+    proof_request = {
+        "proof_request":{
+            "name":"Proof of Receipt",
+            "version":"1.0",
+            "requested_attributes":{
+                "invoice":{
+                    "names":[
+                        "insurance_id",
+                        "pharmaceutical",
+                        "quantity",
+                        "price",
+                        "invoice_id",
+                        "contract_address",
+                        "spending_key"
+                    ],
+                    "restrictions":[
+                    {
+                        "cred_def_id": pharmacy_cred_def_id
+                    }
+                    ]
+                },
+                "insurance":{
+                    "names":[
+                        "insurance_id"
+                    ],
+                    "restrictions":[
+                    {
+                        "cred_def_id": insurance_cred_def_id
+                    }
+                    ]
+                }
+            },
+            "requested_predicates":{
+                
+            },
+            "non_revoked":{
+                "from":0,
+                "to": round(time.time())
+            }
+        }
+    }
+    present_proof = requests.post(url + '/present-proof/create-request', json=proof_request).json()
+    presentation_request = json.dumps(present_proof["presentation_request"])
+    presentation_request = base64.b64encode(presentation_request.encode('utf-8')).decode('ascii')
+    invitation = requests.post(url + '/connections/create-invitation').json()
+
+    reciepentKeys = invitation["invitation"]["recipientKeys"]
+    #verkey = requests.get(url + '/wallet/did').json()["results"][0]["verkey"]
+    serviceEndPoint = invitation["invitation"]["serviceEndpoint"]
+    #routingkeys = invitation["invitation"]["routing_keys"] #TODO: Relevant?
+    proof_request_conless = {
+        "request_presentations~attach": [
+            {
+                "@id": "libindy-request-presentation-0",
+                "mime-type": "application/json",
+                "data": {
+                    "base64" : presentation_request
+                }
+            }
+        ],
+        "@id" : present_proof["presentation_request_dict"]["@id"],
+        "@type": present_proof["presentation_request_dict"]["@type"],
+        "~service": {
+            "recipientKeys": reciepentKeys,
+            "serviceEndpoint": serviceEndPoint,
+            "routingKeys": []
+        }
+    }
+    invitation_string = json.dumps(proof_request_conless)
+    invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
+    invitation_url = str(url_pharmacy_agent)[:-4] + "7000/?c_i=" + str(invitation_string) ##Changing Agent-Port from API to the Agents' one
+    context['invitation'] = invitation_url
+    print(invitation_url)
+    return HttpResponseRedirect(invitation_url)
+
 @require_POST
 @csrf_exempt
 def webhook_proof_view(request):
@@ -352,5 +521,4 @@ def webhook_proof_view(request):
 @require_POST
 @csrf_exempt
 def webhook_catch_all_view(request):
-    print(json.loads(request.body))
     return

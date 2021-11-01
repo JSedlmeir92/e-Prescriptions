@@ -6,20 +6,20 @@
 {% load render_table from django_tables2 %}
 
 {% block body %}
-    <div class="col-md-12">
-        <div class="card shadow mb-12">
-            <div class="card-header">
-                <h1 class="card-title">ePrescriptions Overview<br></h1>
-            </div>
-            <div class="card-body">
-                
-                {% if len == 0 %}
-                    <p>There are <span style="color: #ff0000">{{ len }}</span> ePrescriptions that can be revoked.</p>
-                {% else %}
-                    {% render_table table %}
-                {% endif %}
-            </div>
+<div class="col-md-12">
+    <div class="card shadow mb-12">
+        <div class="card-header">
+            <h1 class="card-title">ePrescriptions Overview<br></h1>
+        </div>
+        <div class="card-body">
+            
+            {% if len == 0 %}
+                <p>There are <span style="color: #ff0000">{{ len }}</span> ePrescriptions that can be revoked.</p>
+            {% else %}
+                {% render_table table %}
+            {% endif %}
         </div>
     </div>
+</div>
 
 {% endblock %}

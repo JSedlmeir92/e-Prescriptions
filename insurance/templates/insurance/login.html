@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    {% if name %}
+    {% elif available_schema %}
+    {% elif available_cred_def %}
+    {% else %}
+        <meta http-equiv="refresh" content="1;URL={% url 'insurance-result' %}" xmlns:width="http://www.w3.org/1999/xhtml">
+    {% endif %}
+{% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block body %}
+    {% if available_schema %}
+        <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd; margin-left: auto; margin-right: auto; width: 500px">Spend ePrescription</button><br>
+        <h3 style="color: darkred; text-align: center">You can't use the functionality yet.</h3><br>
+        <h5 style="color: darkred">{{ available_schema }}</h5><br>
+        <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'doctor-schema' %}';">Go Back</button><br><br>
+    {% elif available_cred_def %}
+        <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd; margin-left: auto; margin-right: auto; width: 300px">Spend ePrescription</button><br>
+        <h3 style="color: darkred; text-align: center">You can't use the functionality yet.</h3><br>
+        <h5 style="color: darkred">{{ available_cred_def }}</h5><br>
+        <button class="button" style="margin-left: auto; margin-right: auto; width: 300px" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Go Back</button><br><br>
+    {% else %}
+        <div class="row mx-auto">
+            <div class="col-md-12">
+                <div class="card shadow mb-6">
+                    <div class="card-header">
+                        <h1 class="card-title">Show your Invoice</h1>
+                    </div>
+                    <div class="card-body">    
+                        <div class="row d-flex justify-content-center align-items-center">
+
+                            <img id='barcode'
+                                src={{ qr_code }}
+                                alt=""
+                                title="Invitation Link"
+                                width="350"
+                                height="350"
+                                class="img-thumbnail mx-auto d-block"
+                            />
+                        </div>                           
+                        <br>
+                        <div class="row">
+                            <p class="text-center">Please scan the  QR-Code and send your invoice</br>
+                            (Afterwards you will automatically receive a proof request on your smartphone)</p>
+                        <a href="{% url 'insurance-connection_result' %}" class="btn btn-block btn-secondary"><i class="fa fa-envelope-o"></i> Continue</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+         setTimeout(function(){
+            window.location.href = '/insurance/login-result/';
+         }, 1000);
+      </script>
+
+    {% endif %}
+{% endblock %}

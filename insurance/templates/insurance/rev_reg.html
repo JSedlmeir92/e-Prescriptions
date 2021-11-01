@@ -5,30 +5,32 @@
 {% block style %}{% endblock %}
 
 {% block body %}
-<h1>Available Active Insurance Revocation Registry</h1><br>
-{% if available_schema %}
-<h5 style="color: darkred">{{ available_schema }}</h5><br>
-<button style="width: 700px" class="button" onclick="window.location.href='{% url 'insurance-schema' %}';">Go
-    Back</button><br><br>
-{% elif available_cred_def %}
-<h5 style="color: darkred">{{ available_cred_def }}</h5><br>
-<button style="width: 700px" class="button" onclick="window.location.href='{% url 'insurance-cred_def' %}';">Go
-    Back</button><br><br>
-{% elif rev_reg %}
-<h5>The following revocation registry is active:</h5><br>
-<h5><strong>{{ rev_reg }}</strong></h5><br>
-<h5 style="color: mediumseagreen"> It is not necessary to publish a new insurance revocation registry.</h5><br>
-<button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd">Publish New Revocation
-    Registry</button><br>
-<button style="width: 700px" class="button"
-    onclick="window.location.href='{% url 'insurance-connection' %}';">Continue</button><br><br>
-{% else %}
-<h5 style="color: darkred">There is no active Insurance revocation registry available. Please publish a new one.
-</h5><br>
-<form method="post">{% csrf_token %}
-    <button style="width: 700px" class="button">Publish New Insurance Revocation Registry</button><br>
-</form>
-<button class="button"
-    style="pointer-events: none; background-color: slategray; color: #c0c7cd">Continue</button><br><br>
-{% endif %}
+<div class="col-md-8 mx-auto">
+    <div class="card shadow mb-12">
+        <div class="card-header">
+            <h1 class="card-title">Available Active Revocation Registry<br></h1>
+        </div>
+        <div class="card-body">
+            {% if created_schema %}
+                <h6 style="color: darkred">{{ available_schema }}</h6><br>
+                <button class="btn btn-block btn-primary" onclick="window.location.href='{% url 'doctor-schema' %}';">Go Back</button>
+            {% elif available_cred_def %}
+                <h6 style="color: darkred">{{ available_cred_def }}</h6><br>
+                <button class="btn btn-block btn-primary" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Go Back</button>
+            {% elif rev_reg %}
+                <h6>The following revocation registry is active:</h6><br>
+                <h6><strong>{{ rev_reg }}</strong></h6><br>
+                <h6 style="color: mediumseagreen"> It is not necessary to publish a new doctor revocation registry.</h6><br>
+                <button class="btn btn-block btn-primary" onclick="window.location.href='{% url 'doctor-connection' %}';">Continue</button>
+            {% else %}
+                <h6 style="color: darkred">There is no active Insurance revocation registry available. Please publish a new one.
+                </h6><br>
+                <form method="post">{% csrf_token %}
+                    <button class="btn btn-block btn-dark">Publish New Insurance Revocation Registry</button><br>
+                </form>
+                <button class="btn btn-block btn-primary">Continue</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

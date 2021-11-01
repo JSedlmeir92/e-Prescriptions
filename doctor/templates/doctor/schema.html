@@ -5,22 +5,30 @@
 {% block style %}{% endblock %}
 
 {% block body %}
-    <h1>Available ePrescription Schemas:</h1><br>
-    {% if created_schema %}
-        <h5>The ePrescription schema <strong>{{ created_schema }}</strong> is available in your wallet.</h5><br>
-        <h5>It has the following attributes:</h5>
-        <br>
-        {% for item in attributes %}
-            <h5>{{ forloop.counter|stringformat:"02d" }} - <strong>{{ item.attribute }}</strong> - {{ item.comment }}</h5>
-        {% endfor %}<br>
-        <h5 style="color: mediumseagreen"> It is not necessary to publish a new schema</h5><br>
-        <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd">Publish New ePrescription Schema</button><br>
-        <button class="button" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Continue</button><br><br>
-    {% else %}
-        <h5 style="color: darkred">There are no suitable ePrescription schemas in your wallet<!-- or on the ledger-->. Please publish a new one.</h5><br>
-        <form method="post">{% csrf_token %}
-            <button class="button">Publish New ePrescription Schema</button><br>
-        </form>
-        <button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd">Continue</button><br><br>
-    {% endif %}
+<div class="col-md-8 mx-auto">
+    <div class="card shadow mb-12">
+        <div class="card-header">
+            <h1 class="card-title">Available Doctor Schemas<br></h1>
+        </div>
+        <div class="card-body">
+            {% if created_schema %}
+                The Doctor schema <strong>{{ created_schema }}</strong> is available in your wallet.<br><br>
+                It has the following attributes:
+                <br>
+                {% for item in attributes %}
+                    {{ forloop.counter|stringformat:"02d" }} - <strong>{{ item.attribute }}</strong> - {{ item.comment }}</br>
+                {% endfor %}<br>
+                <h6 style="color: mediumseagreen"> It is not necessary to publish a new schema</h5><br>
+                <a href="{% url 'doctor-cred_def' %}" class="btn btn-primary btn-block"><i class="fa fa-envelope-o"></i> Continue</a>
+            {% else %}
+                <h6 style="color: darkred"> There are no suitable Doctor schemas in your wallet
+                    <!-- or on the ledger-->. Please publish a new one.</h6><br>
+                <form method="post">{% csrf_token %}
+                    <button class="btn btn-block btn-dark">Publish New Doctor Schema</button><br>
+                </form>
+                <a href="{% url 'doctor-cred_def' %}" class="btn btn-block btn-primary"><i class="fa fa-envelope-o"></i>Continue</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

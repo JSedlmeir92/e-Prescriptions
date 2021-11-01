@@ -5,26 +5,31 @@
 {% block style %}{% endblock %}
 
 {% block body %}
-<h1>Available Insurance Credential Definitions:</h1><br>
-{% if available_schema %}
-<h5 style="color: darkred">{{ available_schema }}</h5><br>
-<button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-schema' %}';">Go
-    Back</button><br><br>
-{% elif created_cred_def_rev %}
-<h5>The Insurance credential definition <strong>{{ created_cred_def_rev }}</strong> is available in your wallet.
-</h5>
-<h5 style="color: mediumseagreen"> It is not necessary to publish a new Insurance credential definition.</h5><br>
-<button class="button" style="pointer-events: none; background-color: slategray; color: #c0c7cd">Publish New Credential
-    Definition</button><br>
-<button style="width: 700px" class="button"
-    onclick="window.location.href='{% url 'insurance-rev_reg' %}';">Continue</button><br><br>
-{% else %}
-<h5 style="color: darkred">There are no suitable Insurance credential definitions in your wallet. Please publish a
-    new one.</h5><br>
-<form method="post">{% csrf_token %}
-    <button style="width: 700px" class="button">Publish New Insurance Credential Definition</button><br>
-</form>
-<button style="width: 700px; pointer-events: none; background-color: slategray; color: #c0c7cd"
-    class="button">Continue</button><br><br>
-{% endif %}
+<div class="col-md-8 mx-auto">
+    <div class="card shadow mb-12">
+        <div class="card-header">
+            <h1 class="card-title">Available Insurance Credential Definitions<br></h1>
+        </div>
+        <div class="card-body">
+            {% if available_schema %}
+                <h6 style="color: darkred">{{ available_schema }}</h6><br>
+                <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-schema' %}';">Go
+                Back</button><br><br>
+            {% elif created_cred_def_rev %}
+                <h6>The Insurance credential definition <strong>{{ created_cred_def_rev }}</strong> is available in your wallet.
+                </h6>
+                <h6 style="color: mediumseagreen"> It is not necessary to publish a new Insurance credential definition.</h6><br>
+                 <button class="btn btn-primary btn-block" onclick="window.location.href='{% url 'insurance-rev_reg' %}';">Continue</button>
+            {% else %}
+                <h6 style="color: darkred">There are no suitable Insurance credential definitions in your wallet. Please publish a
+                    new one.</h6><br>
+                <form method="post">{% csrf_token %}
+                    <button style="btn btn-primary btn-dark">Publish New Insurance Credential Definition</button><br>
+                </form>
+                <button class="btn btn-secondary btn-block" onclick="window.location.href='{% url 'insurance-rev_reg' %}';">Continue</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}
+

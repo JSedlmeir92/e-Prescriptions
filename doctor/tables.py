@@ -10,7 +10,7 @@ def custom_row_attrs(**kwargs):
     tr_class = ''
 
 class ConnectionTable(tables.Table):
-    more_information = tables.LinkColumn('doctor-patients_detail', args=[A('pk')], text='More information', attrs={'a': {'class': 'btn btn-primary'}})
+    #more_information = tables.LinkColumn('doctor-patients_detail', args=[A('pk')], text='More information', attrs={'a': {'class': 'btn btn-primary'}})
     prescribe = tables.LinkColumn('doctor-issue_cred', args=[A('pk')], text='Prescribe', attrs={'a': {'class': 'btn btn-primary'}})
     delete = tables.LinkColumn('doctor-patients_delete_item', args=[A('pk')], text='Delete', attrs={'a': {'class': 'btn btn-danger'}})
     
@@ -18,7 +18,7 @@ class ConnectionTable(tables.Table):
         model    = Connection
         fields  = ("id", "firstname", "lastname", "birthday",)
         template_name = "django_tables2/bootstrap4.html"
-        sequence = ("id", "lastname", "firstname", "birthday", 'more_information', "prescribe", "delete",)
+        sequence = ("id", "lastname", "firstname", "birthday", "prescribe", "delete",)
         row_attrs = {'class': custom_row_attrs}
 
 class CredentialTable(tables.Table):
@@ -28,5 +28,5 @@ class CredentialTable(tables.Table):
         model    = Credential
         fields  = ("patient_fullname", "pharmaceutical", "number", "date_issued", "revoked",)
         template_name = "django_tables2/bootstrap4.html"
-        sequence = ("patient_fullname", "pharmaceutical", "number", "date_issued", "revoked", 'more_information',)
+        sequence = ("patient_fullname", "pharmaceutical", "number", "date_issued", "revoked",)
         row_attrs = {'class': custom_row_attrs}

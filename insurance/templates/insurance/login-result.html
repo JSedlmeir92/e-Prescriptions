@@ -12,19 +12,20 @@
     <div class="col-md-12">
         <div class="card shadow mb-6">
             <div class="card-header">
-                <h1 class="card-title">Spending ePrescription</h1>
+                <h1 class="card-title">Redeeming Invoice</h1>
             </div>
             <div class="card-body text-center">    
                 {% if verified == "true" %}
-                <span style="color: green"><i class="fas fa-check fa-5x"></i></br></span>
-                    <p class="success">Prescription spent successfully. </p>
+                        <span style="color: green"><i class="fas fa-check fa-5x"></i></br></span>
+                    <p class="success">Invoice successfully redeemed. </p>
+                    <p class="success">You will get {{ price }} €!
                 {% else %}
                         <span style="color: red"><i class="fas fa-minus-circle fa-5x"></i></br></br></span>
-                    <h3>Prescription spending failed! </br>
+                    <h3>Invoice cashing failed! </br>
                     {{ title }}!</h3>
                 {% endif %}
             </div>
-            <a href="{% url 'pharmacy-prescription-table' %}" class="btn btn-block btn-secondary"><i class="fa fa-envelope-o"></i> Continue</a>
+            <a href="{% url 'insurance-home' %}" class="btn btn-block btn-secondary"><i class="fa fa-envelope-o"></i> Continue</a>
         </div>
     </div>
 </div>

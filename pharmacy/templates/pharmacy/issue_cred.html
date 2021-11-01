@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block head %}{% endblock %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block body %}
+{% if available_schema %}
+<h5 style="color: darkred">There are no suitable schemas or credential definitions in your wallet. To issue a
+    credential, please go back and publish new ones first.</h5><br>
+<button style="width: 700px" class="button" onclick="window.location.href='{% url 'insurance-schema' %}';">Go
+    Back</button><br><br>
+{% elif available_cred_def %}
+<h5 style="color: darkred">There are no suitable credential definitions in your wallet or on the ledger. To issue a
+    credential, publish a new credential definition first.</h5><br>
+<button style="width: 700px" class="button" onclick="window.location.href='{% url 'insurance-cred_def' %}';">Go
+    Back</button><br><br>
+{% elif rev_reg %}
+<h5 style="color: darkred">There are no suitable revocation registries. To issue a credential, publish a new revocation
+    registry.</h5><br>
+<button style="width: 700px" class="button" onclick="window.location.href='{% url 'insurance-rev_reg' %}';">Go
+    Back</button><br><br>
+{% else %}
+<div class="row mx-auto">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow mb-6">
+            <div class="card-header">
+                <h1 class="card-title">Issue an Invoice</h1>
+            </div>
+            <div class="card-body">    
+                {% if name %}
+                    <div classs="container p-5">
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Sucess!</strong> <br>
+                        The invoice was issued to {{ name }}!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                    </div>
+                {% endif %}
+                <form action="." method="post">{% csrf_token %}
+                <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <label for='{{ form.pharmaceutical }}' class="col-sm-4 col-form-label">Patient's Name:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="patient_birthday" placeholder="{{ object.patient_fullname }}" readonly> 
+                        </div>
+                    </div>
+                     <div class="form-group row">
+                        <label for='{{ form.pharmaceutical }}' class="col-sm-4 col-form-label">Insurance ID:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="patient_birthday" placeholder="{{ object.patient_insurance_company }}" readonly> 
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for='{{ form.pharmaceutical }}' class="col-sm-4 col-form-label">Insurance Company:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="patient_birthday" placeholder="{{ object.pharmaceutical }}" readonly> 
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for='{{ form.pharmaceutical }}' class="col-sm-4 col-form-label">Pharmaceutical:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="patient_birthday" placeholder="{{ object.patient_fullname }}" readonly> 
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for='{{ form.pharmaceutical }}' class="col-sm-4 col-form-label">Quantity:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="patient_birthday" placeholder="{{ object.number }}" readonly> 
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for='{{ form.pharmaceutical }}' class="col-sm-4 col-form-label">Price:</label>
+                        <div class="col-sm-8">
+                            {{ form.price }}
+                        </div>
+                    </div>
+                </div>
+            <button class="btn btn-primary btn-block" type="submit" value="save">Issue CNS Credential (Credential + Token)</button>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -30,25 +30,11 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                         <label for="patient_insurance_company">Insurance Company</label>
-                        <input type="text" class="form-control" id="patient_insurance_company" placeholder="DKB" readonly>
+                        <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.patient_insurance_company }}" readonly>
                         </div>
                         <div class="form-group col-md-6">
                         <label for="patient_insurance_id">Insurance ID</label>
-                        <input type="text" class="form-control" id="patient_insurance_id" placeholder="x234234" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group"> 
-                        <label for="patient_adress">Address</label>
-                        <input type="text" class="form-control" id="patient_adress" placeholder="Coole Adresse" readonly> 
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                        <label for="patient_city">City</label>
-                        <input type="text" class="form-control" id="patient_city" placeholder="Coole Stadt" readonly>
-                        </div>
-                        <div class="form-group col-md-6">
-                        <label for="patient_zip">Zip</label>
-                        <input type="text" class="form-control" id="patient_zip" placeholder="123123" readonly>
+                        <input type="text" class="form-control" id="patient_insurance_id" placeholder="{{ object.patient_insurance_id }}" readonly>
                         </div>
                     </div>
                 </div>
@@ -57,25 +43,23 @@
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="doctor_fullname">Fullname</label>
-                            <input type="text" class="form-control" id="doctor_fullname" placeholder="{{ doctor_fullname }}" readonly>
+                            <input type="text" class="form-control" id="doctor_fullname" placeholder="{{ object.doctor_fullname }}" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                        <label for="patient_insurance_company">Doctor's Type</label>
+                        <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.doctor_type }}" readonly>
+                        </div>
+                        <div class="form-group col-md-6">
+                        <label for="patient_insurance_id">Doctor's ID</label>
+                        <input type="text" class="form-control" id="patient_insurance_id" placeholder="{{ object.doctor_id }}" readonly>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-12">
-                            <label for="doctor_ID">Doctor ID </label>
-                            <input type="text" class="form-control" id="doctor_ID" placeholder="X1234123" readonly>
-                            </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="doctor_type">Doctor's type</label>
-                            <input type="text" class="form-control" id="doctor_type" placeholder="{{ object.doctor_address }}" readonly>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="doctor_address">Address</label>
-                            <input type="text" class="form-control" id="doctor_address" placeholder="{{ object.doctor_address }}" readonly>
+                            <label for="doctor_address">Phone Number</label>
+                            <input type="text" class="form-control" id="doctor_address" placeholder="{{ object.doctor_phonenumber }}" readonly>
                         </div>
                     </div>
                 </div>
@@ -114,7 +98,7 @@
                                 <label for="exampleFormControlTextarea1" class=" col-form-label">Additional information:</label>
                             </div>
                             <div class="col-sm-9">
-                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="2" readonly></textarea>
+                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="2" placeholder="{{ object.extra_information }}" readonly></textarea>
                             </div>
                         </div>
                         <hr class="sidebar-divider my-0" style="padding-bottom: 1rem;">
@@ -146,12 +130,12 @@
                                     </div>
                                     <hr class="sidebar-divider my-0" style="padding-bottom: 1rem;">
                                     <div class="card">
-                                        <h6 class="card-header">Redeemed</h6>
+                                        <h6 class="card-header">Connection</h6>
                                         <div class="card-body">
-                                        {% if object.redeemed == True%}
-                                            <span style="color: green"><i class="fas fa-check-square fa-2x"></i></span>
-                                        {% else %}
+                                        {% if object.connection_id == "test"%}
                                             <span style="color: red"><i class="fas fa-minus-circle fa-2x"></i></span>
+                                        {% else %}
+                                            <span style="color: green"><i class="fas fa-check-square fa-2x"></i></span>
                                         {% endif %}
                                         </div>
                                     </div>
@@ -168,6 +152,11 @@
             {% elif object.valid != True or object.not_spent != True%}
                 <button type="button" class="btn btn-block btn-success" disabled><strike>Reedeem the ePrescription</strike></button>
             {% endif %}
+            {% if object.redeemed == True and object.connection_id != "test"%}
+                <button class="btn btn-block btn-primary" onclick="window.location.href='{% url 'pharmacy-issue_cred' id=object.id %}';">Issue an invoice</button>
+            {% else %}
+                <button type="button" class="btn btn-block btn-primary" disabled><strike>Issue an invoice</strike></button>
+            {% endif %}            
             <form action="" method="post">{% csrf_token %}
                 <p><input type="submit" name="delete" class="btn btn-block btn-danger" value="Delete the Prescription"/></p>
             </form>

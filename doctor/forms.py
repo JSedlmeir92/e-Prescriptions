@@ -6,7 +6,7 @@ class CredentialForm(forms.ModelForm):
     # Creating dropdown list with all the available divisions
     doctors_choices = [
         ('Lisa Cuddy, M.D.', 'Lisa Cuddy, M.D.'),
-        ('Bob Kelsp, M.D.', 'Bob  Kelso, M.D.')
+        ('Bob Kelso, M.D.', 'Bob  Kelso, M.D.')
     ]
 
     expiration_choices = [

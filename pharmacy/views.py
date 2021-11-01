@@ -8,7 +8,9 @@ from django.http import HttpResponse
 from django.views.generic import ListView
 from .tables import PrescriptionTable
 from django.conf import settings
+from .forms import CredentialForm
 
+import hashlib
 import requests
 import time
 import os
@@ -16,6 +18,8 @@ import json
 import base64
 from datetime import date, datetime
 from dateutil.relativedelta import *
+import random
+
 
 ip_address = settings.IP_ADDRESS
 url_pharmacy_agent = f'http://{ip_address}:9080'
@@ -23,13 +27,35 @@ url_doctor_agent = f'http://{ip_address}:7080'
 port = settings.PORT
 url_webapp = f'http://{ip_address}:{port}'
 
+
+support_revocation = True
+
+ATTRIBUTES = [
+                "insurance_id",
+                "pharmaceutical",
+                "quantity",
+                "price",
+                "invoice_id",
+                "contract_address",
+                "spending_key"
+            ]
+
+COMMENTS = [
+    "The insurance ID of the insurend persion",
+    "The sold pharmaceutical",
+    "The quantity of the sold pharmaceutical",
+    "The price of the sold pharmaceutical",
+    "The unique id of the invoice to be referred to on the blockchain token",
+    "The address of the smart contract in which the pharamrcy creates the invoice token",
+    "The private key that allows to spend the token (once only)"
+
+]
+
 ##Table
 class PrescriptionListView(ListView):
     model = Prescription
     table_class = PrescriptionTable
     template_name = 'pharmacy/presciption.html'
-
-
 
 def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
@@ -212,7 +238,7 @@ def login_result_view(request, id = 0): ##Checks the validity of the eprescripti
     
     if (result == True and verified == True):
         context = {
-            'title': 'Spending Success',
+            'title': 'Spending successfull!',
             'verified': "true"
         }
         Prescription.objects.filter(id=id).update(redeemed = True, not_spent = False, date_redeemed = datetime.now())
@@ -282,16 +308,22 @@ def login_url_view(request):
             "version": "1.0",
             "requested_attributes": {
                 "e-prescription": {
-                "names": [
+                    "names": [
+                    "doctor_id",
+                    "doctor_fullname",
+                    "doctor_type",
+                    "doctor_phonenumber",
+                    "patient_insurance_id",
+                    "patient_insurance_company",
                     "patient_fullname",
                     "patient_birthday",
-                    "doctor_fullname",
-                    "doctor_address",
                     "pharmaceutical",
                     "number",
+                    "extra_information",
+                    "date_issued",
                     "prescription_id",
-                    "spending_key",
-                    "contract_address"
+                    "contract_address",
+                    "spending_key"
                 ],
                 "restrictions": [
                     {
@@ -347,7 +379,7 @@ def login_url_view(request):
     }
     invitation_string = json.dumps(proof_request_conless)
     invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
-    invitation_url = str(url_doctor_agent)[:-4] + "7000/?c_i=" + str(invitation_string) ##Changing Agent-Port from API to the Agents' one
+    invitation_url = str(url_pharmacy_agent)[:-4] + "7000/?c_i=" + str(invitation_string) ##Changing Agent-Port from API to the Agents' one
     context['invitation'] = invitation_url
     print(invitation_url)
     return HttpResponseRedirect(invitation_url)
@@ -379,6 +411,212 @@ def prescription_check_item_view(request, id):
     #TODO: Check revocation status and token's value
     return redirect('pharmacy-prescription-table')
 
+
+def schema_view(request):
+    created_schema = requests.get(url_pharmacy_agent + '/schemas/created').json()['schema_ids']
+    context = {
+        'title': 'Schema'
+    }
+    if len(created_schema) > 0:
+        context['created_schema'] = created_schema[0]
+        # context['attributes'] = requests.get(url + '/schemas/' + context['created_schema']).json()['schema']['attrNames']
+        # context['attributes'][1], context['attributes'][2], context['attributes'][3], context['attributes'][7], context['attributes'][8], context['attributes'][9], context['attributes'][6], context['attributes'][5], context['attributes'][4], context['attributes'][10], context['attributes'][0] = context['attributes'][0], context['attributes'][1], context['attributes'][2], context['attributes'][3], context['attributes'][4], context['attributes'][5], context['attributes'][6], context['attributes'][7], context['attributes'][8], context['attributes'][9], context['attributes'][10]
+        context['attributes'] = []
+        for index, _ in enumerate(ATTRIBUTES): #displays the ATTRIBUTES with the describing comments
+            context['attributes'].append({"attribute": ATTRIBUTES[index].ljust(30), "comment": COMMENTS[index] + "."})
+        print(context)
+    else:
+        pass
+    # Publish a new SCHEMA
+    if request.method == 'POST':
+        create_schema()
+        return redirect('.')
+    return render(request, 'pharmacy/schema.html', context)
+
+def create_schema():
+    schema = {
+            "attributes": ATTRIBUTES,
+            "schema_name": f"health pharmacy{random.randint(10000, 100000)}",
+            "schema_version": "1.0"
+        }
+    requests.post(url_pharmacy_agent + '/schemas', json=schema)
+
+def cred_def_view(request):
+    context = {
+        'title': 'Credential Definition'
+    }
+    # Checks if there are suitable SCHEMAS in the wallet
+    created_schema = requests.get(url_pharmacy_agent + '/schemas/created').json()['schema_ids']
+    if len(created_schema) < 1:
+        context['available_schema'] = 'There is no suitable schema available. Please go back and publish a new one first.'
+    else:
+        schema_name = requests.get(url_pharmacy_agent + '/schemas/' + created_schema[0]).json()['schema']['name']
+        # Checks if there are suitable REVOCABLE CREDENTIAL DEFINITIONS in the wallet
+        created_credential_definitions_revocable = requests.get(url_pharmacy_agent + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids']
+        if len(created_credential_definitions_revocable) > 0:
+            context['created_cred_def_rev'] = created_credential_definitions_revocable[0]
+        else:
+            # Publish a new CREDENTIAL DEFINITION
+            if request.method == 'POST':
+                schema_id = created_schema[0]
+                credential_definition = {
+                    "tag": "Pharmacy",
+                    "support_revocation": support_revocation,
+                    "schema_id": schema_id
+                }
+                requests.post(url_pharmacy_agent + '/credential-definitions', json=credential_definition)
+                return redirect('.')
+    return render(request, 'pharmacy/cred_def.html', context)
+
+def rev_reg_view(request):
+    context = {
+        'title': 'Revocation Registry'
+    }
+    created_schema = requests.get(url_pharmacy_agent + '/schemas/created').json()['schema_ids']
+    if len(created_schema) < 1:
+        context['available_schema'] = 'There is no suitable schema & credential definition available. Please go back and publish both first.'
+    else:
+        # Checks if there are suitable CREDENTIAL DEFINITIONS in the wallet
+        schema_name = requests.get(url_pharmacy_agent + '/schemas/' + created_schema[0]).json()['schema']['name']
+        created_credential_definitions_revocable = requests.get(url_pharmacy_agent + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids']
+        if len(created_credential_definitions_revocable) < 1:
+            context['available_cred_def'] = 'There is no suitable credential definition available. Please go back and publish a new one first.'
+        else:
+            # Checks if there is an active REVOCATION REGISTRY available
+            cred_def_id = created_credential_definitions_revocable[0]
+            revocation_registry_id = requests.get(url_pharmacy_agent + '/revocation/registries/created?cred_def_id=' + cred_def_id + '&state=active').json()['rev_reg_ids']
+            if len(revocation_registry_id) > 0:
+                context['rev_reg'] = revocation_registry_id[0]
+            else:
+                try:
+                # Publishes a new REVOCATION REGISTRY
+                    if request.method == 'POST':
+                        cred_def_id = created_credential_definitions_revocable[0]
+                        registry = {
+                            "max_cred_num": 1000,
+                            "credential_definition_id": cred_def_id
+                        }
+                        requests.post(url_pharmacy_agent + '/revocation/create-registry', json=registry)
+                        return redirect('.')
+                except Exception as e:
+                        print(e)
+    return render(request, 'pharmacy/rev_reg.html', context)
+
+
+def issue_cred_view(request, id):
+    print("Issuing credential")
+    # Updates the STATE of all CONNECTIONS that do not have the state 'active' or 'response'
+    obj = get_object_or_404(Prescription, id=id)
+
+    form = CredentialForm(request.POST or None)
+    context = {
+        'title': 'Issue Invoice',
+        'form': form,
+        'object': obj
+    }
+    # Checks if there is a suitable SCHEMA
+    created_schema = requests.get(url_pharmacy_agent + '/schemas/created').json()['schema_ids']
+    if len(created_schema) < 1:
+        context['available_schema'] = True
+    else:
+        # Checks if there is a suitable CREDENTIAL DEFINITION
+        schema_name = requests.get(url_pharmacy_agent + '/schemas/' + created_schema[0]).json()['schema']['name']
+        created_credential_definitions_revocable = requests.get(url_pharmacy_agent + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids']
+        if len(created_credential_definitions_revocable) < 1:
+            context['available_cred_def'] = True
+        else:
+            # Checks if there is a suitable REVOCATION REGISTRY
+            cred_def_id = created_credential_definitions_revocable[0]
+            revocation_registry_id = requests.get(url_pharmacy_agent + '/revocation/registries/created?cred_def_id=' + cred_def_id + '&state=active').json()['rev_reg_ids']
+            if len(revocation_registry_id) < 1:
+                context['rev_reg'] = True
+            else:
+                if form.is_valid():
+                    # Sending the data to the patient
+                    schema = requests.get(url_pharmacy_agent + '/schemas/' + created_schema[0]).json()['schema']
+                    schema_name = schema['name']
+                    schema_id = schema['id']
+                    schema_version = schema['version']
+                    schema_issuer_did = requests.get(url_pharmacy_agent + '/wallet/did/public').json()['result']['did']
+                    credential_definition_id = requests.get(url_pharmacy_agent + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids'][0]
+                    issuer_did = requests.get(url_pharmacy_agent + '/wallet/did/public').json()['result']['did']
+                    connection_id = obj.connection_id
+                    invoice_id = "0x" + hashlib.sha256((json.dumps(connection_id)).encode('utf-8')).hexdigest()
+                    with open("quorum_client/build/contracts/PrescriptionContract.json", "r") as file:
+                        contract = json.load(file)
+                    contract_address = contract["networks"]['10']['address']
+
+                    attributes = [
+                        {
+                            "name": "insurance_id",
+                            "value": obj.patient_insurance_id
+                        },
+                        {
+                            "name": "pharmaceutical",
+                            "value": obj.pharmaceutical
+                        },
+                        {
+                            "name": "quantity",
+                            "value": obj.number
+                        },
+                        {
+                            "name": "contract_address",
+                            "value": contract_address
+                        },
+                        {
+                            "name": "invoice_id",
+                            "value": invoice_id
+                        },
+                        {
+                            "name": "price",
+                            "value": request.POST.get('price')
+                        }
+                    ]
+
+                    os.system(f"quorum_client/createPrescription.sh {invoice_id}")
+                    FileHandler = open("quorum_client/spendingKey", "r")
+                    spending_key = FileHandler.read().replace("\n", "")
+                    # print("Spending key: " + spending_key)
+                    if spending_key[0:2] != "0x":
+                        print("Is not a hex")
+                    else:
+                        attributes.append(
+                        {
+                            "name": "spending_key",
+                            "value": spending_key
+                        })
+                        print(attributes)
+                        credential = {
+                            "schema_name": schema_name,
+                            "auto_remove": True,
+                            "schema_issuer_did": schema_issuer_did,
+                            "schema_version": schema_version,
+                            "schema_id": schema_id,
+                            "credential_proposal": {
+                                "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/1.0/credential-preview",
+                                "attributes": attributes,
+                            },
+                            "credential_def_id": credential_definition_id,
+                            "issuer_did": issuer_did,
+                            "connection_id": connection_id,
+                            "trace": False
+                        }
+                        # Saving the data in the database
+                        form.save()
+                        form = CredentialForm()                        
+                        issue_cred = requests.post(url_pharmacy_agent + '/issue-credential/send', json=credential)
+                        # Updating the object in the database with the thread-id
+                        # print(issue_cred)
+                        # print(issue_cred.status_code)
+                        # print(issue_cred.text)
+                        thread_id = issue_cred.json()['credential_offer_dict']['@id']
+                        context['form'] = form
+                        context['name'] = obj.patient_fullname
+        
+                else:
+                    print("")
+    return render(request, 'pharmacy/issue_cred.html', context)
+
 ##Webhooks
 
 @require_POST
@@ -390,10 +628,10 @@ def webhook_connection_view(request):
         # Deletes old PROOF requests & presentations
         proof_records = requests.get(url_pharmacy_agent + '/present-proof/records').json()['results']
         x = len(proof_records)
-        while x > 0:
-            pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-            requests.delete(url_pharmacy_agent + '/present-proof/records/' + pres_ex_id)
-            x -= 1
+        # while x > 0:
+        #     pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
+        #     requests.delete(url_pharmacy_agent + '/present-proof/records/' + pres_ex_id)
+        #     x -= 1
         # Gets the CONNECTION ID (to which the proof should be sent)
         connection_id = requests.get(url_pharmacy_agent + '/connections').json()['results'][0]['connection_id']
         # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
@@ -413,16 +651,27 @@ def webhook_connection_view(request):
             "requested_attributes": {
                 "e-prescription": {
                     "names": [
-                        "patient_fullname",
-                        "patient_birthday",
-                        "doctor_fullname",
-                        "doctor_address",
-                        "pharmaceutical",
-                        "number",
-                        "prescription_id",
-                        "spending_key",
-                        "contract_address"
-                    ]
+                    "doctor_id",
+                    "doctor_fullname",
+                    "doctor_type",
+                    "doctor_phonenumber",
+                    "patient_insurance_id",
+                    "patient_insurance_company",
+                    "patient_fullname",
+                    "patient_birthday",
+                    "pharmaceutical",
+                    "number",
+                    "extra_information",
+                    "date_issued",
+                    "prescription_id",
+                    "contract_address",
+                    "spending_key"
+                ],
+                "restrictions": [
+                    {
+                        "cred_def_id": cred_def_id
+                    }
+                ]
                 }
             },
             "requested_predicates": {
@@ -456,27 +705,38 @@ def webhook_proof_view(request):
     #proof_attributes = proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']
     if proof['state'] == 'verified': 
         print("valid: " + proof['verified'],)
+        if "connection_id" in proof:
+            connection_id = proof['connection_id']
+        else:
+            connection_id = "test"
         contract_address = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw'])
         prescription_id  = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw'])
         spending_key     = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw'])
         os.system(f"quorum_client/checkPrescription.sh {contract_address} {prescription_id} {spending_key}")
         not_spent = os.popen("tail -n 1 %s" % "quorum_client/check").read().replace("\n", "") == 'true'
+
         Prescription.objects.update_or_create(
             prescription_id     = prescription_id,
             defaults={ 
                 "prescription_id"     : prescription_id,
+                "doctor_id"           : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_id']['raw'],
+                "doctor_fullname"     : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_fullname']['raw'],
+                "doctor_type"         : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_type']['raw'],
+                "doctor_phonenumber"  : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_phonenumber']['raw'],
+                "patient_insurance_id"  : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_insurance_id']['raw'],
+                "patient_insurance_company" : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_insurance_company']['raw'],
                 "patient_fullname"    : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_fullname']['raw'],
                 "patient_birthday"    : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_birthday']['raw'],
-                "doctor_fullname"     : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_fullname']['raw'],
-                "doctor_address"      : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['doctor_address']['raw'],
                 "pharmaceutical"      : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['pharmaceutical']['raw'],
                 "number"              : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['number']['raw'],
+                "extra_information"  : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['extra_information']['raw'],
                 "contract_address"    : contract_address,
                 "spending_key"        : spending_key,
                 "valid"               : proof['verified'] == "true",
                 "not_spent"           : not_spent,
                 "date_issued"         : proof['created_at'],
-                "date_presented"      : datetime.now() ##TODO: 
+                "date_presented"      : datetime.now(),
+                "connection_id"       : connection_id
             }
         )
     return HttpResponse()

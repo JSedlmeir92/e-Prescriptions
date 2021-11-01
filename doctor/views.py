@@ -223,7 +223,7 @@ def login_view(request):
                     pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
                     requests.delete(url_doctor_agent + '/present-proof/records/' + pres_ex_id)
                     x -= 1
-                return redirect('pharmacy-connectionless')
+                return redirect('doctor-home')
             # In case the session key is None, the session is stored to get a key
             if not request.session.session_key:
                 request.session.save()
@@ -344,7 +344,6 @@ def issue_cred_view(request, id):
             if len(revocation_registry_id) < 1:
                 context['rev_reg'] = True
             else:
-                print("form abgeschickt")
                 if form.is_valid():
                     obj = get_object_or_404(Connection, id=id)
                     # Sending the data to the patient
@@ -547,10 +546,10 @@ def webhook_connection_view(request):
         # Deletes old PROOF requests & presentations
         proof_records = requests.get(url_doctor_agent + '/present-proof/records').json()['results']
         x = len(proof_records)
-        while x > 0:
-            pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-            requests.delete(url_doctor_agent + '/present-proof/records/' + pres_ex_id)
-            x -= 1
+        # while x > 0:
+        #     pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
+        #     requests.delete(url_doctor_agent + '/present-proof/records/' + pres_ex_id)
+        #     x -= 1
         # Gets the CONNECTION ID (to which the proof should be sent)
         connection_id = requests.get(url_doctor_agent + '/connections').json()['results'][0]['connection_id']
         # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential

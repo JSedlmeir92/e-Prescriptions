@@ -42,6 +42,15 @@ urlpatterns = [
     #Check Status: Not implemented
     path('prescription/check_item/<int:id>', views.prescription_check_item_view, name="pharmacy-prescription_check_item"), 
 
+    # CNS - Schema
+    path('schema/', views.schema_view, name='pharmacy-schema'),
+    # CNS - Credential Definition
+    path('cred_def/', views.cred_def_view, name='pharmacy-cred_def'),
+    # CNS - Revocation Registry
+    path('rev_reg', views.rev_reg_view, name='pharmacy-rev_reg'),
+    # CNS - Issue Credential
+    path('issue_cred/<int:id>/', views.issue_cred_view, name='pharmacy-issue_cred'),
+
     ## WEBHOOKS
     #Connectionbased Proof: Creates the proof-request and sends it to the prover
     path('topic/connections/', views.webhook_connection_view, name='pharmacy-webhook_connection'),

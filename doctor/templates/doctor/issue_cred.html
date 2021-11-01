@@ -25,7 +25,7 @@
                     {% if name %}
                         <div classs="container p-5">
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            <strong>Sucess!</strong> Thre credential has been issued to {{ name }}!
+                            <strong>Sucess!</strong> The credential has been issued to {{ name }}!
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -54,7 +54,7 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                 <label for="patient_insurance_company">Insurance Company</label>
-                                <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.connection_id }}" readonly>
+                                <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.insurance_company }}" readonly>
                                 </div>
                                 <div class="form-group col-md-6">
                                 <label for="patient_insurance_id">Insurance ID</label>

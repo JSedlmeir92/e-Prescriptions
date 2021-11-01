@@ -13,7 +13,7 @@
         <div class="card-body">
             {% if available_schema %}
                 <h6 style="color: darkred">{{ available_schema }}</h6><br>
-                <button class="btn btn-block btn-dark" onclick="window.location.href='{% url 'doctor-schema' %}';">Go
+                <button class="btn btn-block btn-primary" onclick="window.location.href='{% url 'doctor-schema' %}';">Go
                 Back</button><br><br>
             {% elif created_cred_def_rev %}
                 <h6>The credential definition <strong>{{ created_cred_def_rev }}</strong> is available in your wallet.
@@ -24,9 +24,9 @@
                 <h6 style="color: darkred">There are no suitable credential definitions in your wallet. Please publish a
                     new one.</h6><br>
                 <form method="post">{% csrf_token %}
-                    <button class="btn btn-block btn-dark">Publish New Credential Definition</button><br>
+                    <button class="btn btn-block btn-primary">Publish New Credential Definition</button><br>
                 </form>
-                <button class="btn btn-block btn-dark" onclick="window.location.href='{% url 'doctor-rev_reg' %}';">Continue</button>
+                <button class="btn btn-block btn-secondary" onclick="window.location.href='{% url 'doctor-rev_reg' %}';">Continue</button>
             {% endif %}
         </div>
     </div>

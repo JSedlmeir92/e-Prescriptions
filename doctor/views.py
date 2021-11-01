@@ -39,13 +39,17 @@ url_webapp = f'http://{ip_address}:{port}'
 support_revocation = True
 
 ATTRIBUTES = [
+                "doctor_id",
                 "doctor_fullname",
                 "doctor_type",
-                "doctor_address",
+                "doctor_phonenumber",
+                "patient_insurance_id",
+                "patient_insurance_company",
                 "patient_fullname",
                 "patient_birthday",
                 "pharmaceutical",
                 "number",
+                "extra_information",
                 "date_issued",
                 "expiration_date",
                 "prescription_id",
@@ -54,13 +58,17 @@ ATTRIBUTES = [
             ]
 
 COMMENTS = [
+    "The unique ID of the doctor",
     "The full name of the doctor",
     "The exact specialty of the doctor",
-    "The address of the doctor",
+    "The phone number of the doctor",
+    "The unique Insurance ID of the patient",
+    "The patient's insurance company",
     "The full name of the patient",
     "The birth date of the patient in the format yyyy-mm-dd",
     "The pharmaceutical that is prescribed",
     "The number of units of the pharmaceutical",
+    "Optional additional information",
     "The issuance date of the prescription",
     "The expiration date of the recipe",
     "The unique id of the prescription to be referred to on the blockchain token",
@@ -336,6 +344,7 @@ def issue_cred_view(request, id):
             if len(revocation_registry_id) < 1:
                 context['rev_reg'] = True
             else:
+                print("form abgeschickt")
                 if form.is_valid():
                     obj = get_object_or_404(Connection, id=id)
                     # Sending the data to the patient
@@ -348,10 +357,14 @@ def issue_cred_view(request, id):
                     rev_reg_id = requests.get(url_doctor_agent + '/revocation/registries/created?cred_def_id=' + credential_definition_id + '&state=active').json()['rev_reg_ids'][0]
                     issuer_did = requests.get(url_doctor_agent + '/wallet/did/public').json()['result']['did']
                     connection_id = obj.connection_id
+                    print("Connection_ID: " + connection_id)
 
                     attributes = [
                         {
-                            # "mime-type": "image/jpeg",
+                            "name": "doctor_id",
+                            "value": '758547302'
+                        },
+                        {
                             "name": "doctor_fullname",
                             "value": request.POST.get('doctor_fullname')
                         },
@@ -360,8 +373,16 @@ def issue_cred_view(request, id):
                             "value": request.POST.get('doctor_type')
                         },
                         {
-                            "name": "doctor_address",
-                            "value": request.POST.get('doctor_address')
+                            "name": "doctor_phonenumber",
+                            "value": request.POST.get('doctor_phonenumber')
+                        },
+                        {
+                            "name": "patient_insurance_id",
+                            "value": obj.insurance_id
+                        },
+                        {
+                            "name": "patient_insurance_company",
+                            "value": obj.insurance_company
                         },
                         {
                             "name": "patient_fullname",
@@ -378,6 +399,10 @@ def issue_cred_view(request, id):
                         {
                             "name": "number",
                             "value": request.POST.get('number')
+                        },
+                        {
+                            "name": "extra_information",
+                            "value": request.POST.get('extra_information')
                         },
                         {
                             "name": "date_issued",
@@ -412,7 +437,7 @@ def issue_cred_view(request, id):
                         "name": "contract_address",
                         "value": contract_address
                     })
-
+                    print(attributes)
                     os.system(f"quorum_client/createPrescription.sh {prescription_id}")
                     FileHandler = open("quorum_client/spendingKey", "r")
                     spending_key = FileHandler.read().replace("\n", "")
@@ -455,9 +480,9 @@ def issue_cred_view(request, id):
                         context['form'] = form
                         context['name'] = str(obj.firstname + " " + obj.lastname)
 
-                # else:
-                    # print("Form invalid")
-                    # print(form.errors)
+                else:
+                    print("Form invalid")
+                    print(form.errors)
     return render(request, 'doctor/issue_cred.html', context)
 
 
@@ -579,7 +604,6 @@ def webhook_connection_view(request):
 @csrf_exempt
 def webhook_proof_view(request):
     proof = json.loads(request.body)
-    print(proof)
     if proof['state'] == 'verified':
         attributes = proof['presentation']['requested_proof']['revealed_attr_groups']['health insurance']['values']
         Connection.objects.update_or_create(

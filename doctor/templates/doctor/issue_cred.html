@@ -54,7 +54,7 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                 <label for="patient_insurance_company">Insurance Company</label>
-                                <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.insurance_company }}" readonly>
+                                <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.connection_id }}" readonly>
                                 </div>
                                 <div class="form-group col-md-6">
                                 <label for="patient_insurance_id">Insurance ID</label>
@@ -86,8 +86,8 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-12">
-                                    <label for="doctor_ID">Doctor ID </label>
-                                    <input type="text" class="form-control" id="doctor_ID" placeholder="X1234123" readonly>
+                                    <label for="doctor_id">Doctor ID </label>
+                                    <input type="text" class="form-control" id="doctor_id" placeholder="758547302" readonly>
                                     </div>
                             </div>
                             <div class="form-row">
@@ -98,8 +98,8 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-12">
-                                    <label for="doctor_address">Address</label>
-                                    {{ form.doctor_address }}
+                                    <label for="doctor_phonenumber">Phone Number</label>
+                                    {{ form.doctor_phonenumber }}
                                 </div>
                             </div>
                         </div>
@@ -129,11 +129,11 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-3">
-                                        <label for="exampleFormControlTextarea1" class=" col-form-label">Additional information:</label>
-                                        <small id="emailHelp" class="form-text text-muted">optional</small>
+                                        <label for='{{ form.extra_information }}' class=" col-form-label">Additional information:</label>
+                                        <small id="extra_information" class="form-text text-muted">optional</small>
                                     </div>
                                     <div class="col-sm-9">
-                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="2"></textarea>
+                                        {{ form.extra_information }}
                                     </div>
                                 </div>
                             </div>

@@ -4,21 +4,7 @@ from django.db.models import Q
 
 class CredentialForm(forms.ModelForm):
     # Creating dropdown list with all the available divisions
-    doctors_choices = [
-        ('Mrs Smith', 'Mrs Smith'),
-        ('Mr Miller', 'Mr Miller')
-    ]
-
-    expiration_choices = [
-        ('1', '1 Month'),
-        ('3', '3 Months')
-    ]
-
-    pharmaceuticals_choices = [
-        ('Aspirin', 'Aspirin'),
-        ('Xarelto', 'Xarelto')
-    ]
-
+    
     connection_id     = forms.ChoiceField(choices=[], widget=[])
     # matricule         = forms.CharField(initial='000000000000', label='Insured person matricule', widget=forms.TextInput(attrs={'style': 'width:700px'}))
     firstname         = forms.CharField(initial='Max', label='Insured person first name', widget=forms.TextInput(attrs={'style': 'width:700px'}))

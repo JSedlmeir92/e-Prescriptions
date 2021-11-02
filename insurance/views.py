@@ -23,8 +23,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 ip_address = settings.IP_ADDRESS
+port = settings.PORT
 
-url_webapp = f'http://{ip_address}'
+url_webapp = f'http://{ip_address}:8000'
 url_pharmacy_agent = f'http://{ip_address}:9080'
 url = f'http://{ip_address}:6080'
 # print(f"url: {url}")

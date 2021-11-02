@@ -271,7 +271,6 @@ def login_view(request):
                 FileHandler = open("doctor/connection_doctor", "r")
                 invitation_link = FileHandler.read()
                 FileHandler.close()
-
             invitation_splitted = invitation_link.split("=", 1)
             temp = json.loads(base64.b64decode(invitation_splitted[1]))
             # Icon for the wallet app

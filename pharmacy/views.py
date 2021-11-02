@@ -602,8 +602,8 @@ def issue_cred_view(request, id):
                             "trace": False
                         }
                         # Saving the data in the database
-                        form.save()
-                        form = CredentialForm()                        
+                        #form.save()
+                        #form = CredentialForm()                        
                         issue_cred = requests.post(url_pharmacy_agent + '/issue-credential/send', json=credential)
                         # Updating the object in the database with the thread-id
                         # print(issue_cred)
@@ -712,7 +712,7 @@ def webhook_proof_view(request):
         contract_address = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw'])
         prescription_id  = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw'])
         spending_key     = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw'])
-        if spending_key != None:
+        if not spending_key:
             os.system(f"quorum_client/checkPrescription.sh {contract_address} {prescription_id} {spending_key}")
             not_spent = os.popen("tail -n 1 %s" % "quorum_client/check").read().replace("\n", "") == 'true'
 

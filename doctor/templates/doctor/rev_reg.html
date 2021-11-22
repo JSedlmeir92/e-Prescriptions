@@ -21,7 +21,7 @@
                 <h6>The following revocation registry is active:</h6><br>
                 <h6><strong>{{ rev_reg }}</strong></h6><br>
                 <h6 style="color: mediumseagreen"> It is not necessary to publish a new doctor revocation registry.</h6><br>
-                <button class="btn btn-block btn-primary" onclick="window.location.href='{% url 'doctor-connection' %}';">Continue</button>
+                <button class="btn btn-block btn-primary" onclick="window.location.href='{% url 'pharmacy-schema' %}';">Initilizate Pharmacy-Application</button>
             {% else %}
                 <h6 style="color: darkred">There is no active Insurance revocation registry available. Please publish a new one.
                 </h6><br>

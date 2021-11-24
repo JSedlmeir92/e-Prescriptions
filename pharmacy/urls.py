@@ -42,13 +42,13 @@ urlpatterns = [
     #Check Status: Not implemented
     path('prescription/check_item/<int:id>', views.prescription_check_item_view, name="pharmacy-prescription_check_item"), 
 
-    # CNS - Schema
+    # Insurance - Schema
     path('schema/', views.schema_view, name='pharmacy-schema'),
-    # CNS - Credential Definition
+    # Insurance - Credential Definition
     path('cred_def/', views.cred_def_view, name='pharmacy-cred_def'),
-    # CNS - Revocation Registry
+    # Insurance - Revocation Registry
     path('rev_reg', views.rev_reg_view, name='pharmacy-rev_reg'),
-    # CNS - Issue Credential
+    # Insurance - Issue Credential
     path('issue_cred/<int:id>/', views.issue_cred_view, name='pharmacy-issue_cred'),
 
     ## WEBHOOKS

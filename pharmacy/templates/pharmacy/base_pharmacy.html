@@ -9,43 +9,37 @@
 <div class="card-header border-0">
     <h1 class="card-title">Pharmarcy Application<br></h1>
 </div>
-<div class="row">
-  <div class="col-lg-4">
-    <div class="card shadow mb-4">
+<div class="container">
+  <div class="card-deck mb-3">
+    <div class="card mb-4 shadow">
       <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Present ePrescription</h6>
       </div>
-      <div class="card-body">
-        Click here to present and redeem your ePrescription at the pharmacy.
-        <br></br></br>
-        <a href="{% url 'pharmacy-connectionless' %}" class="btn btn-primary btn-block">Go</a>
+      <div class="card-body d-flex flex-column">
+        Click here to inivite your customer to present his ePrescription.
+        <a href="{% url 'pharmacy-connectionless' %}" class="btn btn-block btn-primary mt-auto">Go</a>
       </div>
     </div>
-  </div>
-  <div class="col-lg-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Present ePrescription- connectionbased</h6>
       </div>
-      <div class="card-body">
-        Click connect with your pharmarcy. In addition to submitting your ePrescription, this aso allowas you to receive an invoice.
-        <br></br>
-        <a href="{% url 'pharmacy-connection' way=2 %}" class="btn btn-primary btn-block">Go</a>
+      <div class="card-body d-flex flex-column">
+          Click here to invite your customer connect with your pharmarcy. In addition to submitting the ePrescription, this also allows you to issue an invoice. 
+        <a href="{% url 'pharmacy-connection' %}" class="btn mt-3 btn-block btn-primary">Go</a>
       </div>
     </div>
-  </div>
-  <div class="col-lg-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Overview of shown Prescriptions</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Revoke ePrescription</h6>
       </div>
-      <div class="card-body">
-        Click here to manage the presented ePrescriptions.
-        <br></br></br></br>
-        <a href="{% url 'pharmacy-prescription-table' %}" class="btn btn-primary btn-block">Go</a>
+      <div class="card-body d-flex flex-column">
+        Revoke an issued ePrescription and prevent using it.
+        <a href="{% url 'pharmacy-prescription-table' %}" class="btn btn-block btn-primary mt-auto">Go</a>
       </div>
     </div>
   </div>
 </div>
+
     {% block extracontent %}{% endblock %}
 {% endblock %}

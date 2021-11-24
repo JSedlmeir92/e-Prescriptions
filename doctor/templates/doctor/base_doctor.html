@@ -6,43 +6,38 @@
 <div class="card-header border-0">
     <h1 class="card-title">Doctor Application<br></h1>
 </div>
-<div class="row">
-  <div class="col-lg-4">
-    <div class="card shadow mb-4">
+<div class="container">
+  <div class="card-deck mb-3">
+    <div class="card mb-4 shadow">
       <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Create Connection</h6>
       </div>
-      <div class="card-body">
-        Invites your patient to show his insurance-ID and create a connection between your agents.
+      <div class="card-body d-flex flex-column">
+        Invites your patient to show his Insurance-ID and create a connection between your agents. 
         </br></br>
-        <a href="{% url 'doctor-connection' %}" class="btn btn-primary btn-block">Go</a>
+        <a href="{% url 'doctor-connection' %}" class="btn mt-3 btn-block btn-primary">Go</a>
       </div>
     </div>
-  </div>
-  <div class="col-lg-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Patients Overview</h6>
       </div>
-      <div class="card-body">
-          Gives an overview about the patients and links to the ePrescriptions issue function.  
-        </br></br>
-        <a href="{% url 'doctor-patients' %}" class="btn btn-primary btn-block">Go</a>
+      <div class="card-body d-flex flex-column">
+          Gives you the opportunity to issue an ePresiption to your patients.  
+        <a href="{% url 'doctor-patients' %}" class="btn btn-block btn-primary mt-auto">Go</a>
       </div>
     </div>
-  </div>
-  <div class="col-lg-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Revoke ePrescription</h6>
       </div>
-      <div class="card-body">
+      <div class="card-body d-flex flex-column">
         Revoke an issued ePrescription and prevent using it.
-        </br></br></br>
-        <a href="{% url 'doctor-revoke_cred' %}" class="btn btn-primary btn-block">Go</a>
+        <a href="{% url 'doctor-revoke_cred' %}" class="btn btn-block btn-primary mt-auto">Go</a>
       </div>
     </div>
   </div>
 </div>
+
     {% block extracontent %}{% endblock %}
 {% endblock %}

@@ -10,44 +10,39 @@
 <div class="card-header border-0">
     <h1 class="card-title">Insurance Application<br></h1>
 </div>
-<div class="row">
-  <div class="col-lg-4">
-    <div class="card shadow mb-4">
+<div class="container">
+  <div class="card-deck mb-3">
+    <div class="card mb-4 shadow">
       <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Create Connection</h6>
       </div>
-      <div class="card-body">
-        Invite the customer to establish a connection with the insurance's agent.
+      <div class="card-body d-flex flex-column">
+        Invite your customer to establish a connection with the insurance's agent.
         </br></br>
-        <a href="{% url 'insurance-connection' %}" class="btn btn-primary btn-block">Go</a>
+        <a href="{% url 'insurance-connection' %}" class="btn mt-3 btn-block btn-primary">Go</a>
       </div>
     </div>
-  </div>
-  <div class="col-lg-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Create Credential</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Patients Overview</h6>
       </div>
-      <div class="card-body">
+      <div class="card-body d-flex flex-column">
         Issue an user-friendly and privacy-preserving insurance ID to your costumer.
-        </br></br>
-        <a href="{% url 'insurance-issue_cred' %}" class="btn btn-primary btn-block">Go</a>
+        <a href="{% url 'insurance-issue_cred' %}" class="btn btn-block btn-primary mt-auto">Go</a>
       </div>
     </div>
-  </div>
-  <div class="col-lg-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Request Proof</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Revoke ePrescription</h6>
       </div>
-      <div class="card-body">
+      <div class="card-body d-flex flex-column">
         Give your customer the opportunity to redeem a user-friendly and privacy-preserving invoice.
-        </br></br>
-        <a href="{% url 'insurance-login' %}" class="btn btn-primary btn-block">Go</a>
+        <a href="{% url 'insurance-login' %}" class="btn btn-block btn-primary mt-auto">Go</a>
       </div>
     </div>
   </div>
 </div>
+
 {% endblock %}
 {% block extracontent %}
 

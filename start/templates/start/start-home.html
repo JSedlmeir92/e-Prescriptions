@@ -55,83 +55,55 @@
 </div>
 -->
 
-<div class="row">
-
-  {% comment %} <div class="col-lg-4">
-
-    <!-- Basic Card Example -->
-    <div class="card shadow mb-4">
-      <div class="card-header py-3 d-flex justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary">CNS</h6>
-        <span><img src="/static/img/insurance.svg" height="100px" width="100px" alt="CNS"></span>
-      </div>
-      <div class="card-body">
-        This module provides opportunities for employees of the <b>CNS</b> to handle privacy-preserving and user-friendly electronic prescriptions.
-        <br></br>
-        <a target="_blank" href="{% url 'cns-home' %}" class="btn btn-primary btn-block">Go</a>
-      </div>
-    </div>
-
-  </div> {% endcomment %}
-
-  <div class="col-lg-3">
-    <div class="card shadow mb-4">
+<div class="container">
+  <div class="card-deck">
+    <div class="card shadow">
       <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Insurance company</h6>
         <span><img src="/static/img/health-insurance.png" height="100px" width="100px" alt="CNS"></span>
       </div>
-      <div class="card-body">
-        This module provides opportunities for employees of the <b>Insurance Company</b> to create privacy-preserving insurance IDs.
-        </br>
-        <br>
-        <a href="{% url 'insurance-home' %}" class="btn btn-primary btn-block">Go</a>
+      <div class="card-body d-flex flex-column">
+        This module provides opportunities for employees of the Insurance Company to create privacy-preserving insurance IDs.
+        <a href="{% url 'insurance-home' %}" class="btn btn-block btn-primary mt-auto">Go</a>
       </div>
     </div>
-  </div>
 
-  <div class="col-lg-3">
-    <div class="card shadow mb-4">
+    <div class="card shadow">
       <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Doctor</h6>
         <span><img src="/static/img/doctor-svgrepo-com.svg" height="100px" width="100px" alt="CNS"></span>
       </div>
-      <div class="card-body">
-        This module provides opportunities for <b>medical doctors</b> to handle privacy-preserving and user-friendly electronic prescriptions.
-        <br></br>
-        <a href="{% url 'doctor-home' %}" class="btn btn-primary btn-block">Go</a>
+      <div class="card-body d-flex flex-column">
+        This module provides opportunities for medical doctors to handle privacy-preserving and user-friendly electronic prescriptions.
+        <a href="{% url 'doctor-home' %}" class="btn btn-block btn-primary mt-auto">Go</a>
       </div>
     </div>
 
-  </div>
 
-  <div class="col-lg-3">
-    <div class="card shadow mb-4">
+    <div class="card shadow">
       <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Pharmacy</h6>
         <span><img src="/static/img/pharmacy-svgrepo-com.svg" height="100px" width="100px" alt="CNS"></span>
       </div>
-      <div class="card-body">
-        This module provides opportunities for employees of the <b>pharmacy</b> to handle privacy-preserving and user-friendly electronic prescriptions.
-        <br></br>
-        <a href="{% url 'pharmacy-home' %}" class="btn btn-primary btn-block">Go</a>
+      <div class="card-body d-flex flex-column">
+        This module provides opportunities for employees of the pharmacy to handle privacy-preserving and user-friendly electronic prescriptions.
+        <a href="{% url 'pharmacy-home' %}" class="btn mt-3 btn-block btn-primary">Go</a>
       </div>
     </div>
   </div>
-
-  <div class="col-lg-3">
-    <div class="card shadow mb-4">
+</div>
+<div class="container mt-5">
+  <div class="card-deck d-flex justify-content-center">
+    <div class="card shadow" style="max-width: 35rem;">
       <div class="card-header py-3 d-flex justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary">Technical Stuff</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Start the demo</h6>
         <span><img src="/static/img/settings-svgrepo-com.svg" height="100px" width="100px" alt="CNS"></span>
       </div>
-      <div class="card-body">
-        This module provides functions for resetting the agents.
-        <br></br></br><br>
-        <a href="{% url 'machine_room' %}" class="btn btn-primary btn-block">Go</a>
+      <div class="card-body d-flex flex-column">
+        <a href="{% url 'machine_room' %}" class="btn mt-5 btn-block btn-primary">Let's start the demo!</a>
       </div>
     </div>
   </div>
-
 </div>
 
 {% endblock body %}

@@ -25,10 +25,10 @@ pip3 install python-dateutil django-tables2
 - Create a .env file in the main directory. It should look as follows:
   + IP_ADDRESS=IP address where the application is running and that is available for your mobile phone
   + DIR_NAME=path to the directory of the project, e.g., /home/user/e-Prescriptions
-  + PORT =port where the webapp is listening
-- Create an another .env file in the von-network folder. It should include following parameters:
+  + PORT=port where the webapp is listening
+- Create an another .env file in the von-network folder. It should include the following parameters:
   + DOCKERHOST= the same IP-Adress as previous
-  + WEB_SERVER_HOST_PORT=9700 (or any port other used in the prototype)
+  + WEB_SERVER_HOST_PORT=9700 (or any other port not used by the prototype)
   + REGISTER_NEW_DIDS=True
   + LEDGER_INSTANCE_NAME=ePrescription-Demo (for example)
 ### STEP 3: Start the demo: ###

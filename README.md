@@ -31,7 +31,11 @@ pip3 install python-dateutil django-tables2
   + WEB_SERVER_HOST_PORT=9700 (or any other port not used by the prototype)
   + REGISTER_NEW_DIDS=True
   + LEDGER_INSTANCE_NAME=ePrescription-Demo (for example)
-### STEP 3: Start the demo: ###
+
+### STEP 3: Add the path to genesis.txt into the first env-file
+- DOCKERHOST:WEB_SERVER_HOST_PORT/genesis.txt
+
+### STEP 4: Start the demo: ###
 - Start the portable development Indy Node Network
   - In the von-network directory
     -./manage build
@@ -40,8 +44,7 @@ pip3 install python-dateutil django-tables2
     - run 'docker-compose up'
     - ...and enjoy our demo! :)
 
-## STEP 4: Add the genesis.txt to your wallet
-- DOCKERHOST:WEB_SERVER_HOST_PORT/genesis.txt
+
 
 ### Used Ports:
 - Web-Apps: specified in .env

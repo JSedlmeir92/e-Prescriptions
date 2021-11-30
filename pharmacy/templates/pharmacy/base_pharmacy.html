@@ -6,9 +6,11 @@
 {% block style %}{% endblock %}
 
 {% block body %}
-<div class="card-header border-0">
+<div class="container-xl">
     <h1 class="card-title">Pharmarcy Application<br></h1>
 </div>
+
+
 <div class="container">
   <div class="card-deck mb-3">
     <div class="card mb-4 shadow">
@@ -31,10 +33,10 @@
     </div>
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Revoke ePrescription</h6>
+        <h6 class="m-0 font-weight-bold text-primary">e-Prescription Overview</h6>
       </div>
       <div class="card-body d-flex flex-column">
-        Revoke an issued ePrescription and prevent using it.
+        This function gives you an overview over the presented e-Prescriptions.
         <a href="{% url 'pharmacy-prescription-table' %}" class="btn btn-block btn-primary mt-auto">Go</a>
       </div>
     </div>

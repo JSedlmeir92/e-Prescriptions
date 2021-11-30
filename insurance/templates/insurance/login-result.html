@@ -17,11 +17,11 @@
             <div class="card-body text-center">    
                 {% if verified == "true" %}
                         <span style="color: green"><i class="fas fa-check fa-5x"></i></br></span>
-                    <p class="success">Invoice successfully redeemed. </p>
+                    <p class="success">Invoice successfully submitted. </p>
                     <p class="success">You will get {{ price }} €!
                 {% else %}
                         <span style="color: red"><i class="fas fa-minus-circle fa-5x"></i></br></br></span>
-                    <h3>Invoice cashing failed! </br>
+                    <h3>Invoice submitting failed! </br>
                     {{ title }}!</h3>
                 {% endif %}
             </div>

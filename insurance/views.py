@@ -398,7 +398,7 @@ def login_result_view(request): ##Checks the validity of the eprescription
             }
         elif (result == False and verified == True):
             context = {
-                'title': 'Invoice already cashed',
+                'title': 'Invoice already submitted',
                 'verified': 'spent'
             }
         elif (result == True and verified == False):
@@ -408,7 +408,7 @@ def login_result_view(request): ##Checks the validity of the eprescription
             }
         elif (result == False and verified == False):
             context = {
-                'title': 'Invoice already cashed and spent',
+                'title': 'Invoice was revoked and already submitted',
                 'verified': 'revoked_and_spent'
             }
         else:

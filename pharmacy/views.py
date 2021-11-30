@@ -20,11 +20,11 @@ from datetime import date, datetime
 from dateutil.relativedelta import *
 import random
 
-
+port = settings.PORT
 ip_address = settings.IP_ADDRESS
+
 url_pharmacy_agent = f'http://{ip_address}:9080'
 url_doctor_agent = f'http://{ip_address}:7080'
-port = settings.PORT
 url_webapp = f'http://{ip_address}:{port}'
 
 
@@ -712,10 +712,9 @@ def webhook_proof_view(request):
         contract_address = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw'])
         prescription_id  = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw'])
         spending_key     = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw'])
-        if not spending_key:
+        if spending_key != None:
             os.system(f"quorum_client/checkPrescription.sh {contract_address} {prescription_id} {spending_key}")
             not_spent = os.popen("tail -n 1 %s" % "quorum_client/check").read().replace("\n", "") == 'true'
-
             Prescription.objects.update_or_create(
                 prescription_id     = prescription_id,
                 defaults={ 

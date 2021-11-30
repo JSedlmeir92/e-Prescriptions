@@ -29,7 +29,7 @@ pip3 install python-dateutil django-tables2
   + LEDGER_INSTANCE_NAME=ePrescription-Demo (for example)
 
 ### STEP 3: Add the path to genesis.txt into the first env-file
-- DOCKERHOST:WEB_SERVER_HOST_PORT/genesis.txt
+- DOCKERHOST:WEB_SERVER_HOST_PORT/genesis
 
 ### STEP 4: Start the demo: ###
 - Start the portable development Indy Node Network

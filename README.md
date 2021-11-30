@@ -1,7 +1,3 @@
-# Let'sFixID Digital Health Ecosystem - ePrescriptions
-
-git clone --recurse-submodules https://github.com/lukwil/letsfixid
-
 ### STEP 1: Prerequisites: ###
 sudo apt-get update
 sudo apt-get -y upgrade
@@ -60,7 +56,7 @@ pip3 install python-dateutil django-tables2
 - Other: Port 8999 (really?)
 
 # Description
-The application launches two blockchains (the PBS blockchain from Luxemburg and an Indy blockchain for handling SSI operations).
+The application launches two blockchains (a local Quorum-network and an Indy blockchain for handling SSI operations).
 To interact with the SSI applications, a standardized wallet and generic protocols, such as aca-py, are used (and launched).
 The patient is at the center of the application and the data finally belongs to the one person, whom it concerns most.
 The front-end is organized as a Django project. Web-Apps simplify interaction for issuers and verifiers of digital health credentials.

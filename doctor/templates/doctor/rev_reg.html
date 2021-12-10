@@ -23,10 +23,10 @@
                 <h6 style="color: mediumseagreen"> It is not necessary to publish a new doctor revocation registry.</h6><br>
                 <button class="btn btn-block btn-primary" onclick="window.location.href='{% url 'pharmacy-schema' %}';">Initilizate Pharmacy-Application</button>
             {% else %}
-                <h6 style="color: darkred">There is no active Insurance revocation registry available. Please publish a new one.
+                <h6 style="color: darkred">There is no active Doctor revocation registry available. Please publish a new one.
                 </h6><br>
                 <form method="post">{% csrf_token %}
-                    <button class="btn btn-block btn-dark">Publish New Insurance Revocation Registry</button><br>
+                    <button class="btn btn-block btn-dark">Publish New Doctor Revocation Registry</button><br>
                 </form>
                 <button class="btn btn-block btn-primary">Continue</button>
             {% endif %}

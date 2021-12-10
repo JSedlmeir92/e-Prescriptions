@@ -71,6 +71,8 @@ services:
         --storage-path /home/indy
     volumes:
         - ${dir_name}/docker_timezone:/etc/localtime:ro
+    networks:
+      ePrescription-net:
 
   insurance-agent:
     container_name: insurance-agent
@@ -84,8 +86,8 @@ services:
     command: >
       start
         --auto-provision
-        --tails-server-base-url http://${ip_address}:6543 
-        --webhook http://${ip_address}:${port}/insurance
+        --tails-server-base-url http://tail-server:6543
+        --webhook http://web-server:80/insurance
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request
@@ -108,6 +110,8 @@ services:
     volumes:
       #- ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
       - ${dir_name}/docker_timezone:/etc/localtime:ro
+    networks:
+      ePrescription-net:
 
   doctor-agent:
     container_name: doctor-agent
@@ -121,7 +125,8 @@ services:
     command: >
       start
         --auto-provision
-        --tails-server-base-url http://${ip_address}:6543 
+        --tails-server-base-url http://tail-server:6543
+        --webhook http://web-server/doctor
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request
@@ -139,11 +144,13 @@ services:
         --admin-insecure-mode 
         --admin 0.0.0.0 7080 
         -e http://${ip_address}:7000/ 
-        --webhook http://${ip_address}:${port}/doctor
         -l Doctor
     volumes:
       #- ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
       - ${dir_name}/docker_timezone:/etc/localtime:ro
+    networks:
+      ePrescription-net:
+
 
   pharmacy-agent:
     container_name: pharmacy-agent
@@ -157,8 +164,8 @@ services:
     command: >
       start
         --auto-provision
-        --webhook http://${ip_address}:${port}/pharmacy
-        --tails-server-base-url http://${ip_address}:6543 
+        --tails-server-base-url http://tail-server:6543
+        --webhook http://web-server/pharmacy
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request
@@ -181,6 +188,8 @@ services:
     volumes:
       #- ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
       - ${dir_name}/docker_timezone:/etc/localtime:ro
+    networks:
+      ePrescription-net:
 
   quorum-node1:
     << : *quorum-def
@@ -196,7 +205,7 @@ services:
       - PRIVATE_CONFIG=ignore
       - NODE_ID=1
     networks:
-      quorum-simple-net:
+      ePrescription-net:
         ipv4_address: 172.16.239.11
   quorum-node2:
     << : *quorum-def
@@ -212,7 +221,7 @@ services:
       - PRIVATE_CONFIG=ignore
       - NODE_ID=2
     networks:
-      quorum-simple-net:
+      ePrescription-net:
         ipv4_address: 172.16.239.12
   quorum-node3:
     << : *quorum-def
@@ -228,10 +237,10 @@ services:
       - PRIVATE_CONFIG=ignore
       - NODE_ID=3
     networks:
-      quorum-simple-net:
+      ePrescription-net:
         ipv4_address: 172.16.239.13
     
-  web:
+  web-server:
       build:
           context: .
           dockerfile: Dockerfile_web
@@ -240,18 +249,17 @@ services:
           - ip_address=${ip_address}
       command: python3 start_demo.py
       ports:
-          - ${port}:8000
+          - ${port}:80
       volumes:
           - ./:/app
       networks:
-          quorum-simple-net:
-              ipv4_address: 172.16.239.14
+          ePrescription-net:
       tty: true
 
 
 networks:
-  quorum-simple-net:
-    name: quorum-simple-net
+  ePrescription-net:
+    name: ePrescription-net
     driver: bridge
     ipam:
       driver: default

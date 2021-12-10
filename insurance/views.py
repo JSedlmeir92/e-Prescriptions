@@ -24,11 +24,11 @@ logger = logging.getLogger(__name__)
 
 ip_address = settings.IP_ADDRESS
 port = settings.PORT
-
 url_webapp = f'http://{ip_address}:{port}'
-url_pharmacy_agent = f'http://{ip_address}:9080'
-url_insurance_agent = f'http://{ip_address}:6080'
-# print(f"url: {url}")
+
+url_pharmacy_agent = "http://pharmacy-agent:9080"
+url_insurance_agent = "http://insurance-agent:6080"
+
 
 support_revocation = True
 

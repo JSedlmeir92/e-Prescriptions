@@ -20,13 +20,12 @@ from datetime import date, datetime
 from dateutil.relativedelta import *
 import random
 
-port = settings.PORT
 ip_address = settings.IP_ADDRESS
-
-url_pharmacy_agent = f'http://{ip_address}:9080'
-url_doctor_agent = f'http://{ip_address}:7080'
+port = settings.PORT
 url_webapp = f'http://{ip_address}:{port}'
 
+url_pharmacy_agent = "http://pharmacy-agent:9080"
+url_doctor_agent = "http://doctor-agent:7080"
 
 support_revocation = True
 

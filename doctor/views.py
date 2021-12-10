@@ -31,10 +31,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 ip_address = settings.IP_ADDRESS
-url_doctor_agent = f'http://{ip_address}:7080'
-url_insurance_agent = f'http://{ip_address}:6080'
 port = settings.PORT
 url_webapp = f'http://{ip_address}:{port}'
+
+url_doctor_agent = "http://doctor-agent:7080"
+url_insurance_agent = "'http://insurance-agent:6080"
+
 
 support_revocation = True
 

@@ -87,6 +87,7 @@ services:
       start
         --auto-provision
         --tails-server-base-url http://tail-server:6543
+        --tails-server-upload-url http://tail-server:6543
         --webhook http://web-server:80/insurance
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
@@ -126,6 +127,7 @@ services:
       start
         --auto-provision
         --tails-server-base-url http://tail-server:6543
+        --tails-server-upload-url http://tail-server:6543
         --webhook http://web-server/doctor
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
@@ -165,12 +167,13 @@ services:
       start
         --auto-provision
         --tails-server-base-url http://tail-server:6543
+        --tails-server-upload-url http://tail-server:6543
         --webhook http://web-server/pharmacy
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request
         --auto-verify-presentation 
-        --inbound-transport http 0.0.0.0 9000 
+        --inbound-transport http 0.0.0.0 9000
         --inbound-transport ws 0.0.0.0 9001 
         --outbound-transport ws 
         --outbound-transport http 

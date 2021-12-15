@@ -13,7 +13,6 @@
                 <h1 class="card-title">ePrescription - Detail View<br></h1>
             </div>
         <div class="card-body">
-            <form action="" method="post">{% csrf_token %}
                 <div class="row">
                     <div class="col-md-6">
                         <h5 class="card-title">Patient</h5>
@@ -147,19 +146,21 @@
                     </div>
                 </div>                        
                 <hr class="sidebar-divider my-0" style="padding-bottom: 1rem; margin-top: 1rem">
+                <form action="" method="post">{% csrf_token %}
+
                 <div class="row">
 
                 {% if object.valid == True and object.not_spent == True%}
-                    <button class="btn btn-block btn-success" onclick="window.location.href='{% url 'pharmacy-connection_result' id=object.id %}';">Redeem the ePrescription</button>
+                    <a class="btn btn-block btn-success" href='{% url 'pharmacy-connection_result' id=object.id %}'>Redeem the ePrescription</a>
                 {% else %}
-                    <button class="btn btn-block btn-success" disabled><strike>Reedeem the ePrescription</strike></button>
+                    <a class="btn btn-block btn-success" disabled><strike>Reedeem the ePrescription</strike></a>
                 {% endif %}
                 {% if object.redeemed == True and object.connection_id != "test"%}
-                    <button class="btn btn-block btn-primary" onclick="window.location.href='{% url 'pharmacy-issue_cred' id=object.id %}';">Issue an invoice</button>
+                <a class="btn btn-block btn-primary" href='{% url 'pharmacy-issue_cred' id=object.id %}'>Issue an invoice</a>
                 {% else %}
-                    <button class="btn btn-block btn-primary" disabled><strike>Issue an invoice</strike></button>
+                    <a class="btn btn-block btn-primary" disabled><strike>Issue an invoice</strike></a>
                 {% endif %}            
-                    <button class="btn btn-block btn-danger" type="submit" value="delete">Delete the ePrescription</button>
+                <button class="btn btn-block btn-danger" type="submit" value="delete">Delete the ePrescription</button>
                 <a href="{% url 'pharmacy-prescription-table' %}" class="btn btn-block btn-secondary"><i class="fa fa-envelope-o"></i> Go back</a>
             </form>
             <a href="{% url 'insurance-login' %}" class="button btn btn-block mt-1 ">Next step</a>

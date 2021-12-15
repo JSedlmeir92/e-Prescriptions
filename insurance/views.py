@@ -40,7 +40,6 @@ ATTRIBUTES = [
                 "street",
                 "zip_code",
                 "city",
-                "date_issued",
                 "expiration_date",
                 "insurance_company"
             ]
@@ -53,7 +52,6 @@ COMMENTS = [
     "The street address of the insured person",
     "The zip code of the insured person",
     "The city address of the insured person",
-    "The issuance date of the insurance credential",
     "The expiration date of the insurance credential",
     "The name of the insurance company"
 ]
@@ -87,7 +85,7 @@ def connection_view(request):
         invitation_splitted = invitation_link.split("=", 1)
         temp = json.loads(base64.b64decode(invitation_splitted[1]))
         # Icon for the wallet app
-        temp.update({"imageUrl": "https://empoweredmarketinggroup.com/wp-content/uploads/Suncoast-Health-Insurance-Logo.svg"})
+        temp.update({"imageUrl": f'{url_webapp}/static/img/health-insurance_logo.png'})
         temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
         invitation_splitted[1] = temp
         invitation_link = "=".join(invitation_splitted)
@@ -271,10 +269,6 @@ def issue_cred_view(request):
                             "value": request.POST.get('expiration_date') #.replace(".", "")
                         },
                         {
-                            "name": "date_issued",
-                            "value": f"{datetime.now()}"
-                        },
-                        {
                             "name": "insurance_company",
                             "value": "Suncoast Health Insurance"
                         }
@@ -372,7 +366,7 @@ def login_result_view(request): ##Checks the validity of the eprescription
         print("waiting...")
         # redirect to the login page after 2 minutes of not receiving a proof presentation
         x += 1
-        if x > 2:
+        if x > 23:
             return redirect('insurance-home')
     proof = requests.get(url_insurance_agent+ '/present-proof/records?state=verified').json()['results'][0]
     insurance_insurance_id = proof['presentation']['requested_proof']['revealed_attr_groups']['insurance']['values']['insurance_id']['raw']
@@ -506,7 +500,7 @@ def login_url_view(request):
     }
     invitation_string = json.dumps(proof_request_conless)
     invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
-    invitation_url = str(url_pharmacy_agent)[:-4] + "7000/?c_i=" + str(invitation_string) ##Changing Agent-Port from API to the Agents' one
+    invitation_url = str(url_pharmacy_agent)[:-4] + "7000/?c_i=" + str(invitation_string)
     context['invitation'] = invitation_url
     print(invitation_url)
     return HttpResponseRedirect(invitation_url)

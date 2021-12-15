@@ -372,8 +372,8 @@ def login_result_view(request): ##Checks the validity of the eprescription
         print("waiting...")
         # redirect to the login page after 2 minutes of not receiving a proof presentation
         x += 1
-        if x > 23:
-            return redirect('insurance-base')
+        if x > 2:
+            return redirect('insurance-home')
     proof = requests.get(url_insurance_agent+ '/present-proof/records?state=verified').json()['results'][0]
     insurance_insurance_id = proof['presentation']['requested_proof']['revealed_attr_groups']['insurance']['values']['insurance_id']['raw']
     pharmacy_insurance_id = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['insurance_id']['raw']

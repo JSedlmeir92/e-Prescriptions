@@ -40,5 +40,5 @@ class Connection(models.Model):
     insurance_id    = models.CharField(max_length=50)
     connection_id   = models.CharField(max_length=50, blank=True, null=True)
     connection_state = models.CharField(max_length=50)
-    date_added      = models.DateTimeField(auto_now=False, auto_now_add=True)
+    date_added      = models.DateTimeField(auto_now=False, auto_now_add=True, verbose_name="Check-in")
 

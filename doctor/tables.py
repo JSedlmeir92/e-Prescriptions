@@ -16,9 +16,9 @@ class ConnectionTable(tables.Table):
     
     class Meta:
         model    = Connection
-        fields  = ("id", "firstname", "lastname", "birthday",)
+        fields  = ("id", "firstname", "lastname", "birthday", "date_added")
         template_name = "django_tables2/bootstrap4.html"
-        sequence = ("id", "lastname", "firstname", "birthday", "prescribe", "delete",)
+        sequence = ("id", "lastname", "firstname", "birthday", "date_added", "prescribe", "delete",)
         row_attrs = {'class': custom_row_attrs}
 
 class CredentialTable(tables.Table):

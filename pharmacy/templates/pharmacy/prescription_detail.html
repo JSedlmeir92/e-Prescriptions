@@ -13,157 +13,159 @@
                 <h1 class="card-title">ePrescription - Detail View<br></h1>
             </div>
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="card-title">Patient</h5>
+            <form action="" method="post">{% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="card-title">Patient</h5>
 
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                        <label for="patient_fullmname">Name</label>
-                        <input type="text" class="form-control" id="patient_fullname" placeholder="{{ object.patient_fullname }}" readonly>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                            <label for="patient_fullmname">Name</label>
+                            <input type="text" class="form-control" id="patient_fullname" placeholder="{{ object.patient_fullname }}" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="patient_birthday">Birthday</label>
+                            <input type="text" class="form-control" id="patient_birthday" placeholder="{{ object.patient_birthday }}" readonly> 
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label for="patient_insurance_company">Insurance Company</label>
+                            <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.patient_insurance_company }}" readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                            <label for="patient_insurance_id">Insurance ID</label>
+                            <input type="text" class="form-control" id="patient_insurance_id" placeholder="{{ object.patient_insurance_id }}" readonly>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="patient_birthday">Birthday</label>
-                        <input type="text" class="form-control" id="patient_birthday" placeholder="{{ object.patient_birthday }}" readonly> 
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                        <label for="patient_insurance_company">Insurance Company</label>
-                        <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.patient_insurance_company }}" readonly>
+                    <div class="col-md-6">
+                        <h5 class="card-title">Doctor</h5>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="doctor_fullname">Fullname</label>
+                                <input type="text" class="form-control" id="doctor_fullname" placeholder="{{ object.doctor_fullname }}" readonly>
+                            </div>
                         </div>
-                        <div class="form-group col-md-6">
-                        <label for="patient_insurance_id">Insurance ID</label>
-                        <input type="text" class="form-control" id="patient_insurance_id" placeholder="{{ object.patient_insurance_id }}" readonly>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label for="patient_insurance_company">Doctor's Type</label>
+                            <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.doctor_type }}" readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                            <label for="patient_insurance_id">Doctor's ID</label>
+                            <input type="text" class="form-control" id="patient_insurance_id" placeholder="{{ object.doctor_id }}" readonly>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="doctor_address">Phone Number</label>
+                                <input type="text" class="form-control" id="doctor_address" placeholder="{{ object.doctor_phonenumber }}" readonly>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <h5 class="card-title">Doctor</h5>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="doctor_fullname">Fullname</label>
-                            <input type="text" class="form-control" id="doctor_fullname" placeholder="{{ object.doctor_fullname }}" readonly>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                        <label for="patient_insurance_company">Doctor's Type</label>
-                        <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.doctor_type }}" readonly>
-                        </div>
-                        <div class="form-group col-md-6">
-                        <label for="patient_insurance_id">Doctor's ID</label>
-                        <input type="text" class="form-control" id="patient_insurance_id" placeholder="{{ object.doctor_id }}" readonly>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="doctor_address">Phone Number</label>
-                            <input type="text" class="form-control" id="doctor_address" placeholder="{{ object.doctor_phonenumber }}" readonly>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr class="sidebar-divider my-0" style="padding-bottom: 1rem;">
-            <div class="row">
-                <div class="col-md-12">
-                    <h5 class="card-title">Pharmaceutical</h5>
+                <hr class="sidebar-divider my-0" style="padding-bottom: 1rem;">
+                <div class="row">
                     <div class="col-md-12">
-                        <div class="form-group row">
-                            <label for='pharmaceutical' class="col-sm-3 col-form-label">Pharmaceutical :</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="pharmaceutical" placeholder="{{ object.pharmaceutical }}" readonly>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for='{{ form.number }}' class="col-sm-3 col-form-label">Quantity:</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="patient_lastname" placeholder="{{ object.number }}" readonly>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for='{{ form.expiration }}' class="col-sm-3 col-form-label">Date Issued:</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="Expiration" placeholder="{{ object.date_issued }}" readonly>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for='{{ form.expiration }}' class="col-sm-3 col-form-label">Date presented:</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="Expiration" placeholder="{{ object.date_presented }}" readonly>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-sm-3">
-                                <label for="exampleFormControlTextarea1" class=" col-form-label">Additional information:</label>
-                            </div>
-                            <div class="col-sm-9">
-                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="2" placeholder="{{ object.extra_information }}" readonly></textarea>
-                            </div>
-                        </div>
-                        <hr class="sidebar-divider my-0" style="padding-bottom: 1rem;">
-
-                        <div class="row">
-                            <div class="col-sm-3">
-                            </div>
+                        <h5 class="card-title">Pharmaceutical</h5>
+                        <div class="col-md-12">
+                            <div class="form-group row">
+                                <label for='pharmaceutical' class="col-sm-3 col-form-label">Pharmaceutical :</label>
                                 <div class="col-sm-9">
-                                <div class="card-deck text-center">
-                                    <div class="card">
-                                        <h6 class="card-header">Valid</h6>
-                                        <div class="card-body">
-                                        {% if object.valid == True%}
-                                            <span style="color: green"><i class="fas fa-check-square fa-2x"></i></span>
-                                        {% else %}
-                                            <span style="color: red"><i class="fas fa-minus-circle fa-2x"></i></span>
-                                        {% endif %}
+                                    <input type="text" class="form-control" id="pharmaceutical" placeholder="{{ object.pharmaceutical }}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for='{{ form.number }}' class="col-sm-3 col-form-label">Quantity:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="patient_lastname" placeholder="{{ object.number }}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for='{{ form.expiration }}' class="col-sm-3 col-form-label">Date Issued:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="Expiration" placeholder="{{ object.date_issued }}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for='{{ form.expiration }}' class="col-sm-3 col-form-label">Date presented:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="Expiration" placeholder="{{ object.date_presented }}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for="exampleFormControlTextarea1" class=" col-form-label">Additional information:</label>
+                                </div>
+                                <div class="col-sm-9">
+                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="2" placeholder="{{ object.extra_information }}" readonly></textarea>
+                                </div>
+                            </div>
+                            <hr class="sidebar-divider my-0" style="padding-bottom: 1rem;">
+
+                            <div class="row">
+                                <div class="col-sm-3">
+                                </div>
+                                    <div class="col-sm-9">
+                                    <div class="card-deck text-center">
+                                        <div class="card">
+                                            <h6 class="card-header">Valid</h6>
+                                            <div class="card-body">
+                                            {% if object.valid == True%}
+                                                <span style="color: green"><i class="fas fa-check-square fa-2x"></i></span>
+                                            {% else %}
+                                                <span style="color: red"><i class="fas fa-minus-circle fa-2x"></i></span>
+                                            {% endif %}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="card">
-                                        <h6 class="card-header">Not Spent</h6>
-                                        <div class="card-body">
-                                        {% if object.not_spent == True%}
-                                            <span style="color: green"><i class="fas fa-check-square fa-2x"></i></span>
-                                        {% else %}
-                                            <span style="color: red"><i class="fas fa-minus-square fa-2x"></i></span>
-                                        {% endif %}
+                                        <div class="card">
+                                            <h6 class="card-header">Not Spent</h6>
+                                            <div class="card-body">
+                                            {% if object.not_spent == True%}
+                                                <span style="color: green"><i class="fas fa-check-square fa-2x"></i></span>
+                                            {% else %}
+                                                <span style="color: red"><i class="fas fa-minus-square fa-2x"></i></span>
+                                            {% endif %}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <hr class="sidebar-divider my-0" style="padding-bottom: 1rem;">
-                                    <div class="card">
-                                        <h6 class="card-header">Connection</h6>
-                                        <div class="card-body">
-                                        {% if object.connection_id == "test"%}
-                                            <span style="color: red"><i class="fas fa-minus-circle fa-2x"></i></span>
-                                        {% else %}
-                                            <span style="color: green"><i class="fas fa-check-square fa-2x"></i></span>
-                                        {% endif %}
+                                        <hr class="sidebar-divider my-0" style="padding-bottom: 1rem;">
+                                        <div class="card">
+                                            <h6 class="card-header">Connection</h6>
+                                            <div class="card-body">
+                                            {% if object.connection_id == "test"%}
+                                                <span style="color: red"><i class="fas fa-minus-circle fa-2x"></i></span>
+                                            {% else %}
+                                                <span style="color: green"><i class="fas fa-check-square fa-2x"></i></span>
+                                            {% endif %}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>                        
-            <hr class="sidebar-divider my-0" style="padding-bottom: 1rem; margin-top: 1rem">
+                </div>                        
+                <hr class="sidebar-divider my-0" style="padding-bottom: 1rem; margin-top: 1rem">
+                <div class="row">
 
-            {% if object.valid == True and object.not_spent == True%}
-                <button class="btn btn-block btn-success" onclick="window.location.href='{% url 'pharmacy-connection_result' id=object.id %}';">Redeem the ePrescription</button>
-            {% elif object.valid != True or object.not_spent != True%}
-                <button type="button" class="btn btn-block btn-success" disabled><strike>Reedeem the ePrescription</strike></button>
-            {% endif %}
-            {% if object.redeemed == True and object.connection_id != "test"%}
-                <button class="btn btn-block btn-primary" onclick="window.location.href='{% url 'pharmacy-issue_cred' id=object.id %}';">Issue an invoice</button>
-            {% else %}
-                <button type="button" class="btn btn-block btn-primary" disabled><strike>Issue an invoice</strike></button>
-            {% endif %}            
-            <form action="" method="post">{% csrf_token %}
-                <p><input type="submit" name="delete" class="btn btn-block btn-danger" value="Delete the Prescription"/></p>
-            </form>
+                {% if object.valid == True and object.not_spent == True%}
+                    <button class="btn btn-block btn-success" onclick="window.location.href='{% url 'pharmacy-connection_result' id=object.id %}';">Redeem the ePrescription</button>
+                {% else %}
+                    <button class="btn btn-block btn-success" disabled><strike>Reedeem the ePrescription</strike></button>
+                {% endif %}
+                {% if object.redeemed == True and object.connection_id != "test"%}
+                    <button class="btn btn-block btn-primary" onclick="window.location.href='{% url 'pharmacy-issue_cred' id=object.id %}';">Issue an invoice</button>
+                {% else %}
+                    <button class="btn btn-block btn-primary" disabled><strike>Issue an invoice</strike></button>
+                {% endif %}            
+                    <button class="btn btn-block btn-danger" type="submit" value="delete">Delete the ePrescription</button>
                 <a href="{% url 'pharmacy-prescription-table' %}" class="btn btn-block btn-secondary"><i class="fa fa-envelope-o"></i> Go back</a>
+            </form>
+            <a href="{% url 'insurance-login' %}" class="button btn btn-block mt-1 ">Next step</a>
+
+           </div>
         </div>
     </div>
-</div>
-</div>
 </div>
 {% endblock %}

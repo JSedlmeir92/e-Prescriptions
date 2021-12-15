@@ -276,7 +276,7 @@ def login_view(request):
             invitation_splitted = invitation_link.split("=", 1)
             temp = json.loads(base64.b64decode(invitation_splitted[1]))
             # Icon for the wallet app
-            temp.update({"imageUrl": "'{url_webapp}/static/img/doctor.png'})"})
+            temp.update({"imageUrl": f'{url_webapp}/static/img/doctor.png'})
             temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
             invitation_splitted[1] = temp
             invitation_link = "=".join(invitation_splitted)
@@ -494,12 +494,12 @@ def revoke_cred_view(request):
     update_credential = Credential.objects.all()
     print(url_doctor_agent)
 
-    for object in update_credential:
-        credential = requests.get(url_doctor_agent + '/issue-credential/records?thread_id=' + str(object.thread_id)).json()['results']
-        if len(credential) < 1:
-            Credential.objects.filter(id=object.id).delete()
-        else:
-            pass
+    # for object in update_credential:
+    #     credential = requests.get(url_doctor_agent + '/issue-credential/records?thread_id=' + str(object.thread_id)).json()['results']
+    #     if len(credential) < 1:
+    #         Credential.objects.filter(id=object.id).delete()
+    #     else:
+    #         pass
     queryset = Credential.objects.filter(revoked=False).order_by('-id')
     table = CredentialTable(Credential.objects.all())
     context = {

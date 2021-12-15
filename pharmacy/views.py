@@ -307,26 +307,26 @@ def login_url_view(request):
             "requested_attributes": {
                 "e-prescription": {
                     "names": [
-                    "doctor_id",
-                    "doctor_fullname",
-                    "doctor_type",
-                    "doctor_phonenumber",
-                    "patient_insurance_id",
-                    "patient_insurance_company",
-                    "patient_fullname",
-                    "patient_birthday",
-                    "pharmaceutical",
-                    "number",
-                    "extra_information",
-                    "date_issued",
-                    "prescription_id",
-                    "contract_address",
-                    "spending_key"
-                ],
-                "non_revoked":{
-                    "from": 0,
-                    "to": round(time.time())
-                    },                    
+                        "doctor_id",
+                        "doctor_fullname",
+                        "doctor_type",
+                        "doctor_phonenumber",
+                        "patient_insurance_id",
+                        "patient_insurance_company",
+                        "patient_fullname",
+                        "patient_birthday",
+                        "pharmaceutical",
+                        "number",
+                        "extra_information",
+                        "date_issued",
+                        "prescription_id",
+                        "contract_address",
+                        "spending_key"
+                    ],
+                    "non_revoked":{
+                        "from": 0,
+                        "to": round(time.time())
+                        },
                 "restrictions": [
                     {
                         "cred_def_id": cred_def_id
@@ -336,18 +336,18 @@ def login_url_view(request):
             },
             "requested_predicates": {
                 "e-prescription": {
-                "name": "expiration_date",
-                "p_type": ">=",
-                "p_value": expiration,
-                "restrictions": [
-                    {
-                        "cred_def_id": cred_def_id
+                    "name": "expiration_date",
+                    "p_type": ">=",
+                    "p_value": expiration,
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
                     }
-                ]
                 }
             }
         }
-    }
     present_proof = requests.post(url_pharmacy_agent + '/present-proof/create-request', json=proof_request).json()
     presentation_request = json.dumps(present_proof["presentation_request"])
     presentation_request = base64.b64encode(presentation_request.encode('utf-8')).decode('ascii')
@@ -735,6 +735,6 @@ def webhook_proof_view(request):
                     "date_issued"         : proof['created_at'],
                     "date_presented"      : datetime.now(),
                     "connection_id"       : connection_id
-                }
-        )
+                    }
+                )
     return HttpResponse()

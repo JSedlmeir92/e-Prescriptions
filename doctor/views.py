@@ -35,7 +35,7 @@ port = settings.PORT
 url_webapp = f'http://{ip_address}:{port}'
 
 url_doctor_agent = "http://doctor-agent:7080"
-url_insurance_agent = "'http://insurance-agent:6080"
+url_insurance_agent = "http://insurance-agent:6080"
 
 
 support_revocation = True
@@ -594,7 +594,7 @@ def webhook_connection_view(request):
                 }
             }
         }
-        print(proof_records)
+        print(proof_request)
         requests.post(url_doctor_agent + '/present-proof/send-request', json=proof_request)
     else:
         pass

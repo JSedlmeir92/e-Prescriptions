@@ -559,7 +559,6 @@ def webhook_connection_view(request):
         cred_def_id = requests.get(url_insurance_agent + '/credential-definitions/created?schema_name=' + schema_name).json()[
             'credential_definition_ids'][0]
         # Gets the unixstamp of the next day
-        # Creates the PROOF REQUEST #TODO: proof-Request als Variable für beide Methoden
         proof_request = {
             "connection_id": connection_id,
             "proof_request":{
@@ -567,33 +566,31 @@ def webhook_connection_view(request):
                 "version": "1.0",
                 "requested_attributes": {
                     "health insurance": {
-                    "names": [
-                        "insurance_id",
-                        "firstname",
-                        "lastname",
-                        "birthday",
-                        "street",
-                        "zip_code",
-                        "city",
-                        "date_issued",
-                        "expiration_date",
-                        "insurance_company"
-                    ],
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
+                        "names": [
+                            "insurance_id",
+                            "firstname",
+                            "lastname",
+                            "birthday",
+                            "street",
+                            "zip_code",
+                            "city",
+                            "expiration_date",
+                            "insurance_company"
+                        ],
+                        "non_revoked":{
+                            "from": 0,
+                            "to": round(time.time())
+                        },
+                        "restrictions": [
+                            {
+                                "cred_def_id": cred_def_id
+                            }
+                        ]
                     }
                 },
-                "requested_predicates": {
-                },           
-                "non_revoked":{
-                    "from": 0,
-                    "to": round(time.time())
+                "requested_predicates": {}
                 }
             }
-        }
         print(proof_request)
         requests.post(url_doctor_agent + '/present-proof/send-request', json=proof_request)
     else:

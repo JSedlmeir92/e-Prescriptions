@@ -7,80 +7,84 @@
 {% endblock %}
 
 {% block body %}
-<div class="col-md-6">
-    <div class="card shadow mb-8">
-        <div class="card-header">
-            <h1 class="card-title">Credential Detailed View<br></h1>
-        </div>
-        <div class="card-body">
-                <div class="row">
-                    <div class="col-5">
-                        Patient's Fullname:
-                    </div>
-                    <div class="col-7">
-                        {{ object.patient_fullname }}
-                    </div>
+<div class="row mx-auto">
+    <div class="col-md-12 mx-auto">
+            <div class="card shadow mb-12">
+                <div class="card-header">
+                    <h1 class="card-title">Credential Detailed View<br></h1>
                 </div>
-                <div class="row">
-                    <div class="col-5">
-                        Doctor Full Name:
+                <div class="card-body">
+                        <div class="row">
+                            <div class="col-5">
+                                Patient's Fullname:
+                            </div>
+                            <div class="col-7">
+                                {{ object.patient_fullname }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                Doctor Full Name:
+                            </div>
+                            <div class="col-7">
+                                {{ object.doctor_fullname }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                Pharmaceutical:
+                            </div>
+                            <div class="col-7">
+                                {{ object.pharmaceutical }}
+                            </div>
+                        </div>                            
+                        <div class="row">
+                            <div class="col-5">
+                                Quantity:
+                            </div>
+                            <div class="col-7">
+                                {{ object.number }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                Revoked:
+                            </div>
+                            <div class="col-7">
+                                {{ object.revoked }}
+                            </div>
+                        </div>                
+                        <div class="row">
+                            <div class="col-5">
+                                Issued on:
+                            </div>
+                            <div class="col-7">
+                                {{ object.date_issued }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5">
+                                Rovcation ID:
+                            </div>
+                            <div class="col-7">
+                                {% if object.rev_id == None %}<p>Test</p>{% else %}{{ object.rev_id }}{% endif %}
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-7">
-                        {{ object.doctor_fullname }}
-                    </div>
+                    <div class="contact">
+                        {% if object.revoked == False %}
+                            <form action="." method="post">{% csrf_token %}
+                                <h3>Do you want to revoke this credential?</h3>
+                                <button type="submit" value="Yes" class="btn btn-block btn-danger" >Yes</button>
+        
+                            </form>
+                        {% endif %}</br>
+                    <a href="{% url 'doctor-patients' %}" class="btn btn-block btn-secondary"><i class="fa fa-envelope-o"></i> Go back</a>
                 </div>
-                <div class="row">
-                    <div class="col-5">
-                        Pharmaceutical:
-                    </div>
-                    <div class="col-7">
-                        {{ object.pharmaceutical }}
-                    </div>
-                </div>                            
-                <div class="row">
-                    <div class="col-5">
-                        Quantity:
-                    </div>
-                    <div class="col-7">
-                        {{ object.number }}
-                    </div>
                 </div>
-                <div class="row">
-                    <div class="col-5">
-                        Revoked:
-                    </div>
-                    <div class="col-7">
-                        {{ object.revoked }}
-                    </div>
-                </div>                
-                <div class="row">
-                    <div class="col-5">
-                        Issued on:
-                    </div>
-                    <div class="col-7">
-                        {{ object.date_issued }}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-5">
-                        Rovcation ID:
-                    </div>
-                    <div class="col-7">
-                        {% if object.rev_id == None %}<p>Test</p>{% else %}{{ object.rev_id }}{% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </br>
-    <div class="contact">
-        {% if object.revoked == False %}
-            <form action="." method="post">{% csrf_token %}
-                <h3>Do you want to revoke this credential?</h3>
-                <button type="submit" value="Yes" class="btn btn-block btn-danger" >Yes</button>
+            </br>
 
-            </form>
-        {% endif %}</br>
-    <a href="{% url 'doctor-patients' %}" class="btn btn-block btn-secondary"><i class="fa fa-envelope-o"></i> Go back</a>
-   </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

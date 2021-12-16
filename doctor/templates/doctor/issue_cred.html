@@ -6,145 +6,146 @@
 {% endblock %}
 
 {% block body %}
-    {% if available_schema %}
-        <h5 style="color: darkred">There are no suitable schemas or credential definitions in your wallet. To issue a credential, please go back and publish new ones first.</h5><br>
-        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-schema' %}';">Go Back</button><br><br>
-    {% elif available_cred_def %}
-        <h5 style="color: darkred">There are no suitable credential definitions in your wallet or on the ledger. To issue a credential, publish a new credential definition first.</h5><br>
-        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Go Back</button><br><br>
-    {% elif rev_reg %}
-        <h5 style="color: darkred">There are no suitable revocation registries. To issue a credential, publish a new revocation registry.</h5><br>
-        <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-rev_reg' %}';">Go Back</button><br><br>
-    {% else %}
-        <div class="row mx-auto">
-            <div class="card shadow mb-8">
-                <div class="card-header">
-                     <h1 class="card-title">Issue ePrescription<br></h1>
-                 </div>
-                <div class="card-body">
-                    {% if name %}
-                        <div classs="container p-5">
-                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            <strong>Sucess!</strong> The credential has been issued to {{ name }}!
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            </div>
+{% if available_schema %}
+    <h5 style="color: darkred">There are no suitable schemas or credential definitions in your wallet. To issue a credential, please go back and publish new ones first.</h5><br>
+    <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-schema' %}';">Go Back</button><br><br>
+{% elif available_cred_def %}
+    <h5 style="color: darkred">There are no suitable credential definitions in your wallet or on the ledger. To issue a credential, publish a new credential definition first.</h5><br>
+    <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-cred_def' %}';">Go Back</button><br><br>
+{% elif rev_reg %}
+    <h5 style="color: darkred">There are no suitable revocation registries. To issue a credential, publish a new revocation registry.</h5><br>
+    <button style="width: 700px" class="button" onclick="window.location.href='{% url 'doctor-rev_reg' %}';">Go Back</button><br><br>
+{% else %}
+    <div class="row mx-auto">
+        <div class="card shadow mb-8">
+            <div class="card-header">
+                    <h1 class="card-title">Issue ePrescription<br></h1>
+                </div>
+            <div class="card-body">
+                {% if name %}
+                    <div classs="container p-5">
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Sucess!</strong> The credential has been issued to {{ name }}!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                         </div>
-                    {% endif %}
-                    <form action="." method="post">{% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5 class="card-title">Patient</h5>
-
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                <label for="patient_firstname">Firstname</label>
-                                <input type="text" class="form-control" id="patient_firstname" placeholder="{{ object.firstname }}" readonly>
-                                </div>
-                                <div class="form-group col-md-6">
-                                <label for="patient_lastname">Lastname</label>
-                                <input type="text" class="form-control" id="patient_lastname" placeholder="{{ object.lastname }}" readonly>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="patient_birthday">Birthday</label>
-                                <input type="text" class="form-control" id="patient_birthday" placeholder="{{ object.birthday }}" readonly> 
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                <label for="patient_insurance_company">Insurance Company</label>
-                                <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.insurance_company }}" readonly>
-                                </div>
-                                <div class="form-group col-md-6">
-                                <label for="patient_insurance_id">Insurance ID</label>
-                                <input type="text" class="form-control" id="patient_insurance_id" placeholder="{{ object.insurance_id }}" readonly>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="patient_adress">Address</label>
-                                <input type="text" class="form-control" id="patient_adress" placeholder="{{ object.street }}" readonly> 
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                <label for="patient_city">City</label>
-                                <input type="text" class="form-control" id="patient_city" placeholder="{{ object.city }}" readonly>
-                                </div>
-                                <div class="form-group col-md-6">
-                                <label for="patient_zip">Zip</label>
-                                <input type="text" class="form-control" id="patient_zip" placeholder="{{ object.zip_code }}" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <h5 class="card-title">Doctor</h5>
-                            <div class="form-row">
-                                <div class="form-group col-md-12">
-                                    <label for="doctor_fullname">Fullname</label>
-                                    {{ form.doctor_fullname }}
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-12">
-                                    <label for="doctor_id">Doctor ID </label>
-                                    <input type="text" class="form-control" id="doctor_id" placeholder="758547302" readonly>
-                                    </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-12">
-                                    <label for="doctor_type">Doctor's type</label>
-                                    {{ form.doctor_type }}
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-12">
-                                    <label for="doctor_phonenumber">Phone Number</label>
-                                    {{ form.doctor_phonenumber }}
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-                    <div class="row">
+                {% endif %}
+                <form action="." method="post">{% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="card-title">Patient</h5>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label for="patient_firstname">Firstname</label>
+                            <input type="text" class="form-control" id="patient_firstname" placeholder="{{ object.firstname }}" readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                            <label for="patient_lastname">Lastname</label>
+                            <input type="text" class="form-control" id="patient_lastname" placeholder="{{ object.lastname }}" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="patient_birthday">Birthday</label>
+                            <input type="text" class="form-control" id="patient_birthday" placeholder="{{ object.birthday }}" readonly> 
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label for="patient_insurance_company">Insurance Company</label>
+                            <input type="text" class="form-control" id="patient_insurance_company" placeholder="{{ object.insurance_company }}" readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                            <label for="patient_insurance_id">Insurance ID</label>
+                            <input type="text" class="form-control" id="patient_insurance_id" placeholder="{{ object.insurance_id }}" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="patient_adress">Address</label>
+                            <input type="text" class="form-control" id="patient_adress" placeholder="{{ object.street }}" readonly> 
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label for="patient_city">City</label>
+                            <input type="text" class="form-control" id="patient_city" placeholder="{{ object.city }}" readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                            <label for="patient_zip">Zip</label>
+                            <input type="text" class="form-control" id="patient_zip" placeholder="{{ object.zip_code }}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="card-title">Doctor</h5>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="doctor_fullname">Fullname</label>
+                                {{ form.doctor_fullname }}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="doctor_id">Doctor ID </label>
+                                <input type="text" class="form-control" id="doctor_id" placeholder="758547302" readonly>
+                                </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="doctor_type">Doctor's type</label>
+                                {{ form.doctor_type }}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="doctor_phonenumber">Phone Number</label>
+                                {{ form.doctor_phonenumber }}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5 class="card-title">Pharmaceutical</h5>
                         <div class="col-md-12">
-                            <h5 class="card-title">Pharmaceutical</h5>
-                            <div class="col-md-12">
-                                <div class="form-group row">
-                                    <label for='{{ form.pharmaceutical }}' class="col-sm-3 col-form-label">Pharmaceutical :</label>
-                                    <div class="col-sm-9">
-                                        {{ form.pharmaceutical }}
-                                    </div>
+                            <div class="form-group row">
+                                <label for='{{ form.pharmaceutical }}' class="col-sm-3 col-form-label">Pharmaceutical :</label>
+                                <div class="col-sm-9">
+                                    {{ form.pharmaceutical }}
                                 </div>
-                                <div class="form-group row">
-                                    <label for='{{ form.number }}' class="col-sm-3 col-form-label">Quantity:</label>
-                                    <div class="col-sm-9">
-                                        {{ form.number }}
-                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for='{{ form.number }}' class="col-sm-3 col-form-label">Quantity:</label>
+                                <div class="col-sm-9">
+                                    {{ form.number }}
                                 </div>
-                                <div class="form-group row">
-                                    <label for='{{ form.expiration }}' class="col-sm-3 col-form-label">Expiration:</label>
-                                    <div class="col-sm-9">
-                                        {{ form.expiration }}
-                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for='{{ form.expiration }}' class="col-sm-3 col-form-label">Expiration:</label>
+                                <div class="col-sm-9">
+                                    {{ form.expiration }}
                                 </div>
-                                <div class="form-group row">
-                                    <div class="col-sm-3">
-                                        <label for='{{ form.extra_information }}' class=" col-form-label">Additional information:</label>
-                                        <small id="extra_information" class="form-text text-muted">optional</small>
-                                    </div>
-                                    <div class="col-sm-9">
-                                        {{ form.extra_information }}
-                                    </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-3">
+                                    <label for='{{ form.extra_information }}' class=" col-form-label">Additional information:</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    {{ form.extra_information }}
+                                    <small id="extra_information" class="form-text text-muted">optional</small>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <button class="button btn btn-primary" type="submit" value="save">Issue ePrescription (Credential + Token)</button>
-                </form>
-            </div>
+                <button class="button btn btn-block btn-primary" type="submit" value="save">Issue ePrescription (Credential + Token)</button>
+                <a href="{% url 'pharmacy-home' %}" class="button btn btn-block mt-1 ">Next step</a>
+
+            </form>
         </div>
     </div>
-    </div>
-    {% endif %}
+</div>
+{% endif %}
+
 {% endblock %}

@@ -31,10 +31,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 ip_address = settings.IP_ADDRESS
-url_doctor_agent = f'http://{ip_address}:7080'
-url_insurance_agent = f'http://{ip_address}:6080'
 port = settings.PORT
 url_webapp = f'http://{ip_address}:{port}'
+
+url_doctor_agent = "http://doctor-agent:7080"
+url_insurance_agent = "http://insurance-agent:6080"
+
 
 support_revocation = True
 
@@ -274,7 +276,7 @@ def login_view(request):
             invitation_splitted = invitation_link.split("=", 1)
             temp = json.loads(base64.b64decode(invitation_splitted[1]))
             # Icon for the wallet app
-            temp.update({"imageUrl": "https://cdn.pixabay.com/photo/2016/03/31/20/12/doctor-1295581_960_720.png"})
+            temp.update({"imageUrl": f'{url_webapp}/static/img/doctor.png'})
             temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
             invitation_splitted[1] = temp
             invitation_link = "=".join(invitation_splitted)
@@ -492,12 +494,12 @@ def revoke_cred_view(request):
     update_credential = Credential.objects.all()
     print(url_doctor_agent)
 
-    for object in update_credential:
-        credential = requests.get(url_doctor_agent + '/issue-credential/records?thread_id=' + str(object.thread_id)).json()['results']
-        if len(credential) < 1:
-            Credential.objects.filter(id=object.id).delete()
-        else:
-            pass
+    # for object in update_credential:
+    #     credential = requests.get(url_doctor_agent + '/issue-credential/records?thread_id=' + str(object.thread_id)).json()['results']
+    #     if len(credential) < 1:
+    #         Credential.objects.filter(id=object.id).delete()
+    #     else:
+    #         pass
     queryset = Credential.objects.filter(revoked=False).order_by('-id')
     table = CredentialTable(Credential.objects.all())
     context = {
@@ -557,7 +559,6 @@ def webhook_connection_view(request):
         cred_def_id = requests.get(url_insurance_agent + '/credential-definitions/created?schema_name=' + schema_name).json()[
             'credential_definition_ids'][0]
         # Gets the unixstamp of the next day
-        # Creates the PROOF REQUEST #TODO: proof-Request als Variable für beide Methoden
         proof_request = {
             "connection_id": connection_id,
             "proof_request":{
@@ -565,34 +566,32 @@ def webhook_connection_view(request):
                 "version": "1.0",
                 "requested_attributes": {
                     "health insurance": {
-                    "names": [
-                        "insurance_id",
-                        "firstname",
-                        "lastname",
-                        "birthday",
-                        "street",
-                        "zip_code",
-                        "city",
-                        "date_issued",
-                        "expiration_date",
-                        "insurance_company"
-                    ],
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
+                        "names": [
+                            "insurance_id",
+                            "firstname",
+                            "lastname",
+                            "birthday",
+                            "street",
+                            "zip_code",
+                            "city",
+                            "expiration_date",
+                            "insurance_company"
+                        ],
+                        "non_revoked":{
+                            "from": 0,
+                            "to": round(time.time())
+                        },
+                        "restrictions": [
+                            {
+                                "cred_def_id": cred_def_id
+                            }
+                        ]
                     }
                 },
-                "requested_predicates": {
-                },           
-                "non_revoked":{
-                    "from": 0,
-                    "to": round(time.time())
+                "requested_predicates": {}
                 }
             }
-        }
-        print(proof_records)
+        print(proof_request)
         requests.post(url_doctor_agent + '/present-proof/send-request', json=proof_request)
     else:
         pass

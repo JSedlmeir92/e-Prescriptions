@@ -24,11 +24,11 @@ logger = logging.getLogger(__name__)
 
 ip_address = settings.IP_ADDRESS
 port = settings.PORT
+url_webapp = f'http://{ip_address}:{port}'
 
-url_webapp = f'http://{ip_address}:8000'
-url_pharmacy_agent = f'http://{ip_address}:9080'
-url = f'http://{ip_address}:6080'
-# print(f"url: {url}")
+url_pharmacy_agent = "http://pharmacy-agent:9080"
+url_insurance_agent = "http://insurance-agent:6080"
+
 
 support_revocation = True
 
@@ -40,7 +40,6 @@ ATTRIBUTES = [
                 "street",
                 "zip_code",
                 "city",
-                "date_issued",
                 "expiration_date",
                 "insurance_company"
             ]
@@ -53,7 +52,6 @@ COMMENTS = [
     "The street address of the insured person",
     "The zip code of the insured person",
     "The city address of the insured person",
-    "The issuance date of the insurance credential",
     "The expiration date of the insurance credential",
     "The name of the insurance company"
 ]
@@ -72,13 +70,13 @@ def connection_view(request):
     }
     if request.method == 'POST':
         # Deleting old INVITATIONS
-        connections_invitation = requests.get(url + '/connections?initiator=self&state=invitation').json()['results']
+        connections_invitation = requests.get(url_insurance_agent+ '/connections?initiator=self&state=invitation').json()['results']
         if len(connections_invitation) > 0:
-            connection_id = requests.get(url + '/connections?initiator=self&state=invitation').json()['results'][0]["connection_id"]
-            requests.delete(url + '/connections/' + connection_id)
+            connection_id = requests.get(url_insurance_agent+ '/connections?initiator=self&state=invitation').json()['results'][0]["connection_id"]
+            requests.delete(url_insurance_agent+ '/connections/' + connection_id)
         # Generating the new INVITATION
         alias = request.POST.get('alias')
-        response = requests.post(url + '/connections/create-invitation?alias=' + alias + '&auto_accept=true').json()
+        response = requests.post(url_insurance_agent+ '/connections/create-invitation?alias=' + alias + '&auto_accept=true').json()
         invitation_link = response['invitation_url']
         connection_id = response['connection_id']
         Connection.objects.filter(id=Connection.objects.latest('date_added').id).update(invitation_link=invitation_link)
@@ -87,7 +85,7 @@ def connection_view(request):
         invitation_splitted = invitation_link.split("=", 1)
         temp = json.loads(base64.b64decode(invitation_splitted[1]))
         # Icon for the wallet app
-        temp.update({"imageUrl": "https://www.topaze.lu/files/31525.jpg"})
+        temp.update({"imageUrl": f'{url_webapp}/static/img/health-insurance_logo.png'})
         temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
         invitation_splitted[1] = temp
         invitation_link = "=".join(invitation_splitted)
@@ -97,13 +95,13 @@ def connection_view(request):
     return render(request, 'insurance/connection.html', context)
 
 def schema_view(request):
-    created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
+    created_schema = requests.get(url_insurance_agent+ '/schemas/created').json()['schema_ids']
     context = {
         'title': 'Schema'
     }
     if len(created_schema) > 0:
         context['created_schema'] = created_schema[0]
-        # context['attributes'] = requests.get(url + '/schemas/' + context['created_schema']).json()['schema']['attrNames']
+        # context['attributes'] = requests.get(url_insurance_agent+ '/schemas/' + context['created_schema']).json()['schema']['attrNames']
         # context['attributes'][1], context['attributes'][2], context['attributes'][3], context['attributes'][7], context['attributes'][8], context['attributes'][9], context['attributes'][6], context['attributes'][5], context['attributes'][4], context['attributes'][10], context['attributes'][0] = context['attributes'][0], context['attributes'][1], context['attributes'][2], context['attributes'][3], context['attributes'][4], context['attributes'][5], context['attributes'][6], context['attributes'][7], context['attributes'][8], context['attributes'][9], context['attributes'][10]
         context['attributes'] = []
         for index, _ in enumerate(ATTRIBUTES): #displays the ATTRIBUTES with the describing comments
@@ -123,20 +121,20 @@ def create_schema():
             "schema_name": f"health insurance{random.randint(10000, 100000)}",
             "schema_version": "1.0"
         }
-    requests.post(url + '/schemas', json=schema)
+    requests.post(url_insurance_agent+ '/schemas', json=schema)
 
 def cred_def_view(request):
     context = {
         'title': 'Credential Definition'
     }
     # Checks if there are suitable SCHEMAS in the wallet
-    created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
+    created_schema = requests.get(url_insurance_agent+ '/schemas/created').json()['schema_ids']
     if len(created_schema) < 1:
         context['available_schema'] = 'There is no suitable schema available. Please go back and publish a new one first.'
     else:
-        schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
+        schema_name = requests.get(url_insurance_agent+ '/schemas/' + created_schema[0]).json()['schema']['name']
         # Checks if there are suitable REVOCABLE CREDENTIAL DEFINITIONS in the wallet
-        created_credential_definitions_revocable = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids']
+        created_credential_definitions_revocable = requests.get(url_insurance_agent+ '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids']
         if len(created_credential_definitions_revocable) > 0:
             context['created_cred_def_rev'] = created_credential_definitions_revocable[0]
         else:
@@ -148,7 +146,7 @@ def cred_def_view(request):
                     "support_revocation": support_revocation,
                     "schema_id": schema_id
                 }
-                requests.post(url + '/credential-definitions', json=credential_definition)
+                requests.post(url_insurance_agent+ '/credential-definitions', json=credential_definition)
                 return redirect('.')
     return render(request, 'insurance/cred_def.html', context)
 
@@ -160,19 +158,19 @@ def rev_reg_view(request):
         # return render(request, 'doctor/rev_reg.html', context)
 
     # Checks if there are suitable SCHEMA in the wallet
-    created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
+    created_schema = requests.get(url_insurance_agent+ '/schemas/created').json()['schema_ids']
     if len(created_schema) < 1:
         context['available_schema'] = 'There is no suitable schema & credential definition available. Please go back and publish both first.'
     else:
         # Checks if there are suitable CREDENTIAL DEFINITIONS in the wallet
-        schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
-        created_credential_definitions_revocable = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids']
+        schema_name = requests.get(url_insurance_agent+ '/schemas/' + created_schema[0]).json()['schema']['name']
+        created_credential_definitions_revocable = requests.get(url_insurance_agent+ '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids']
         if len(created_credential_definitions_revocable) < 1:
             context['available_cred_def'] = 'There is no suitable credential definition available. Please go back and publish a new one first.'
         else:
             # Checks if there is an active REVOCATION REGISTRY available
             cred_def_id = created_credential_definitions_revocable[0]
-            revocation_registry_id = requests.get(url + '/revocation/registries/created?cred_def_id=' + cred_def_id + '&state=active').json()['rev_reg_ids']
+            revocation_registry_id = requests.get(url_insurance_agent+ '/revocation/registries/created?cred_def_id=' + cred_def_id + '&state=active').json()['rev_reg_ids']
             if len(revocation_registry_id) > 0:
                 context['rev_reg'] = revocation_registry_id[0]
             else:
@@ -184,7 +182,7 @@ def rev_reg_view(request):
                             "max_cred_num": 1000,
                             "credential_definition_id": cred_def_id
                         }
-                        requests.post(url + '/revocation/create-registry', json=registry)
+                        requests.post(url_insurance_agent+ '/revocation/create-registry', json=registry)
                         return redirect('.')
                 except Exception as e:
                         print(e)
@@ -195,9 +193,9 @@ def issue_cred_view(request):
     # Updates the STATE of all CONNECTIONS that do not have the state 'active' or 'response'
     update_state = Connection.objects.all()
     for object in update_state:
-        connection = requests.get(url + '/connections/' + object.connection_id).status_code
+        connection = requests.get(url_insurance_agent+ '/connections/' + object.connection_id).status_code
         if connection == 200:
-            state = requests.get(url + '/connections/' + object.connection_id).json()['state']
+            state = requests.get(url_insurance_agent+ '/connections/' + object.connection_id).json()['state']
             Connection.objects.filter(id=object.id).update(state=state)
         else:
             Connection.objects.filter(id=object.id).delete()
@@ -207,32 +205,32 @@ def issue_cred_view(request):
         'form': form
     }
     # Checks if there is a suitable SCHEMA
-    created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
+    created_schema = requests.get(url_insurance_agent+ '/schemas/created').json()['schema_ids']
     if len(created_schema) < 1:
         context['available_schema'] = True
     else:
         # Checks if there is a suitable CREDENTIAL DEFINITION
-        schema_name = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']['name']
-        created_credential_definitions_revocable = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids']
+        schema_name = requests.get(url_insurance_agent+ '/schemas/' + created_schema[0]).json()['schema']['name']
+        created_credential_definitions_revocable = requests.get(url_insurance_agent+ '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids']
         if len(created_credential_definitions_revocable) < 1:
             context['available_cred_def'] = True
         else:
             # Checks if there is a suitable REVOCATION REGISTRY
             cred_def_id = created_credential_definitions_revocable[0]
-            revocation_registry_id = requests.get(url + '/revocation/registries/created?cred_def_id=' + cred_def_id + '&state=active').json()['rev_reg_ids']
+            revocation_registry_id = requests.get(url_insurance_agent+ '/revocation/registries/created?cred_def_id=' + cred_def_id + '&state=active').json()['rev_reg_ids']
             if len(revocation_registry_id) < 1:
                 context['rev_reg'] = True
             else:
                 if form.is_valid():
                     # Sending the data to the patient
-                    schema = requests.get(url + '/schemas/' + created_schema[0]).json()['schema']
+                    schema = requests.get(url_insurance_agent+ '/schemas/' + created_schema[0]).json()['schema']
                     schema_name = schema['name']
                     schema_id = schema['id']
                     schema_version = schema['version']
-                    schema_issuer_did = requests.get(url + '/wallet/did/public').json()['result']['did']
-                    credential_definition_id = requests.get(url + '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids'][0]
-                    rev_reg_id = requests.get(url + '/revocation/registries/created?cred_def_id=' + credential_definition_id + '&state=active').json()['rev_reg_ids'][0]
-                    issuer_did = requests.get(url + '/wallet/did/public').json()['result']['did']
+                    schema_issuer_did = requests.get(url_insurance_agent+ '/wallet/did/public').json()['result']['did']
+                    credential_definition_id = requests.get(url_insurance_agent+ '/credential-definitions/created?schema_name=' + schema_name).json()['credential_definition_ids'][0]
+                    rev_reg_id = requests.get(url_insurance_agent+ '/revocation/registries/created?cred_def_id=' + credential_definition_id + '&state=active').json()['rev_reg_ids'][0]
+                    issuer_did = requests.get(url_insurance_agent+ '/wallet/did/public').json()['result']['did']
                     connection_id = request.POST.get('connection_id')
                     insurance_id = "O" + str(random.randint(0,999999999))
 
@@ -271,17 +269,10 @@ def issue_cred_view(request):
                             "value": request.POST.get('expiration_date') #.replace(".", "")
                         },
                         {
-                            "name": "date_issued",
-                            "value": f"{datetime.now()}"
-                        },
-                        {
                             "name": "insurance_company",
-                            "value": "MediScare"
+                            "value": "Suncoast Health Insurance"
                         }
                     ]
-
-
-                    print(attributes)
                     credential = {
                         "schema_name": schema_name,
                         "auto_remove": True,
@@ -301,7 +292,7 @@ def issue_cred_view(request):
                     # Saving the data in the database
                     form.save()
                     form = CredentialForm()
-                    issue_cred = requests.post(url + '/issue-credential/send', json=credential)
+                    issue_cred = requests.post(url_insurance_agent+ '/issue-credential/send', json=credential)
                     context['name'] = str(request.POST.get('firstname') + " " + request.POST.get('lastname'))
                     print(context['name'])
                 else:
@@ -312,7 +303,7 @@ def revoke_cred_view(request):
     # Updates all issued Credentials
     update_credential = Credential.objects.all()
     for object in update_credential:
-        credential = requests.get(url + '/issue-credential/records?thread_id=' + str(object.thread_id)).json()['results']
+        credential = requests.get(url_insurance_agent+ '/issue-credential/records?thread_id=' + str(object.thread_id)).json()['results']
         if len(credential) < 1:
             Credential.objects.filter(id=object.id).delete()
         else:
@@ -328,7 +319,7 @@ def revoke_cred_view(request):
 def cred_detail_view(request, id):
     obj = get_object_or_404(Credential, id=id)
     if obj.rev_id == None:
-        credential = requests.get(url + '/issue-credential/records?thread_id=' + obj.thread_id).json()['results'][0]
+        credential = requests.get(url_insurance_agent+ '/issue-credential/records?thread_id=' + obj.thread_id).json()['results'][0]
         state = credential['state']
         if state == 'credential_issued':
             rev_id = credential['revocation_id']
@@ -339,7 +330,7 @@ def cred_detail_view(request, id):
             "rev_reg_id" : credential['revoc_reg_id'],
             "publish" : "true"
         }
-        requests.post(url + '/revocation/revoke', json=revoke)
+        requests.post(url_insurance_agent+ '/revocation/revoke', json=revoke)
         obj.revoked = True
         obj.save()
         return redirect('.')
@@ -361,23 +352,23 @@ def login_view(request):
     return render(request, 'insurance/login.html', context)
 
 def login_result_view(request): ##Checks the validity of the eprescription
-    proof_records = requests.get(url + '/present-proof/records').json()['results']
+    proof_records = requests.get(url_insurance_agent+ '/present-proof/records').json()['results']
     x = len(proof_records)
     print(x)
     while x > 0:
         pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
-        requests.delete(url + '/present-proof/records/' + pres_ex_id)
+        requests.delete(url_insurance_agent+ '/present-proof/records/' + pres_ex_id)
         print(x)
         x -= 1
     x = 0
-    while len(requests.get(url + '/present-proof/records?state=verified').json()['results']) == 0:
+    while len(requests.get(url_insurance_agent+ '/present-proof/records?state=verified').json()['results']) == 0:
         time.sleep(5)
         print("waiting...")
         # redirect to the login page after 2 minutes of not receiving a proof presentation
         x += 1
         if x > 23:
-            return redirect('insurance-base')
-    proof = requests.get(url + '/present-proof/records?state=verified').json()['results'][0]
+            return redirect('insurance-home')
+    proof = requests.get(url_insurance_agent+ '/present-proof/records?state=verified').json()['results'][0]
     insurance_insurance_id = proof['presentation']['requested_proof']['revealed_attr_groups']['insurance']['values']['insurance_id']['raw']
     pharmacy_insurance_id = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['insurance_id']['raw']
     if insurance_insurance_id == pharmacy_insurance_id:
@@ -401,7 +392,7 @@ def login_result_view(request): ##Checks the validity of the eprescription
             }
         elif (result == False and verified == True):
             context = {
-                'title': 'Invoice already cashed',
+                'title': 'Invoice already submitted',
                 'verified': 'spent'
             }
         elif (result == True and verified == False):
@@ -411,7 +402,7 @@ def login_result_view(request): ##Checks the validity of the eprescription
             }
         elif (result == False and verified == False):
             context = {
-                'title': 'Invoice already cashed and spent',
+                'title': 'Invoice was revoked and already submitted',
                 'verified': 'revoked_and_spent'
             }
         else:
@@ -434,9 +425,9 @@ def login_url_view(request):
     pharmacy_schema_name = requests.get(url_pharmacy_agent + '/schemas/' + pharmacy_created_schema[0]).json()['schema']['name']
     pharmacy_cred_def_id = requests.get(url_pharmacy_agent + '/credential-definitions/created?schema_name=' + pharmacy_schema_name).json()[
         'credential_definition_ids'][0]
-    insurance_created_schema = requests.get(url + '/schemas/created').json()['schema_ids']
-    insurance_schema_name = requests.get(url + '/schemas/' + insurance_created_schema[0]).json()['schema']['name']
-    insurance_cred_def_id = requests.get(url + '/credential-definitions/created?schema_name=' + insurance_schema_name).json()[
+    insurance_created_schema = requests.get(url_insurance_agent+ '/schemas/created').json()['schema_ids']
+    insurance_schema_name = requests.get(url_insurance_agent+ '/schemas/' + insurance_created_schema[0]).json()['schema']['name']
+    insurance_cred_def_id = requests.get(url_insurance_agent+ '/credential-definitions/created?schema_name=' + insurance_schema_name).json()[
         'credential_definition_ids'][0]
     print("pharmacy_cred_def_id " + pharmacy_cred_def_id)
     proof_request = {
@@ -480,13 +471,13 @@ def login_url_view(request):
             }
         }
     }
-    present_proof = requests.post(url + '/present-proof/create-request', json=proof_request).json()
+    present_proof = requests.post(url_insurance_agent+ '/present-proof/create-request', json=proof_request).json()
     presentation_request = json.dumps(present_proof["presentation_request"])
     presentation_request = base64.b64encode(presentation_request.encode('utf-8')).decode('ascii')
-    invitation = requests.post(url + '/connections/create-invitation').json()
+    invitation = requests.post(url_insurance_agent+ '/connections/create-invitation').json()
 
     reciepentKeys = invitation["invitation"]["recipientKeys"]
-    #verkey = requests.get(url + '/wallet/did').json()["results"][0]["verkey"]
+    #verkey = requests.get(url_insurance_agent+ '/wallet/did').json()["results"][0]["verkey"]
     serviceEndPoint = invitation["invitation"]["serviceEndpoint"]
     #routingkeys = invitation["invitation"]["routing_keys"] #TODO: Relevant?
     proof_request_conless = {
@@ -509,7 +500,7 @@ def login_url_view(request):
     }
     invitation_string = json.dumps(proof_request_conless)
     invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
-    invitation_url = str(url_pharmacy_agent)[:-4] + "7000/?c_i=" + str(invitation_string) ##Changing Agent-Port from API to the Agents' one
+    invitation_url = str(url_pharmacy_agent)[:-4] + "7000/?c_i=" + str(invitation_string)
     context['invitation'] = invitation_url
     print(invitation_url)
     return HttpResponseRedirect(invitation_url)

@@ -40,7 +40,7 @@ os.system("python3 manage.py makemigrations --noinput")
 os.system("python3 manage.py migrate") ##
 
 print("\nStarting the Server...")
-os.system("python3 manage.py runserver 0.0.0.0:8000")
+os.system("python3 manage.py runserver 0.0.0.0:80")
 
 #print("\nStarting Dockr-Server....")
 #os.system()

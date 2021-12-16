@@ -20,13 +20,12 @@ from datetime import date, datetime
 from dateutil.relativedelta import *
 import random
 
-
 ip_address = settings.IP_ADDRESS
-url_pharmacy_agent = f'http://{ip_address}:9080'
-url_doctor_agent = f'http://{ip_address}:7080'
 port = settings.PORT
 url_webapp = f'http://{ip_address}:{port}'
 
+url_pharmacy_agent = "http://pharmacy-agent:9080"
+url_doctor_agent = "http://doctor-agent:7080"
 
 support_revocation = True
 
@@ -61,7 +60,7 @@ def home_view(request):
     return render(request, 'pharmacy/base_pharmacy.html', {'title': 'Pharmacy'})
 
 @csrf_exempt 
-def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbased" proof
+def login_view(request, way = 2): #1 = connectionless proof, 2 = "connectionbased" proof
     context = {
         'title': 'Login',
         'way': way,
@@ -137,8 +136,7 @@ def login_view(request, way = 1): #1 = connectionless proof, 2 = "connectionbase
 
             invitation_splitted = invitation_link.split("=", 1)
             temp = json.loads(base64.b64decode(invitation_splitted[1]))
-            # Icon for the wallet app
-            temp.update({"imageUrl": "https://cdn.pixabay.com/photo/2014/04/03/11/47/pharmacy-312139_960_720.png"})
+            temp.update({"imageUrl": f'{url_webapp}/static/img/pharmacy.png'})
             temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
             invitation_splitted[1] = temp
             invitation_link = "=".join(invitation_splitted)
@@ -309,22 +307,26 @@ def login_url_view(request):
             "requested_attributes": {
                 "e-prescription": {
                     "names": [
-                    "doctor_id",
-                    "doctor_fullname",
-                    "doctor_type",
-                    "doctor_phonenumber",
-                    "patient_insurance_id",
-                    "patient_insurance_company",
-                    "patient_fullname",
-                    "patient_birthday",
-                    "pharmaceutical",
-                    "number",
-                    "extra_information",
-                    "date_issued",
-                    "prescription_id",
-                    "contract_address",
-                    "spending_key"
-                ],
+                        "doctor_id",
+                        "doctor_fullname",
+                        "doctor_type",
+                        "doctor_phonenumber",
+                        "patient_insurance_id",
+                        "patient_insurance_company",
+                        "patient_fullname",
+                        "patient_birthday",
+                        "pharmaceutical",
+                        "number",
+                        "extra_information",
+                        "date_issued",
+                        "prescription_id",
+                        "contract_address",
+                        "spending_key"
+                    ],
+                    "non_revoked":{
+                        "from": 0,
+                        "to": round(time.time())
+                        },
                 "restrictions": [
                     {
                         "cred_def_id": cred_def_id
@@ -334,27 +336,23 @@ def login_url_view(request):
             },
             "requested_predicates": {
                 "e-prescription": {
-                "name": "expiration_date",
-                "p_type": ">=",
-                "p_value": expiration,
-                "restrictions": [
-                    {
-                        "cred_def_id": cred_def_id
+                    "name": "expiration_date",
+                    "p_type": ">=",
+                    "p_value": expiration,
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
                     }
-                ]
                 }
-            },
-            "non_revoked":{
-                "from": 0,
-                "to": round(time.time())
             }
         }
-    }
     present_proof = requests.post(url_pharmacy_agent + '/present-proof/create-request', json=proof_request).json()
     presentation_request = json.dumps(present_proof["presentation_request"])
     presentation_request = base64.b64encode(presentation_request.encode('utf-8')).decode('ascii')
     invitation = requests.post(url_pharmacy_agent + '/connections/create-invitation').json()
-
+    print(proof_request)
     reciepentKeys = invitation["invitation"]["recipientKeys"]
     #verkey = requests.get(url_pharmacy_agent + '/wallet/did').json()["results"][0]["verkey"]
     serviceEndPoint = invitation["invitation"]["serviceEndpoint"]
@@ -645,54 +643,54 @@ def webhook_connection_view(request):
         # Creates the PROOF REQUEST #TODO: proof-Request als Variable für beide Methoden
         proof_request = {
             "connection_id": connection_id,
-            "proof_request": {
-                            "name": "Proof of Receipt",
-            "version": "1.0",
-            "requested_attributes": {
-                "e-prescription": {
-                    "names": [
-                    "doctor_id",
-                    "doctor_fullname",
-                    "doctor_type",
-                    "doctor_phonenumber",
-                    "patient_insurance_id",
-                    "patient_insurance_company",
-                    "patient_fullname",
-                    "patient_birthday",
-                    "pharmaceutical",
-                    "number",
-                    "extra_information",
-                    "date_issued",
-                    "prescription_id",
-                    "contract_address",
-                    "spending_key"
-                ],
-                "restrictions": [
-                    {
-                        "cred_def_id": cred_def_id
+            "proof_request":{
+                "name": "Proof of Receipt",
+                "version": "1.0",
+                "requested_attributes": {
+                    "e-prescription": {
+                        "names": [
+                        "doctor_id",
+                        "doctor_fullname",
+                        "doctor_type",
+                        "doctor_phonenumber",
+                        "patient_insurance_id",
+                        "patient_insurance_company",
+                        "patient_fullname",
+                        "patient_birthday",
+                        "pharmaceutical",
+                        "number",
+                        "extra_information",
+                        "date_issued",
+                        "prescription_id",
+                        "contract_address",
+                        "spending_key"
+                    ],
+                    "non_revoked":{
+                        "from": 0,
+                        "to": round(time.time())
+                        },                    
+                    "restrictions": [
+                        {
+                            "cred_def_id": cred_def_id
+                        }
+                    ]
                     }
-                ]
-                }
-            },
-            "requested_predicates": {
-                "e-prescription": {
+                },
+                "requested_predicates": {
+                    "e-prescription": {
                     "name": "expiration_date",
-                    "p_type": ">=", 
+                    "p_type": ">=",
                     "p_value": expiration,
                     "restrictions": [
                         {
                             "cred_def_id": cred_def_id
                         }
                     ]
+                    }
                 }
-            },
-            "non_revoked": {
-                "from": 0,
-                "to": round(time.time())
-                },
             }
         }
-        print(proof_records)
+        print(proof_request)
         requests.post(url_pharmacy_agent + '/present-proof/send-request', json=proof_request)
     else:
         pass
@@ -712,10 +710,9 @@ def webhook_proof_view(request):
         contract_address = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['contract_address']['raw'])
         prescription_id  = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw'])
         spending_key     = str(proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['spending_key']['raw'])
-        if not spending_key:
+        if spending_key != None:
             os.system(f"quorum_client/checkPrescription.sh {contract_address} {prescription_id} {spending_key}")
             not_spent = os.popen("tail -n 1 %s" % "quorum_client/check").read().replace("\n", "") == 'true'
-
             Prescription.objects.update_or_create(
                 prescription_id     = prescription_id,
                 defaults={ 
@@ -738,6 +735,6 @@ def webhook_proof_view(request):
                     "date_issued"         : proof['created_at'],
                     "date_presented"      : datetime.now(),
                     "connection_id"       : connection_id
-                }
-        )
+                    }
+                )
     return HttpResponse()

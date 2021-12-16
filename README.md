@@ -19,9 +19,9 @@ pip3 install python-dateutil django-tables2
 - Make sure that the ports in the Used Ports section are open for your docker network.
   The doctor agent and pharmacy agent must be available from your mobile phone with the SSI wallet app.   
 - Create a .env file in the main directory. It should look as follows:
-  + IP_ADDRESS=IP address where the application is running and that is available for your mobile phone
-  + DIR_NAME=path to the directory of the project, e.g., /home/user/e-Prescriptions
-  + PORT=port where the webapp is listening
+  + id_address=IP address where the application is running and that is available for your mobile phone
+  + dir_mname=path to the directory of the project, e.g., /home/user/e-Prescriptions
+  + port=port where the webapp is listening
 - Create an another .env file in the von-network folder. It should include the following parameters:
   + DOCKERHOST= the same IP-Adress as previous
   + WEB_SERVER_HOST_PORT=9700 (or any other port not used by the prototype)
@@ -29,7 +29,7 @@ pip3 install python-dateutil django-tables2
   + LEDGER_INSTANCE_NAME=ePrescription-Demo (for example)
 
 ### STEP 3: Add the path to genesis.txt into the first env-file
-- DOCKERHOST:WEB_SERVER_HOST_PORT/genesis.txt
+- genesis_url=DOCKERHOST:WEB_SERVER_HOST_PORT/genesis
 
 ### STEP 4: Start the demo: ###
 - Start the portable development Indy Node Network

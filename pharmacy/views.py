@@ -318,36 +318,23 @@ def login_url_view(request):
                         "pharmaceutical",
                         "number",
                         "extra_information",
-                        "date_issued",
                         "prescription_id",
                         "contract_address",
-                        "spending_key"
-                    ],
-                    "non_revoked":{
-                        "from": 0,
-                        "to": round(time.time())
-                        },
-                "restrictions": [
-                    {
-                        "cred_def_id": cred_def_id
+                        "spending_key" 
+                        ],
+                        "restrictions": [
+                            {
+                                "cred_def_id": cred_def_id
+                            }
+                        ]
                     }
-                ]
-                }
             },
             "requested_predicates": {
-                "e-prescription": {
-                    "name": "expiration_date",
-                    "p_type": ">=",
-                    "p_value": expiration,
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
                     }
-                }
+            },
             }
-        }
+
+
     present_proof = requests.post(url_pharmacy_agent + '/present-proof/create-request', json=proof_request).json()
     presentation_request = json.dumps(present_proof["presentation_request"])
     presentation_request = base64.b64encode(presentation_request.encode('utf-8')).decode('ascii')
@@ -649,44 +636,29 @@ def webhook_connection_view(request):
                 "requested_attributes": {
                     "e-prescription": {
                         "names": [
-                        "doctor_id",
-                        "doctor_fullname",
-                        "doctor_type",
-                        "doctor_phonenumber",
-                        "patient_insurance_id",
-                        "patient_insurance_company",
-                        "patient_fullname",
-                        "patient_birthday",
-                        "pharmaceutical",
-                        "number",
-                        "extra_information",
-                        "date_issued",
-                        "prescription_id",
-                        "contract_address",
-                        "spending_key"
-                    ],
-                    "non_revoked":{
-                        "from": 0,
-                        "to": round(time.time())
-                        },                    
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
+                            "doctor_id",
+                            "doctor_fullname",
+                            "doctor_type",
+                            "doctor_phonenumber",
+                            "patient_insurance_id",
+                            "patient_insurance_company",
+                            "patient_fullname",
+                            "patient_birthday",
+                            "pharmaceutical",
+                            "number",
+                            "extra_information",
+                            "prescription_id",
+                            "contract_address",
+                            "spending_key"
+                        ],      
+                        "restrictions": [
+                            {
+                                "cred_def_id": cred_def_id
+                            }
+                        ]
                     }
                 },
                 "requested_predicates": {
-                    "e-prescription": {
-                    "name": "expiration_date",
-                    "p_type": ">=",
-                    "p_value": expiration,
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                    }
                 }
             }
         }
@@ -727,7 +699,7 @@ def webhook_proof_view(request):
                     "patient_birthday"    : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_birthday']['raw'],
                     "pharmaceutical"      : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['pharmaceutical']['raw'],
                     "number"              : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['number']['raw'],
-                    "extra_information"  : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['extra_information']['raw'],
+                    "extra_information"   : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['extra_information']['raw'],
                     "contract_address"    : contract_address,
                     "spending_key"        : spending_key,
                     "valid"               : proof['verified'] == "true",
@@ -737,4 +709,9 @@ def webhook_proof_view(request):
                     "connection_id"       : connection_id
                     }
                 )
+    return HttpResponse()
+
+@require_POST
+@csrf_exempt
+def webhook_catch_all_view(request):
     return HttpResponse()

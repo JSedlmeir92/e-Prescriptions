@@ -52,7 +52,6 @@ ATTRIBUTES = [
                 "pharmaceutical",
                 "number",
                 "extra_information",
-                "date_issued",
                 "expiration_date",
                 "prescription_id",
                 "contract_address",
@@ -71,7 +70,6 @@ COMMENTS = [
     "The pharmaceutical that is prescribed",
     "The number of units of the pharmaceutical",
     "Optional additional information",
-    "The issuance date of the prescription",
     "The expiration date of the recipe",
     "The unique id of the prescription to be referred to on the blockchain token",
     "The address of the smart contract in which the doctor creates the prescription token",
@@ -234,12 +232,6 @@ def login_view(request):
             connections = requests.get(url_doctor_agent + '/connections?alias=' + session_key + '&state=active').json()['results']
             if len(connections) > 0:
                 connection_id = connections[0]['connection_id']
-                proof = requests.get(url_doctor_agent + '/present-proof/records?connection_id=' + connection_id + '&state=verified').json()['results']
-                if (len(proof) > 0):
-                    name = proof[0]['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
-                    context['name'] = name
-                else:
-                    pass
             else:
                 proof_records = requests.get(url_doctor_agent + '/present-proof/records').json()['results']
                 x = len(proof_records)
@@ -357,7 +349,6 @@ def issue_cred_view(request, id):
                     rev_reg_id = requests.get(url_doctor_agent + '/revocation/registries/created?cred_def_id=' + credential_definition_id + '&state=active').json()['rev_reg_ids'][0]
                     issuer_did = requests.get(url_doctor_agent + '/wallet/did/public').json()['result']['did']
                     connection_id = obj.connection_id
-                    print("Connection_ID: " + connection_id)
 
                     attributes = [
                         {
@@ -403,10 +394,6 @@ def issue_cred_view(request, id):
                         {
                             "name": "extra_information",
                             "value": request.POST.get('extra_information')
-                        },
-                        {
-                            "name": "date_issued",
-                            "value": f"{datetime.now()}"
                         }
                     ]
 
@@ -469,7 +456,8 @@ def issue_cred_view(request, id):
                         }
                         # Saving the data in the database
                         form.save()
-                        form = CredentialForm()                        
+                        form = CredentialForm() 
+                        print(credential)                       
                         issue_cred = requests.post(url_doctor_agent + '/issue-credential/send', json=credential)
                         # Updating the object in the database with the thread-id
                         # print(issue_cred)
@@ -577,10 +565,6 @@ def webhook_connection_view(request):
                             "expiration_date",
                             "insurance_company"
                         ],
-                        "non_revoked":{
-                            "from": 0,
-                            "to": round(time.time())
-                        },
                         "restrictions": [
                             {
                                 "cred_def_id": cred_def_id
@@ -619,4 +603,4 @@ def webhook_proof_view(request):
 @require_POST
 @csrf_exempt
 def webhook_catch_all_view(request):
-    return
+    return HttpResponse()

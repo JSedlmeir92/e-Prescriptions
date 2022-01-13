@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
@@ -18,10 +18,10 @@ urlpatterns = [
     # Insurance - Detailed Overview over a credential
     path('cred_detail/<int:id>/', views.cred_detail_view, name='insurance-cred_detail'),
     #Webhook
-    path('topic', views.webhook_catch_all_view, name='doctor-webhook-catchall'),
 
     path('login-result/', views.login_result_view, name='insurance-connection_result'),
     path('login/', views.login_view, name='insurance-login'),
-    path('login_url', views.login_url_view, name='insurance-connectionless_url')
+    path('login_url', views.login_url_view, name='insurance-connectionless_url'),
+    re_path(r'^topic/', views.webhook_catch_all_view, name='insurance-webhook-catchall')
 
 ]

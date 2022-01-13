@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 ## Check Read.Me for a more detailed overview
 
@@ -56,4 +56,5 @@ urlpatterns = [
     path('topic/connections/', views.webhook_connection_view, name='pharmacy-webhook_connection'),
     #Saves the presented proof into the database
     path('topic/present_proof/', views.webhook_proof_view, name='pharmacy-webhook_proof'),
+    re_path(r'^topic/', views.webhook_catch_all_view, name='pharmacy-webhook-catchall')
 ]

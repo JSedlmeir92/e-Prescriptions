@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 
 urlpatterns = [
@@ -35,5 +35,5 @@ urlpatterns = [
     #Saves the presented proof into the database
     path('topic/present_proof/', views.webhook_proof_view, name='doctor-webhook_proof'),
     #Catches all other webhooks and gives just a simple respond
-    path('topic/', views.webhook_catch_all_view, name='doctor-webhook-catchall')
+    re_path(r'^topic/', views.webhook_catch_all_view, name='doctor-webhook-catchall')
 ]  

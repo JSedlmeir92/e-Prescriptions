@@ -3,7 +3,7 @@ from .models import Credential, Connection
 from .forms import CredentialForm, ConnectionForm
 
 
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect, HttpResponse
 
 import random
 import hashlib
@@ -295,6 +295,7 @@ def issue_cred_view(request):
                     issue_cred = requests.post(url_insurance_agent+ '/issue-credential/send', json=credential)
                     context['name'] = str(request.POST.get('firstname') + " " + request.POST.get('lastname'))
                     print(context['name'])
+                    print(credential)
                 else:
                     print("")
     return render(request, 'insurance/issue_cred.html', context)
@@ -507,10 +508,5 @@ def login_url_view(request):
 
 @require_POST
 @csrf_exempt
-def webhook_proof_view(request):
-    return
-
-@require_POST
-@csrf_exempt
 def webhook_catch_all_view(request):
-    return
+    return HttpResponse()

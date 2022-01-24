@@ -364,7 +364,7 @@ def login_url_view(request):
     }
     invitation_string = json.dumps(proof_request_conless)
     invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
-    invitation_url = str(url_pharmacy_agent)[:-4] + "7000/?c_i=" + str(invitation_string) ##Changing Agent-Port from API to the Agents' one
+    invitation_url = str(url_pharmacy_agent)[:-4] + "7000/?c_i=" + str(invitation_string) ##Changing Agent-Port from API to the Agent's one
     context['invitation'] = invitation_url
     print(invitation_url)
     return HttpResponseRedirect(invitation_url)

@@ -374,7 +374,7 @@ def login_result_view(request): ##Checks the validity of the eprescription
     pharmacy_insurance_id = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['insurance_id']['raw']
     if insurance_insurance_id == pharmacy_insurance_id:
         verified = proof['verified'] == 'true'
-        print("revoked" + str(verified))
+        print("revoked: " + str(verified))
         contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['contract_address']['raw']
         print("contract_address: " + contract_address)
         prescription_id = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['invoice_id']['raw']
@@ -383,6 +383,7 @@ def login_result_view(request): ##Checks the validity of the eprescription
         print("spending_key: " + spending_key)
         os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
         result = os.popen("tail -n 1 %s" % "quorum_client/result").read().replace("\n", "")
+        print("result: " + result)
         result = result == 'true' #Converts result to boolean
         price = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['price']['raw']
 

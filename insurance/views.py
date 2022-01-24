@@ -465,10 +465,6 @@ def login_url_view(request):
             },
             "requested_predicates":{
                 
-            },
-            "non_revoked":{
-                "from":0,
-                "to": round(time.time())
             }
         }
     }

@@ -44,6 +44,7 @@ pip3 install python-dateutil django-tables2
 
 ### Used Ports:
 - Web-Apps: specified in .env
+- Insurance-Agent: Port 6000 / API 6080
 - Doctor-Agent: Port 7000 / API 7080
 - Pharmacy-Agent: Port 9000 / API 9080
 - Quorum-Network:

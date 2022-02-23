@@ -47,10 +47,10 @@ x-quorum-def:
         --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,raft \
         --port 21000 \
         --ws \
-        --wsaddr 0.0.0.0 \
-        --wsport 8546 \
-        --wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,raft \
-        --wsorigins "*" \
+        --ws.addr 0.0.0.0 \
+        --ws.port 8546 \
+        --ws.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,raft \
+        --ws.origins "*" \
         --unlock 0 \
         --password /3nodes/passwords.txt \
         ${QUORUM_GETH_ARGS:-} $${GETH_ARGS_raft}

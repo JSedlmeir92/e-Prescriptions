@@ -13,7 +13,7 @@ spendingKey
 .vscode/settings.json
 .DS_Store
 pharmacy/connection_pharmacy
-quorum_client/build/contracts/
+quorum_client/build/contracts/*
 quorum_client/check
 /ganache_data
 indy-tails-server/*

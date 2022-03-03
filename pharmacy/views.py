@@ -24,7 +24,7 @@ ip_address = settings.IP_ADDRESS
 port = settings.PORT
 url_webapp = f'http://{ip_address}:{port}'
 
-url_pharmacy_agent = "http://pharmacy-agent:9080"
+url_pharmacy_agent = "http://pharmacy-agent:5080"
 url_doctor_agent = "http://doctor-agent:7080"
 
 support_revocation = True

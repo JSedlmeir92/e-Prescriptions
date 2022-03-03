@@ -47,15 +47,31 @@ x-quorum-def:
         --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,raft \
         --port 21000 \
         --ws \
-        --wsaddr 0.0.0.0 \
-        --wsport 8546 \
-        --wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,raft \
-        --wsorigins "*" \
+        --ws.addr 0.0.0.0 \
+        --ws.port 8546 \
+        --ws.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,raft \
+        --ws.origins "*" \
         --unlock 0 \
         --password /3nodes/passwords.txt \
         ${QUORUM_GETH_ARGS:-} $${GETH_ARGS_raft}
 
 services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    volumes:
+      - ./nginx_templates/nginx.conf:/etc/nginx/nginx.conf
+      # - ./nginx_templates/localSSL/:/etc/nginx/localSSL/
+      # - ./nginx_templates/.well-known/acme-challenge/:/var/www/letsencrypt/.well-known/acme-challenge/
+      # - /etc/letsencrypt/:/etc/letsencrypt/
+    ports:
+      - "80:8080"
+      - "443:443"
+    environment:
+      - NGINX_PORT=80
+    networks:
+      ePrescription-net:
+
   tails-server:
     container_name: tails-server
     build:
@@ -79,9 +95,9 @@ services:
     build:
       context: ./aries-cloudagent-python
       dockerfile: ./docker/Dockerfile.run
-    ports:
-      - 6000:6000
-      - 6080:6080
+    # ports:
+    #   - 6000:6000
+    #   - 6080:6080
     entrypoint: aca-py
     command: >
       start
@@ -119,9 +135,9 @@ services:
     build:
       context: ./aries-cloudagent-python
       dockerfile: ./docker/Dockerfile.run
-    ports:
-      - 7000:7000
-      - 7080:7080
+    # ports:
+    #   - 7000:7000
+    #   - 7080:7080
     entrypoint: aca-py
     command: >
       start
@@ -159,9 +175,9 @@ services:
     build:
       context: ./aries-cloudagent-python
       dockerfile: ./docker/Dockerfile.run
-    ports:
-      - 9000:9000
-      - 9080:9080
+    # ports:
+    #   - 5000:5000
+    #   - 5080:5080
     entrypoint: aca-py
     command: >
       start
@@ -173,7 +189,7 @@ services:
         --auto-respond-credential-offer 
         --auto-respond-credential-request
         --auto-verify-presentation 
-        --inbound-transport http 0.0.0.0 9000
+        --inbound-transport http 0.0.0.0 5000
         --inbound-transport ws 0.0.0.0 9001 
         --outbound-transport ws 
         --outbound-transport http 
@@ -185,7 +201,7 @@ services:
         --wallet-key StewardWallet3 
         --wallet-name StewardWallet3
         --admin-insecure-mode 
-        --admin 0.0.0.0 9080 
+        --admin 0.0.0.0 5080 
         -e http://${ip_address}/pharmacy-agent/
         -l Pharmacy
     volumes:
@@ -252,8 +268,8 @@ services:
       environment:
           - ip_address=${ip_address}
       command: python3 start_demo.py
-      ports:
-          - ${port}:80
+      # ports:
+      #     - ${port}:80
       volumes:
           - ./:/app
       networks:

@@ -26,7 +26,7 @@ ip_address = settings.IP_ADDRESS
 port = settings.PORT
 url_webapp = f'http://{ip_address}:{port}'
 
-url_pharmacy_agent = "http://pharmacy-agent:9080"
+url_pharmacy_agent = "http://pharmacy-agent:5080"
 url_insurance_agent = "http://insurance-agent:6080"
 
 
@@ -89,7 +89,7 @@ def connection_view(request):
         temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
         invitation_splitted[1] = temp
         invitation_link = "=".join(invitation_splitted)
-        # print(invitation_link)
+        print(invitation_link)
         qr_code = "https://api.qrserver.com/v1/create-qr-code/?data=" + invitation_link + "&amp;size=600x600"
         context['qr_code'] = qr_code
     return render(request, 'insurance/connection.html', context)

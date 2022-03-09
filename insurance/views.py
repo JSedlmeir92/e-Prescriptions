@@ -3,7 +3,7 @@ from .models import Credential, Connection
 from .forms import CredentialForm, ConnectionForm
 
 
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect, HttpResponse
 
 import random
 import hashlib
@@ -295,6 +295,7 @@ def issue_cred_view(request):
                     issue_cred = requests.post(url_insurance_agent+ '/issue-credential/send', json=credential)
                     context['name'] = str(request.POST.get('firstname') + " " + request.POST.get('lastname'))
                     print(context['name'])
+                    print(credential)
                 else:
                     print("")
     return render(request, 'insurance/issue_cred.html', context)
@@ -373,7 +374,7 @@ def login_result_view(request): ##Checks the validity of the eprescription
     pharmacy_insurance_id = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['insurance_id']['raw']
     if insurance_insurance_id == pharmacy_insurance_id:
         verified = proof['verified'] == 'true'
-        print("revoked" + str(verified))
+        print("revoked: " + str(verified))
         contract_address = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['contract_address']['raw']
         print("contract_address: " + contract_address)
         prescription_id = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['invoice_id']['raw']
@@ -382,6 +383,7 @@ def login_result_view(request): ##Checks the validity of the eprescription
         print("spending_key: " + spending_key)
         os.system(f"quorum_client/spendPrescription.sh {contract_address} {prescription_id} {spending_key}")
         result = os.popen("tail -n 1 %s" % "quorum_client/result").read().replace("\n", "")
+        print("result: " + result)
         result = result == 'true' #Converts result to boolean
         price = proof['presentation']['requested_proof']['revealed_attr_groups']['invoice']['values']['price']['raw']
 
@@ -464,10 +466,6 @@ def login_url_view(request):
             },
             "requested_predicates":{
                 
-            },
-            "non_revoked":{
-                "from":0,
-                "to": round(time.time())
             }
         }
     }
@@ -507,10 +505,5 @@ def login_url_view(request):
 
 @require_POST
 @csrf_exempt
-def webhook_proof_view(request):
-    return
-
-@require_POST
-@csrf_exempt
 def webhook_catch_all_view(request):
-    return
+    return HttpResponse()

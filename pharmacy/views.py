@@ -117,19 +117,24 @@ def login_view(request, way = 2): #1 = connectionless proof, 2 = "connectionbase
             invitations = requests.get(url_pharmacy_agent + '/connections?alias=' + session_key + '&state=invitation').json()['results']
             # Creates a new INVITATION, if none exists
             if len(invitations) == 0:
-                invitation_link = requests.post(url_pharmacy_agent + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
+                invitation_link = requests.post(url_pharmacy_agent + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=false').json()['invitation_url']
                 FileHandler = open("pharmacy/connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
                 FileHandler.close()
             elif os.stat("pharmacy/connection_pharmacy").st_size == 0:
                 connection_id = invitations[0]["connection_id"]
                 requests.delete(url_pharmacy_agent + '/connections/' + connection_id)
-                invitation_link = requests.post(url_pharmacy_agent + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
+                invitation_link = requests.post(url_pharmacy_agent + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=false').json()['invitation_url']
                 FileHandler = open("pharmacy/connection_pharmacy", "w")
                 FileHandler.write(invitation_link)
                 FileHandler.close()
-            # Uses the latest created INVITATION, if it has not been used yet
             else:
+                x = len(invitations)
+                while x > 1:
+                    connection_id = invitations[x - 1]["connection_id"]
+                    requests.delete(url_doctor_agent + '/connections/' + connection_id)
+                    x -= 1
+
                 FileHandler = open("pharmacy/connection_pharmacy", "r")
                 invitation_link = FileHandler.read()
                 FileHandler.close()
@@ -318,36 +323,24 @@ def login_url_view(request):
                         "pharmaceutical",
                         "number",
                         "extra_information",
-                        "date_issued",
                         "prescription_id",
                         "contract_address",
-                        "spending_key"
-                    ],
-                    "non_revoked":{
-                        "from": 0,
-                        "to": round(time.time())
-                        },
-                "restrictions": [
-                    {
-                        "cred_def_id": cred_def_id
+                        "spending_key",
+                        "date_issued"                        
+                        ],
+                        "restrictions": [
+                            {
+                                "cred_def_id": cred_def_id
+                            }
+                        ]
                     }
-                ]
-                }
             },
             "requested_predicates": {
-                "e-prescription": {
-                    "name": "expiration_date",
-                    "p_type": ">=",
-                    "p_value": expiration,
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
                     }
-                }
+            },
             }
-        }
+
+
     present_proof = requests.post(url_pharmacy_agent + '/present-proof/create-request', json=proof_request).json()
     presentation_request = json.dumps(present_proof["presentation_request"])
     presentation_request = base64.b64encode(presentation_request.encode('utf-8')).decode('ascii')
@@ -377,7 +370,7 @@ def login_url_view(request):
     }
     invitation_string = json.dumps(proof_request_conless)
     invitation_string = base64.urlsafe_b64encode(invitation_string.encode('utf-8')).decode('ascii')
-    invitation_url = str(url_pharmacy_agent)[:-4] + "7000/?c_i=" + str(invitation_string) ##Changing Agent-Port from API to the Agents' one
+    invitation_url = str(url_pharmacy_agent)[:-4] + "7000/?c_i=" + str(invitation_string) ##Changing Agent-Port from API to the Agent's one
     context['invitation'] = invitation_url
     print(invitation_url)
     return HttpResponseRedirect(invitation_url)
@@ -434,7 +427,7 @@ def schema_view(request):
 def create_schema():
     schema = {
             "attributes": ATTRIBUTES,
-            "schema_name": f"health pharmacy{random.randint(10000, 100000)}",
+            "schema_name": f"pharmacy_invoice{random.randint(10000, 100000)}",
             "schema_version": "1.0"
         }
     requests.post(url_pharmacy_agent + '/schemas', json=schema)
@@ -631,7 +624,7 @@ def webhook_connection_view(request):
         #     requests.delete(url_pharmacy_agent + '/present-proof/records/' + pres_ex_id)
         #     x -= 1
         # Gets the CONNECTION ID (to which the proof should be sent)
-        connection_id = requests.get(url_pharmacy_agent + '/connections').json()['results'][0]['connection_id']
+        connection_id = requests.get(url_pharmacy_agent + '/connections?state=response').json()['results'][-1]['connection_id']
         # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
         created_schema = requests.get(url_doctor_agent + '/schemas/created').json()['schema_ids']
         schema_name = requests.get(url_doctor_agent + '/schemas/' + created_schema[0]).json()['schema']['name']
@@ -649,44 +642,30 @@ def webhook_connection_view(request):
                 "requested_attributes": {
                     "e-prescription": {
                         "names": [
-                        "doctor_id",
-                        "doctor_fullname",
-                        "doctor_type",
-                        "doctor_phonenumber",
-                        "patient_insurance_id",
-                        "patient_insurance_company",
-                        "patient_fullname",
-                        "patient_birthday",
-                        "pharmaceutical",
-                        "number",
-                        "extra_information",
-                        "date_issued",
-                        "prescription_id",
-                        "contract_address",
-                        "spending_key"
-                    ],
-                    "non_revoked":{
-                        "from": 0,
-                        "to": round(time.time())
-                        },                    
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
+                            "doctor_id",
+                            "doctor_fullname",
+                            "doctor_type",
+                            "doctor_phonenumber",
+                            "patient_insurance_id",
+                            "patient_insurance_company",
+                            "patient_fullname",
+                            "patient_birthday",
+                            "pharmaceutical",
+                            "number",
+                            "extra_information",
+                            "prescription_id",
+                            "contract_address",
+                            "spending_key",
+                            "date_issued"
+                        ],      
+                        "restrictions": [
+                            {
+                                "cred_def_id": cred_def_id
+                            }
+                        ]
                     }
                 },
                 "requested_predicates": {
-                    "e-prescription": {
-                    "name": "expiration_date",
-                    "p_type": ">=",
-                    "p_value": expiration,
-                    "restrictions": [
-                        {
-                            "cred_def_id": cred_def_id
-                        }
-                    ]
-                    }
                 }
             }
         }
@@ -727,14 +706,19 @@ def webhook_proof_view(request):
                     "patient_birthday"    : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['patient_birthday']['raw'],
                     "pharmaceutical"      : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['pharmaceutical']['raw'],
                     "number"              : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['number']['raw'],
-                    "extra_information"  : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['extra_information']['raw'],
+                    "extra_information"   : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['extra_information']['raw'],
                     "contract_address"    : contract_address,
                     "spending_key"        : spending_key,
                     "valid"               : proof['verified'] == "true",
                     "not_spent"           : not_spent,
-                    "date_issued"         : proof['created_at'],
+                    "date_issued"         : proof['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['date_issued']['raw'],
                     "date_presented"      : datetime.now(),
                     "connection_id"       : connection_id
                     }
                 )
+    return HttpResponse()
+
+@require_POST
+@csrf_exempt
+def webhook_catch_all_view(request):
     return HttpResponse()

@@ -95,15 +95,17 @@ services:
     build:
       context: ./aries-cloudagent-python
       dockerfile: ./docker/Dockerfile.run
-    # ports:
-    #   - 6000:6000
-    #   - 6080:6080
+    ports:
+      - 6000:6000
+      - 6001:6001
+      - 6080:6080
     entrypoint: aca-py
     command: >
       start
         --auto-provision
-        --tails-server-base-url http://${ip_address}/tails
-        --tails-server-upload-url http://tails-server:6543
+        --tails-server-base-url http://${ip_address}:6543
+        --tails-server-upload-url http://tail-server:6543
+        --webhook http://web-server/insurance
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request
@@ -135,14 +137,16 @@ services:
       context: ./aries-cloudagent-python
       dockerfile: ./docker/Dockerfile.run
     ports:
-    #   - 7000:7000
+      - 7000:7000
+      - 7001:7001
       - 7080:7080
     entrypoint: aca-py
     command: >
       start
         --auto-provision
-        --tails-server-base-url http://${ip_address}/tails
-        --tails-server-upload-url http://tails-server:6543
+        --tails-server-base-url http://${ip_address}:6543
+        --tails-server-upload-url http://tail-server:6543
+        --webhook http://web-server/doctor
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request
@@ -153,6 +157,7 @@ services:
         --outbound-transport http 
         --genesis-url ${genesis_url}
         --log-level info
+        --debug-connections
         --seed 000000000000000000000000Steward3
         --wallet-type indy 
         --wallet-key StewardWallet3 
@@ -175,15 +180,16 @@ services:
       context: ./aries-cloudagent-python
       dockerfile: ./docker/Dockerfile.run
     ports:
-    #   - 5000:5000
-      - 5080:5080
+      - 9000:9000
+      - 9001:9001
+      - 9080:9080
     entrypoint: aca-py
     command: >
       start
         --auto-provision
-        --webhook http://app:${port}/pharmacy
-        --tails-server-base-url http://${ip_address}/tails
-        --tails-server-upload-url http://tails-server:6543
+        --tails-server-base-url http://${ip_address}:6543
+        --tails-server-upload-url http://tail-server:6543
+        --webhook http://web-server/pharmacy
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request

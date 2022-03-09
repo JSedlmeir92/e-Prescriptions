@@ -159,8 +159,8 @@
                 <a class="btn btn-block btn-primary" href='{% url 'pharmacy-issue_cred' id=object.id %}'>Issue an invoice</a>
                 {% else %}
                     <a class="btn btn-block btn-primary" disabled><strike>Issue an invoice</strike></a>
-                {% endif %}            
-                <button class="btn btn-block btn-danger" type="submit" value="delete">Delete the ePrescription</button>
+                {% endif %}
+                <a class="btn btn-block btn-danger" href='{% url 'pharmacy-prescription_delete_item' id=object.id %}'>Delete the ePrescription</a>
                 <a href="{% url 'pharmacy-prescription-table' %}" class="btn btn-block btn-secondary"><i class="fa fa-envelope-o"></i> Go back</a>
             </form>
             <a href="{% url 'insurance-login' %}" class="button btn btn-block mt-1 ">Next step</a>

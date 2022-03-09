@@ -19,8 +19,8 @@ pip3 install python-dateutil django-tables2
 - Make sure that the ports in the Used Ports section are open for your docker network.
   The doctor agent and pharmacy agent must be available from your mobile phone with the SSI wallet app.   
 - Create a .env file in the main directory. It should look as follows:
-  + id_address=IP address where the application is running and that is available for your mobile phone
-  + dir_mname=path to the directory of the project, e.g., /home/user/e-Prescriptions
+  + ip_address=IP address where the application is running and that is available for your mobile phone
+  + dir_name=path to the directory of the project, e.g., /home/user/e-Prescriptions
   + port=port where the webapp is listening
 - Create an another .env file in the von-network folder. It should include the following parameters:
   + DOCKERHOST= the same IP-Adress as previous
@@ -44,6 +44,7 @@ pip3 install python-dateutil django-tables2
 
 ### Used Ports:
 - Web-Apps: specified in .env
+- Insurance-Agent: Port 6000 / API 6080
 - Doctor-Agent: Port 7000 / API 7080
 - Pharmacy-Agent: Port 9000 / API 9080
 - Quorum-Network:

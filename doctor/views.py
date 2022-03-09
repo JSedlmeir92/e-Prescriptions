@@ -52,8 +52,8 @@ ATTRIBUTES = [
                 "pharmaceutical",
                 "number",
                 "extra_information",
-                "date_issued",
                 "expiration_date",
+                "date_issued",
                 "prescription_id",
                 "contract_address",
                 "spending_key"
@@ -71,8 +71,8 @@ COMMENTS = [
     "The pharmaceutical that is prescribed",
     "The number of units of the pharmaceutical",
     "Optional additional information",
-    "The issuance date of the prescription",
     "The expiration date of the recipe",
+    "The date of issuance of the prescription",
     "The unique id of the prescription to be referred to on the blockchain token",
     "The address of the smart contract in which the doctor creates the prescription token",
     "The private key that allows to spend the token (once only)"
@@ -234,12 +234,6 @@ def login_view(request):
             connections = requests.get(url_doctor_agent + '/connections?alias=' + session_key + '&state=active').json()['results']
             if len(connections) > 0:
                 connection_id = connections[0]['connection_id']
-                proof = requests.get(url_doctor_agent + '/present-proof/records?connection_id=' + connection_id + '&state=verified').json()['results']
-                if (len(proof) > 0):
-                    name = proof[0]['presentation']['requested_proof']['revealed_attr_groups']['e-prescription']['values']['prescription_id']['raw']
-                    context['name'] = name
-                else:
-                    pass
             else:
                 proof_records = requests.get(url_doctor_agent + '/present-proof/records').json()['results']
                 x = len(proof_records)
@@ -247,29 +241,27 @@ def login_view(request):
                     pres_ex_id = proof_records[x - 1]['presentation_exchange_id']
                     requests.delete(url_doctor_agent + '/present-proof/records/' + pres_ex_id)
                     x -= 1
-                connections = requests.get(url_doctor_agent + '/connections').json()['results']
-                y = len(connections)
-                while y > 0:
-                    connection_id = connections[y - 1]["connection_id"]
-                    requests.delete(url_doctor_agent + '/connections/' + connection_id)
-                    y -= 1
             # Checks if it is necessary to create a new INVITATION QR Code and creates one if necessary
             invitations = requests.get(url_doctor_agent + '/connections?alias=' + session_key + '&state=invitation').json()['results']
             # Creates a new INVITATION, if none exists
             if len(invitations) == 0:
-                invitation_link = requests.post(url_doctor_agent + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
+                invitation_link = requests.post(url_doctor_agent + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=false').json()['invitation_url']
                 FileHandler = open("doctor/connection_doctor", "w")
                 FileHandler.write(invitation_link)
                 FileHandler.close()
             elif os.stat("doctor/connection_doctor").st_size == 0:
                 connection_id = invitations[0]["connection_id"]
                 requests.delete(url_doctor_agent + '/connections/' + connection_id)
-                invitation_link = requests.post(url_doctor_agent + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=true').json()['invitation_url']
+                invitation_link = requests.post(url_doctor_agent + '/connections/create-invitation?alias=' + session_key + '&auto_accept=true&multi_use=false').json()['invitation_url']
                 FileHandler = open("doctor/connection_doctor", "w")
                 FileHandler.write(invitation_link)
                 FileHandler.close()
-            # Uses the latest created INVITATION, if it has not been used yet
             else:
+                x = len(invitations)
+                while x > 1:
+                    connection_id = invitations[x - 1]["connection_id"]
+                    requests.delete(url_doctor_agent + '/connections/' + connection_id)
+                    x -= 1
                 FileHandler = open("doctor/connection_doctor", "r")
                 invitation_link = FileHandler.read()
                 FileHandler.close()
@@ -314,14 +306,6 @@ def issue_cred_view(request, id):
     # Updates the STATE of all CONNECTIONS that do not have the state 'active' or 'response'
     update_state = Connection.objects.all()
     obj = get_object_or_404(Connection, id=id)
-    for object in update_state:
-        connection = requests.get(url_doctor_agent + '/connections/' + object.connection_id).status_code
-        if connection == 200:
-            state = requests.get(url_doctor_agent + '/connections/' + object.connection_id).json()['state']
-            Connection.objects.filter(id=object.id).update(connection_state=state)
-        else:
-            print(object)
-            #Connection.objects.filter(id=object.id).delete()
     form = CredentialForm(request.POST or None)
     context = {
         'title': 'Issue Credential',
@@ -357,7 +341,6 @@ def issue_cred_view(request, id):
                     rev_reg_id = requests.get(url_doctor_agent + '/revocation/registries/created?cred_def_id=' + credential_definition_id + '&state=active').json()['rev_reg_ids'][0]
                     issuer_did = requests.get(url_doctor_agent + '/wallet/did/public').json()['result']['did']
                     connection_id = obj.connection_id
-                    print("Connection_ID: " + connection_id)
 
                     attributes = [
                         {
@@ -469,7 +452,8 @@ def issue_cred_view(request, id):
                         }
                         # Saving the data in the database
                         form.save()
-                        form = CredentialForm()                        
+                        form = CredentialForm() 
+                        print(credential)                       
                         issue_cred = requests.post(url_doctor_agent + '/issue-credential/send', json=credential)
                         # Updating the object in the database with the thread-id
                         # print(issue_cred)
@@ -552,7 +536,7 @@ def webhook_connection_view(request):
         #     requests.delete(url_doctor_agent + '/present-proof/records/' + pres_ex_id)
         #     x -= 1
         # Gets the CONNECTION ID (to which the proof should be sent)
-        connection_id = requests.get(url_doctor_agent + '/connections').json()['results'][0]['connection_id']
+        connection_id = requests.get(url_doctor_agent + '/connections?state=response').json()['results'][-1]['connection_id']
         # Gets the CREDENTIAL DEFINITION ID for the proof of a REVOCABLE credential
         created_schema = requests.get(url_insurance_agent + '/schemas/created').json()['schema_ids']
         schema_name = requests.get(url_insurance_agent + '/schemas/' + created_schema[0]).json()['schema']['name']
@@ -577,10 +561,6 @@ def webhook_connection_view(request):
                             "expiration_date",
                             "insurance_company"
                         ],
-                        "non_revoked":{
-                            "from": 0,
-                            "to": round(time.time())
-                        },
                         "restrictions": [
                             {
                                 "cred_def_id": cred_def_id
@@ -619,4 +599,4 @@ def webhook_proof_view(request):
 @require_POST
 @csrf_exempt
 def webhook_catch_all_view(request):
-    return
+    return HttpResponse()

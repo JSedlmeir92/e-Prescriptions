@@ -28,6 +28,7 @@ url_webapp = f'http://{ip_address}:{port}'
 
 url_pharmacy_agent = "http://pharmacy-agent:5080"
 url_insurance_agent = "http://insurance-agent:6080"
+url_insurance_agent_endpoint = str(url_webapp + "/insurance-agent-endpoint/")
 
 
 support_revocation = True
@@ -77,15 +78,20 @@ def connection_view(request):
         # Generating the new INVITATION
         alias = request.POST.get('alias')
         response = requests.post(url_insurance_agent+ '/connections/create-invitation?alias=' + alias + '&auto_accept=true').json()
+        print(response)
         invitation_link = response['invitation_url']
         connection_id = response['connection_id']
         Connection.objects.filter(id=Connection.objects.latest('date_added').id).update(invitation_link=invitation_link)
         Connection.objects.filter(id=Connection.objects.latest('date_added').id).update(connection_id=connection_id)
         # Generating the QR code
         invitation_splitted = invitation_link.split("=", 1)
+        print(invitation_splitted)
+        invitation_splitted[0] = str(url_insurance_agent_endpoint + "?c_i")
         temp = json.loads(base64.b64decode(invitation_splitted[1]))
         # Icon for the wallet app
         temp.update({"imageUrl": f'{url_webapp}/static/img/health-insurance_logo.png'})
+        temp.update({"serviceEndpoint": url_insurance_agent_endpoint})
+        print(temp)
         temp = base64.b64encode(json.dumps(temp).encode("utf-8")).decode("utf-8")
         invitation_splitted[1] = temp
         invitation_link = "=".join(invitation_splitted)

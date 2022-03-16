@@ -99,13 +99,14 @@ services:
       - 6000:6000
       - 6001:6001
       - 6080:6080
+      - 6010:6010
     entrypoint: aca-py
     command: >
       start
         --auto-provision
         --tails-server-base-url http://${ip_address}:6543
         --tails-server-upload-url http://tail-server:6543
-        --webhook http://web-server/insurance
+
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request
@@ -123,10 +124,11 @@ services:
         --wallet-name StewardWallet3
         --admin-insecure-mode 
         --admin 0.0.0.0 6080 
-        -e http://${ip_address}/insurance-agent
+        -e 0.0.0.0 6010
         -l Insurance
     volumes:
       #- ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+              # --webhook http://web-server/insurance
       - ${dir_name}/docker_timezone:/etc/localtime:ro
     networks:
       ePrescription-net:
@@ -146,7 +148,7 @@ services:
         --auto-provision
         --tails-server-base-url http://${ip_address}:6543
         --tails-server-upload-url http://tail-server:6543
-        --webhook http://web-server/doctor
+
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request
@@ -169,6 +171,7 @@ services:
         -l Doctor
     volumes:
       #- ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      #         --webhook http://web-server/doctor
       - ${dir_name}/docker_timezone:/etc/localtime:ro
     networks:
       ePrescription-net:
@@ -189,7 +192,7 @@ services:
         --auto-provision
         --tails-server-base-url http://${ip_address}:6543
         --tails-server-upload-url http://tail-server:6543
-        --webhook http://web-server/pharmacy
+        
         --auto-respond-credential-proposal 
         --auto-respond-credential-offer 
         --auto-respond-credential-request
@@ -211,6 +214,7 @@ services:
         -l Pharmacy
     volumes:
       #- ${dir_name}/pool_transactions_genesis:/var/lib/indy/my-net/pool_transactions_genesis
+      # --webhook http://web-server/pharmacy
       - ${dir_name}/docker_timezone:/etc/localtime:ro
     networks:
       ePrescription-net:

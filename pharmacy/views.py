@@ -346,7 +346,7 @@ def login_url_view(request):
     presentation_request = base64.b64encode(presentation_request.encode('utf-8')).decode('ascii')
     invitation = requests.post(url_pharmacy_agent + '/connections/create-invitation').json()
     print(proof_request)
-    reciepentKeys = invitation["invitation"]["recipientKeys"]
+    recipientKeys = invitation["invitation"]["recipientKeys"]
     #verkey = requests.get(url_pharmacy_agent + '/wallet/did').json()["results"][0]["verkey"]
     serviceEndPoint = invitation["invitation"]["serviceEndpoint"]
     #routingkeys = invitation["invitation"]["routing_keys"] #TODO: Relevant?
@@ -363,7 +363,7 @@ def login_url_view(request):
         "@id" : present_proof["presentation_request_dict"]["@id"],
         "@type": present_proof["presentation_request_dict"]["@type"],
         "~service": {
-            "recipientKeys": reciepentKeys,
+            "recipientKeys": recipientKeys,
             "serviceEndpoint": serviceEndPoint,
             "routingKeys": []
         }

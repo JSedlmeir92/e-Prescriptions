@@ -28,7 +28,7 @@ url_webapp = f'http://{ip_address}:{port}'
 
 url_pharmacy_agent = "http://pharmacy-agent:5080"
 url_insurance_agent = "http://insurance-agent:6080"
-url_insurance_agent_endpoint = str(url_webapp + "/insurance-agent-endpoint/")
+url_insurance_agent_endpoint = f'http://{ip_address}:6000'
 
 
 support_revocation = True

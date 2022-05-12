@@ -56,6 +56,13 @@ pip3 install python-dateutil django-tables2
   + 9701-9708
 - Other: Port 8999 (really?)
 
+### Trouble-Shooting
+"web-server_1 | npm ERR! command git ls-remote ssh://git@github.com/frozeman/bignumber.js-nolookahead.git
+web-server_1 | npm ERR! No user exists for uid 1000
+web-server_1 | npm ERR! fatal: Could not read from remote repository."
+installiere npm und starte ./start.sh, um die Module zu installieren.
+
+
 # Description
 The application launches two blockchains (a local Quorum-network and an Indy blockchain for handling SSI operations).
 To interact with the SSI applications, a standardized wallet and generic protocols, such as aca-py, are used (and launched).

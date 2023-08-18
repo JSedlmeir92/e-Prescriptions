@@ -28,14 +28,21 @@ pip3 install python-dateutil django-tables2
   + REGISTER_NEW_DIDS=True
   + LEDGER_INSTANCE_NAME=ePrescription-Demo (for example)
 
-### STEP 3: Add the path to genesis.txt into the first env-file
+### STEP 3: Add the path to genesis.txt into the first env-file (replace the Variables)
 - genesis_url=DOCKERHOST:WEB_SERVER_HOST_PORT/genesis
+
 
 ### STEP 4: Start the demo: ###
 - Start the portable development Indy Node Network
   - In the von-network directory
     -./manage build
     -./manage start
+- Register the DIDs from the wallets on the ledger:
+  - http://DOCKERHOST:WEB_SERVER_HOST_PORT/ -->  Authenticate a New DID -->
+  - 00000000000000000000000insurance
+  - 000000000000000000000000Steward3
+  - 000000000000000000000000000Agent
+    
 - In the project directory,
     - run 'docker-compose up'
     - ...and enjoy our demo! :)
